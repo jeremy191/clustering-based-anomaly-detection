@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jun 17 10:23:31 2019
+
+@author: jeremyperez
+"""
+
+#Main Libraries for the Project
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+#Reading the Dataset
+trainData = pd.read_csv("/Users/jeremyperez/Jupyter/NSL-KDD/KDDTrain+.csv", header = None) 
+testData = pd.read_csv("/Users/jeremyperez/Jupyter/NSL-KDD/KDDTest+.csv", header = None)
+#125972 rows × 43 columns
+
+
+#Getting the Dependent and independent Variables
+X = trainData.iloc[:,:-2].values # Get all the rows and all the clums except all the colums - 2
+Y = trainData.iloc[:,41].values # Get all the rows and the colum number 42
+
+
+#Dummy encoding
+#We use dummy Encoding to pervent the machine learning don't atribute the categorical data in order. 
+from sklearn import preprocessing
+from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer, make_column_transformer
+
+# Encoding the categorical data
+# Encoding the Independent Variable
+labelencoder_X = LabelEncoder()
+
+X[:,1] = labelencoder_X.fit_transform(X[:,1])
+X[:,2] = labelencoder_X.fit_transform(X[:,2])
+X[:,3] = labelencoder_X.fit_transform(X[:,3])
+columntransformer = ColumnTransformer([('one_hot_encoder', OneHotEncoder(), [1,2,3])],remainder = 'passthrough')
+
+
+# Encoding the Dependent Variable
+labelencoder_Y = LabelEncoder()
+Y = labelencoder_Y.fit_transform(Y)
