@@ -5,7 +5,7 @@ Created on Mon Jun 17 13:24:12 2019
 
 @author: jeremyperez
 """
-#%reset -f
+#reset -f
 #Main Libraries for the Project
 import numpy as np
 import pandas as pd
@@ -18,34 +18,38 @@ testData = pd.read_csv("/Users/jeremyperez/Jupyter/NSL-KDD/KDDTest+.csv", header
 
 #Getting the Dependent and independent Variables
 X = trainData.iloc[:,:-2].values # Get all the rows and all the clums except all the colums - 2
-Y = trainData.iloc[:,41].values# Get all the rows and the colum number 42
+Y = trainData.iloc[:,41]# Get all the rows and the colum number 42
+attacks = trainData.iloc[:,41]
 
+
+
+# Encoding the categorical data
 from sklearn import preprocessing
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
 
-
 #We use dummy Encoding to pervent the machine learning don't atribute the categorical data in order. 
-
-# Encoding the categorical data
 # Encoding the Independent Variable
+ 
 labelencoder_X1 = LabelEncoder()
-labelencoder_X2 = LabelEncoder()
-labelencoder_X3 = LabelEncoder()
-
-X[:,1] = labelencoder_X1.fit_transform(X[:,1])
-X[:,2] = labelencoder_X2.fit_transform(X[:,2])
-X[:,3] = labelencoder_X3.fit_transform(X[:,3])
-
-#Dummy encoding
-onehotencoder = OneHotEncoder(categories = 'auto')
-X = onehotencoder.fit_transform(X).toarray()
+X[:, 1] = labelencoder_X1.fit_transform(X[:, 1])
+labelencoder_X1 = LabelEncoder()
+X[:, 2] = labelencoder_X1.fit_transform(X[:, 2])
+labelencoder_X1 = LabelEncoder()
+X[:, 3] = labelencoder_X1.fit_transform(X[:, 3])
 
 # Encoding the Dependent Variable
-labelencoder_Y = LabelEncoder()
-Y = labelencoder_Y.fit_transform(Y)
+labelencoder_y = LabelEncoder()
+Y = labelencoder_y.fit_transform(Y)
 
+
+
+#Feature Scaling
+#We scaled the data to all fall within the range []
+from sklearn.preprocessing import StandardScaler
+standarscaler = StandardScaler()
+X =  standarscaler.fit_transform(X)
 
 
 #Elbow method to find the best number of culster
@@ -64,10 +68,12 @@ plt.show()
 
 #Applying K-mea(n_clusters = 5)
 kmeans = KMeans(n_clusters = 5, init = 'k-means++',max_iter = 300,n_init = 10,random_state = 0)
-y_kmeans = kmeans.fit_predict(X)
+y_kmeans = kmeans.fit(X)
+y_kmeans.labels_
+pd.crosstab(attacks,y_kmeans.labels_)
+
 
 #Visual representation of the clusters
-
 plt.scatter(X[y_kmeans ==0,0],X[y_kmeans == 0,1], s = 21, c = 'red', label = 'cluster1')
 plt.scatter(X[y_kmeans ==1,0],X[y_kmeans == 1,1], s = 21, c = 'yellow', label = 'cluster2')
 plt.scatter(X[y_kmeans ==2,0],X[y_kmeans == 2,1], s = 21, c = 'cyan', label = 'cluster3')
