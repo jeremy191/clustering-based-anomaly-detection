@@ -1,57 +1,88 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Jun 17 13:24:12 2019
-
-@author: jeremyperez
-"""
 #reset -f
 #Main Libraries for the Project
+
 import numpy as np
-import pandas as pd
+import pandas as pd 
 import matplotlib.pyplot as plt
 
-
-#Reading the Dataset
+#Reading the Train Dataset and Checking if has missing Values
 trainData = pd.read_csv("/Users/jeremyperez/Jupyter/NSL-KDD/KDDTrain+.csv", header = None) 
+#Run a Missing Value Ratio test to determine if any feature is missing values.
+#If all ratios = 0.0, then data is not missing any values for any features.
+#More info about Missing value ratio at 
+#https://www.analyticsvidhya.com/blog/2018/08/dimensionality-reduction-techniques-python/
+trainData.isnull().sum()/len(trainData)*100
+
+
+#Reading the Test Dataset and Checking if has missing Values
 testData = pd.read_csv("/Users/jeremyperez/Jupyter/NSL-KDD/KDDTest+.csv", header = None)
+#Run a Missing Value Ratio test to determine if any feature is missing values.
+#If all ratios = 0.0, then data is not missing any values for any features.
+testData.isnull().sum()/len(testData)*100
+
 
 #Getting the Dependent and independent Variables
-X = trainData.iloc[:,:-2].values # Get all the rows and all the clums except all the colums - 2
-Y = trainData.iloc[:,41]# Get all the rows and the colum number 42
-attacks = trainData.iloc[:,41]
+X = trainData.iloc[:,:-1].values # Get all the rows and all the clums except all the colums - 1
+Y = trainData.iloc[:,42].values# Get all the rows and the colum number 42
+A = testData.iloc[:,:-1].values # Get all the rows and all the clums except all the colums - 1
+Z = testData.iloc[:,42].values# Get all the rows and the colum number 42
+attacks = trainData.iloc[:,42].values #Attacks with no one hot encoding
 
+X = pd.DataFrame(X)
+Y = pd.DataFrame(Y)
+A = pd.DataFrame(A)
+Z = pd.DataFrame(Z)
 
-
-# Encoding the categorical data
+#Encoding Categorical Data for Train Set
 from sklearn import preprocessing
-from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
+#We use One hot encoding to pervent the machine learning to atribute the categorical data in order. 
+#What one hot encoding(ColumnTransformer) does is, it takes a column which has categorical data, 
+#which has been label encoded, and then splits the column into multiple columns.
+#The numbers are replaced by 1s and 0s, depending on which column has what value
+#We don't need to do a label encoded step because ColumnTransformer do one hot encode and label encode!
 
-#We use dummy Encoding to pervent the machine learning don't atribute the categorical data in order. 
-# Encoding the Independent Variable
- 
-labelencoder_X1 = LabelEncoder()
-X[:, 1] = labelencoder_X1.fit_transform(X[:, 1])
-labelencoder_X1 = LabelEncoder()
-X[:, 2] = labelencoder_X1.fit_transform(X[:, 2])
-labelencoder_X1 = LabelEncoder()
-X[:, 3] = labelencoder_X1.fit_transform(X[:, 3])
-
-# Encoding the Dependent Variable
-labelencoder_y = LabelEncoder()
-Y = labelencoder_y.fit_transform(Y)
+#Encoding the Independient Variable
+transformX = ColumnTransformer([("Servers", OneHotEncoder(categories = "auto"), [1,2,3])], remainder="passthrough")
+X = transformX.fit_transform(X)
+#Encoding the Dependent Variable
+transformY= ColumnTransformer([("Attacks", OneHotEncoder(categories = "auto"), [0])], remainder="passthrough")
+Y = transformY.fit_transform(Y)
 
 
 
-#Feature Scaling
-#We scaled the data to all fall within the range []
+#Encoding Categorical Data for Test Set
+#Encoding the Independient Variable
+transformA = ColumnTransformer([("Servers", OneHotEncoder(categories = "auto"), [1,2,3])], remainder="passthrough")
+A = transformA.fit_transform(A)
+    
+#Encoding the Dependent Variable
+transformZ = ColumnTransformer([("Attacks", OneHotEncoder(categories = "auto"), [0])], remainder="passthrough")
+Z = transformZ.fit_transform(Z)
+
+
+
+#Because we are using numerical-value-only clustering techniques to analyze the NSL-KDD dataset,
+#we need to normalize the values in the dataset, as Ibrahim., et. al. describe (page 112).
+#We complete the normalization process below:
 from sklearn.preprocessing import StandardScaler
-standarscaler = StandardScaler()
-X =  standarscaler.fit_transform(X)
+from sklearn.linear_model import LogisticRegression
 
+trainScaler = StandardScaler()
+X = trainScaler.fit_transform(X)
 
+testScaler = StandardScaler()
+A = testScaler.fit_transform(A)
+
+#np.array(Y) 
+#np.array(Z)
+
+#model = LogisticRegression(solver = 'lbfgs')
+#model.fit(trainData,trainLabel)
+
+#Elbow Method
+#trainData
 #Elbow method to find the best number of culster
 from sklearn.cluster import KMeans
 wcss = []
@@ -66,22 +97,9 @@ plt.ylabel('WCSS')
 plt.show()
 #5 clusters 
 
+#KMeans
 #Applying K-mea(n_clusters = 5)
-kmeans = KMeans(n_clusters = 5, init = 'k-means++',max_iter = 300,n_init = 10,random_state = 0)
-y_kmeans = kmeans.fit(X)
-y_kmeans.labels_
-pd.crosstab(attacks,y_kmeans.labels_)
-
-
-#Visual representation of the clusters
-plt.scatter(X[y_kmeans ==0,0],X[y_kmeans == 0,1], s = 21, c = 'red', label = 'cluster1')
-plt.scatter(X[y_kmeans ==1,0],X[y_kmeans == 1,1], s = 21, c = 'yellow', label = 'cluster2')
-plt.scatter(X[y_kmeans ==2,0],X[y_kmeans == 2,1], s = 21, c = 'cyan', label = 'cluster3')
-plt.scatter(X[y_kmeans ==3,0],X[y_kmeans == 3,1], s = 21, c = 'orange', label = 'cluster4')
-plt.scatter(X[y_kmeans ==4,0],X[y_kmeans == 4,1], s = 21, c = 'black', label = 'cluster5')
-plt.scatter(kmeans.cluster_centers_[:, 0],kmeans.cluster_centers_[:, 1],s = 300, c = 'purple', label = 'Centroids')
-plt.title('Clusters of Attacks')
-plt.xlabel('Numbers of Attacks')
-plt.ylabel('Types of Attacks')
-plt.legend()
-plt.show()
+KMEANS = KMeans(n_clusters = 2, init = 'k-means++',max_iter = 300,n_init = 10,random_state = 0)
+kmeans = KMEANS.fit(X)
+kmeans.labels_
+pd.crosstab(attacks,kmeans.labels_)
