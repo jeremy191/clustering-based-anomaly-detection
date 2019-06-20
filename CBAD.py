@@ -36,7 +36,6 @@ Y = pd.DataFrame(Y)
 Z = pd.DataFrame(Z)
 
 #Encoding Categorical Data for Train Set
-from sklearn import preprocessing
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
 #We use One hot encoding to pervent the machine learning to atribute the categorical data in order. 
@@ -68,7 +67,6 @@ Z = transformZ.fit_transform(Z)
 #Because we are using numerical-value-only clustering techniques to analyze the NSL-KDD dataset,
 #we need to normalize the values in the dataset, as Ibrahim., et. al. describe (page 112).
 #We complete the normalization process below:
-from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import Normalizer
 from sklearn.linear_model import LogisticRegression
 
@@ -84,12 +82,12 @@ trainLabel =np.array(Y)
 
 testData =  np.array(testA)
 testLabel = np.array(Z)
-
 #model = LogisticRegression(solver = 'lbfgs')
 #model.fit(trainData,trainLabel)
 
+
+
 #Elbow Method
-#trainData
 #Elbow method to find the best number of culster
 from sklearn.cluster import KMeans
 wcss = []
@@ -102,11 +100,30 @@ plt.title('The Elbow Method')
 plt.xlabel('Number of clusters')
 plt.ylabel('WCSS')
 plt.show()
-#5 clusters 
-
 #KMeans
 #Applying K-mea(n_clusters = 5)
 KMEANS = KMeans(n_clusters = 2, init = 'k-means++',max_iter = 300,n_init = 10,random_state = 0)
 kmeans = KMEANS.fit(trainData)
 kmeans.labels_
 pd.crosstab(attacks,kmeans.labels_)
+
+
+#DBSCAN
+from sklearn.cluster import DBSCAN
+# #############################################################################
+# Compute DBSCAN
+db = DBSCAN(eps=0.1, min_samples=10).fit(trainData)
+core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
+core_samples_mask[db.core_sample_indices_] = True
+labels = db.labels_
+# Number of clusters in labels, ignoring noise if present.
+n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
+n_noise_ = list(labels).count(-1)
+# Analyzing Results of DBSCAN by Crosstab
+pd.crosstab(attacks,labels)
+
+
+
+# F-Score implementation
+from sklearn.metrics import f1_score
+f1 = f1_score(trainLabel,kmeans.labels_, average="binary")
