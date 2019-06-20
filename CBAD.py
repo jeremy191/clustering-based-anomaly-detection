@@ -5,6 +5,10 @@ import numpy as np
 import pandas as pd 
 import matplotlib.pyplot as plt
 
+
+#trainData = pd.read_csv("/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/NSL-KDD/KDDTrain+.csv", header = None)
+#testData = pd.read_csv("/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/NSL-KDD/KDDTest+.csv", header = None) 
+
 #Reading the Train Dataset and Checking if has missing Values
 trainData = pd.read_csv("/Users/jeremyperez/Jupyter/NSL-KDD/KDDTrain+.csv", header = None) 
 #Run a Missing Value Ratio test to determine if any feature is missing values.
@@ -28,9 +32,7 @@ A = testData.iloc[:,:-1].values # Get all the rows and all the clums except all 
 Z = testData.iloc[:,42].values# Get all the rows and the colum number 42
 attacks = trainData.iloc[:,42].values #Attacks with no one hot encoding
 
-X = pd.DataFrame(X)
 Y = pd.DataFrame(Y)
-A = pd.DataFrame(A)
 Z = pd.DataFrame(Z)
 
 #Encoding Categorical Data for Train Set
@@ -67,16 +69,21 @@ Z = transformZ.fit_transform(Z)
 #we need to normalize the values in the dataset, as Ibrahim., et. al. describe (page 112).
 #We complete the normalization process below:
 from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import Normalizer
 from sklearn.linear_model import LogisticRegression
 
-trainScaler = StandardScaler()
-X = trainScaler.fit_transform(X)
+normalizer = Normalizer().fit(X)
+trainX = normalizer.transform(X)
 
-testScaler = StandardScaler()
-A = testScaler.fit_transform(A)
+normalizer = Normalizer().fit(A)
+testA = normalizer.transform(A)
 
-#np.array(Y) 
-#np.array(Z)
+
+trainData = np.array(trainX)
+trainLabel =np.array(Y)
+
+testData =  np.array(testA)
+testLabel = np.array(Z)
 
 #model = LogisticRegression(solver = 'lbfgs')
 #model.fit(trainData,trainLabel)
@@ -88,7 +95,7 @@ from sklearn.cluster import KMeans
 wcss = []
 for i in range(1,11):
     kmeans = KMeans(n_clusters = i, init = 'k-means++',max_iter = 300,n_init = 10,random_state = 0)
-    kmeans.fit(X)
+    kmeans.fit(trainData)
     wcss.append(kmeans.inertia_)
 plt.plot(range(1,11),wcss)
 plt.title('The Elbow Method')
@@ -100,6 +107,6 @@ plt.show()
 #KMeans
 #Applying K-mea(n_clusters = 5)
 KMEANS = KMeans(n_clusters = 2, init = 'k-means++',max_iter = 300,n_init = 10,random_state = 0)
-kmeans = KMEANS.fit(X)
+kmeans = KMEANS.fit(trainData)
 kmeans.labels_
 pd.crosstab(attacks,kmeans.labels_)
