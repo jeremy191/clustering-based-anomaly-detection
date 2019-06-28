@@ -1,157 +1,247 @@
-reset -f
-#Main Libraries for the Project
+#@authors: jeremyperez,bethanydanner
+
+#reset -f
 
 import numpy as np
 import pandas as pd 
 import matplotlib.pyplot as plt
 
 
-#trainData = pd.read_csv("/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/NSL-KDD/KDDTrain+.csv", header = None)
-#testData = pd.read_csv("/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/NSL-KDD/KDDTest+.csv", header = None) 
 
-#Reading the Train Dataset and Checking if has missing Values
-trainData = pd.read_csv("/Users/jeremyperez/Jupyter/NSL-KDD/KDDTrain+.csv", header = None) 
-#Run a Missing Value Ratio test to determine if any feature is missing values.
-#If all ratios = 0.0, then data is not missing any values for any features.
-#More info about Missing value ratio at 
-#https://www.analyticsvidhya.com/blog/2018/08/dimensionality-reduction-techniques-python/
-trainData.isnull().sum()/len(trainData)*100
-
-
-#Reading the Test Dataset and Checking if has missing Values
-testData = pd.read_csv("/Users/jeremyperez/Jupyter/NSL-KDD/KDDTest+.csv", header = None)
-#Run a Missing Value Ratio test to determine if any feature is missing values.
-#If all ratios = 0.0, then data is not missing any values for any features.
-testData.isnull().sum()/len(testData)*100
-
-
-#Getting the Dependent and independent Variables
-X = trainData.iloc[:,:-1].values # Get all the rows and all the clums except all the colums - 1
-Y = trainData.iloc[:,42].values# Get all the rows and the colum number 42
-A = testData.iloc[:,:-1].values # Get all the rows and all the clums except all the colums - 1
-Z = testData.iloc[:,42].values# Get all the rows and the colum number 42
-
-Y = pd.DataFrame(Y)
-Y = np.array(Y)
-Z = pd.DataFrame(Z)
-Z = np.array(Z)
-
-###############################################################################################
-#removing Categorical data from the data set
-X = trainData.iloc[:,[0,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41]].values
-attacks = trainData.iloc[:,42].values #Attacks with no one hot encoding
-###############################################################################################
-
-
-#Encoding Categorical Data for Train Set
-from sklearn.preprocessing import OneHotEncoder, LabelEncoder
-from sklearn.compose import ColumnTransformer
-#We use One hot encoding to pervent the machine learning to atribute the categorical data in order. 
-#What one hot encoding(ColumnTransformer) does is, it takes a column which has categorical data, 
-#which has been label encoded, and then splits the column into multiple columns.
-#The numbers are replaced by 1s and 0s, depending on which column has what value
-#We don't need to do a label encoded step because ColumnTransformer do one hot encode and label encode!
-
-###############################################################################################################
-#Manually encode
-#col1 = {'tcp': 0,'udp': 1,'icmp': 2} 
-#col2  = {'http': 0, 'domain_u': 1, 'sunrpc': 2, 'smtp': 3, 'ecr_i': 4, 'iso_tsap': 5, 'private': 6, 'finger': 7, 'ftp': 8, 'telnet': 9,'other': 10,'discard': 11, 'courier': 12, 'pop_3': 13, 'ldap': 14, 'eco_i': 15, 'ftp_data': 16, 'klogin': 17, 'auth': 18, 'mtp': 19, 'name': 20, 'netbios_ns': 21,'remote_job': 22,'supdup': 23,'uucp_path': 24,'Z39_50': 25,'csnet_ns': 26,'uucp': 27,'netbios_dgm': 28,'urp_i': 29,'domain': 30,'bgp':31,'gopher': 32,'vmnet': 33,'systat': 34,'http_443': 35,'efs': 36,'whois': 37,'imap4': 38,'echo': 39,'link': 40,'login': 41,'kshell': 42,'sql_net': 43,'time': 44,'hostnames': 45,'exec': 46,'ntp_u': 47,'nntp': 48,'ctf': 49,'ssh': 50,'daytime': 51,'shell': 52,'netstat': 53,'nnsp': 54,'IRC': 55,'pop_2': 56,'printer': 57,'tim_i': 58,'pm_dump': 59,'red_i': 60,'netbios_ssn': 61,'rje': 62,'X11': 63,'urh_i': 64,'http_8001': 65,'aol': 66,'http_2784': 67,'tftp_u': 68,'harvest': 69} 
-#col3  = {'REJ': 0, 'SF': 1, 'S0': 2, 'RSTR': 3, 'RSTO': 4,'SH': 5,'S1': 6,'RSTOS0': 7,'S3': 8,'S2': 9,'OTH': 10} 
-#col42  = {'normal': 0, 'neptune': 1, 'warezclient': 2, 'ipsweep': 3, 'mscan': 4, 'back': 5, 'smurf': 6, 'mailbomb': 7, 'apache2': 8, 'rootkit': 9,'back': 10,'satan': 11, 'processtable': 12, 'guess_passwd': 13, 'saint': 14,'portsweep': 15,'teardrop': 16,'nmap': 17,'pod': 18,'ftp_write': 19,'multihop': 20,'buffer_overflow': 21,'imap': 22,'warezmaster': 21,'phf': 22,'land': 23,'loadmodule': 24,'spy': 25,'perl': 26,'snmpgetattack': 27,'httptunnel': 28,'ps': 29,'snmpguess': 30,'named': 31,'sendmail':32,'xterm':33,'worm': 34,'xlock': 35,'xsnoop': 36,'sqlattack': 37,'udpstorm':38} 
-#trainData.col_1 = [col1[item] for item in trainData.col_1]
-#trainData.col_2 = [col2[item] for item in trainData.col_2]
-#trainData.col_3 = [col3[item] for item in trainData.col_3]
-#Y[0] = [col42[item] for item in Y[0]]
-###############################################################################################################
-
-
-#Encoding the Independient Variable
-transformX = ColumnTransformer([("Servers", OneHotEncoder(), [1,2,3])], remainder="passthrough")
-X = transformX.fit_transform(X)
-
-
-#Encoding the Dependent Variable
-transformY= ColumnTransformer([("Attacks", OneHotEncoder(), [0])], remainder="passthrough")
-Y = transformY.fit_transform(Y)
-Y = pd.DataFrame(Y)
-
-#Encoding Categorical Data for Test Set
-#Encoding the Independient Variable
-transformA = ColumnTransformer([("Servers", OneHotEncoder(), [1,2,3])], remainder="passthrough")
-A = transformA.fit_transform(A)
+def readingData(path):
     
-#Encoding the Dependent Variable
-transformZ = ColumnTransformer([("Attacks", OneHotEncoder(), [0])], remainder="passthrough")
-Z = transformZ.fit_transform(Z)
+    #Reading the Train Dataset and Checking if has missing Values
+    ###############################################################################################
+    #trainData = pd.read_csv("/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/NSL-KDD/KDDTrain+.csv", header = None)
+    dataSet = pd.read_csv(path, header = None)
+    
+    return dataSet
+#########################################################################
+#trainData = pd.read_csv("/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/NSL-KDD/KDDTrain+.csv", header = None)
+dataSet = readingData("/Users/jeremyperez/Jupyter/NSL-KDD/KDDTrain+.csv")
 
-###############################################################################################################
-labelencoder_y = LabelEncoder()
-Y = labelencoder_y.fit_transform(Y)
-#pd.get_dummies(,drop_first=True)
-###############################################################################################################
-
-
-#Because we are using numerical-value-only clustering techniques to analyze the NSL-KDD dataset,
-#we need to normalize the values in the dataset, as Ibrahim., et. al. describe (page 112).
-#We complete the normalization process below:
-from sklearn.preprocessing import Normalizer
-
-normalizer = Normalizer().fit(X)
-X = normalizer.transform(X)
-
-normalizer = Normalizer().fit(A)
-A = normalizer.transform(A)
+#Run a Missing Value Ratio test to determine if any feature is missing values.
+#If all ratios = 0.0, then data is not missing any values for any features.
+dataSet.isnull().sum()/len(dataSet)*100
+#########################################################################
 
 
-trainData = np.array(X)
-trainLabel = np.array(Y)
-
-testData =  np.array(A)
-testLabel = np.array(Z)
-
-###############################################################################################################
-#model = LogisticRegression(solver = 'lbfgs')
-#model.fit(trainData,trainLabel)
-###############################################################################################################
 
 
-#Elbow Method
-#Elbow method to find the best number of culster
-from sklearn.cluster import KMeans
-wcss = []
-for i in range(1,11):
-    kmeans = KMeans(n_clusters = i, init = 'k-means++',max_iter = 300,n_init = 10,random_state = 0)
-    kmeans.fit(trainData)
-    wcss.append(kmeans.inertia_)
-plt.plot(range(1,11),wcss)
-plt.title('The Elbow Method')
-plt.xlabel('Number of clusters')
-plt.ylabel('WCSS')
-plt.show()
-#KMeans
-#Applying K-mea(n_clusters = 5)
-KMEANS = KMeans(n_clusters = 4, init = 'k-means++',max_iter = 300,n_init = 10,random_state = 0)
-kmeans = KMEANS.fit(trainData)
-kmeans.labels_
-pd.crosstab(attacks,kmeans.labels_)
+#Getting The data we want to test for the clustering algorithms
+def gettingVariables(dataSet):
+    #Getting the Dependent and independent Variables
+    X = dataSet.iloc[:,:-2].values # Data, Get all the rows and all the clums except all the colums - 2
+    Y = dataSet.iloc[:,42].values# Labels
+
+    #Removing Categorical data from the data set
+    Z = dataSet.iloc[:,[0,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40]].values
+    
+    #Removing server types
+    W = dataSet.iloc[:,[0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40]].values
+    
+    #Removing Protocols to start using risk Values
+    R = dataSet.iloc[:,[0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40]].values
+
+    return X,Y,Z,W,R
+#########################################################################
+data,labels,noCatg,noServ,riskVal  = gettingVariables(dataSet) #Getting the Data we want to use for the algorithms
+#########################################################################
 
 
+#Encoding the data using one hot encoding and using Main attacks categories or binary categories
+def encodingData(data,labels): 
+    from sklearn.preprocessing import OneHotEncoder
+    from sklearn.compose import ColumnTransformer
+    
+    #We use One hot encoding to pervent the machine learning to atribute the categorical data in order. 
+    #What one hot encoding(ColumnTransformer) does is, it takes a column which has categorical data, 
+    #which has been label encoded, and then splits the column into multiple columns.
+    #The numbers are replaced by 1s and 0s, depending on which column has what value
+    #We don't need to do a label encoded step because ColumnTransformer do one hot encode and label encode!
+
+    #Encoding the Independient Variable
+    transform = ColumnTransformer([("Servers", OneHotEncoder(categories = "auto"), [1,2,3])], remainder="passthrough")
+    data = transform.fit_transform(data)
+
+
+    #Attacks
+    
+    #Binary Categories
+    attackType  = {'normal': "normal", 'neptune': "abnormal", 'warezclient': "abnormal", 'ipsweep': "abnormal",'back': "abnormal", 'smurf': "abnormal", 'rootkit': "abnormal",'satan': "abnormal", 'guess_passwd': "abnormal",'portsweep': "abnormal",'teardrop': "abnormal",'nmap': "abnormal",'pod': "abnormal",'ftp_write': "abnormal",'multihop': "abnormal",'buffer_overflow': "abnormal",'imap': "abnormal",'warezmaster': "abnormal",'phf': "abnormal",'land': "abnormal",'loadmodule': "abnormal",'spy': "abnormal",'perl': "abnormal"} 
+    #4 Main Categories
+    #attackType  = {'normal': "normal", 'neptune': "DoS", 'warezclient': "R2L", 'ipsweep': "Probe",'back': "DoS", 'smurf': "DoS", 'rootkit': "U2R",'satan': "Probe", 'guess_passwd': "R2L",'portsweep': "Probe",'teardrop': "DoS",'nmap': "Probe",'pod': "DoS",'ftp_write': "R2L",'multihop': "R2L",'buffer_overflow': "U2R",'imap': "R2L",'warezmaster': "R2L",'phf': "R2L",'land': "DoS",'loadmodule': "U2R",'spy': "R2L",'perl': "U2R"} 
+    labels[:] = [attackType[item] for item in labels[:]] #Changing the names from the data set with the choosen Categories
+    
+    #attackEncodingCluster  = {'normal': 0,'DoS': 1,'Probe': 2,'R2L': 3, 'U2R': 4} #Main Categories
+    attackEncodingCluster  = {'normal': 0,'abnormal': 1}  #Binary Categories
+    
+    labels[:] = [attackEncodingCluster[item] for item in labels[:]]
+    
+    return data,labels
+#########################################################################
+data,labels = encodingData(data,labels) #One hot Encode with the complete data
+#noServ,labels = encodingData(noServ,labels) #One hot Encode with no Server Type
+#########################################################################
+
+
+
+
+def riskEncodingData(data,labels): #This function is only for risk testing only
+    #Manually Encoding for the attacks types only
+    data = pd.DataFrame(data)
+    servers  = {'http': 0.01, 'domain_u': 0, 'sunrpc': 1, 'smtp': 0.01, 'ecr_i': 0.87, 'iso_tsap': 1, 'private': 0.97, 'finger': 0.27, 'ftp': 0.26, 'telnet': 0.48,'other': 0.12,'discard': 1, 'courier': 1, 'pop_3': 0.53, 'ldap': 1, 'eco_i': 0.8, 'ftp_data': 0.06, 'klogin': 1, 'auth': 0.31, 'mtp': 1, 'name': 1, 'netbios_ns': 1,'remote_job': 1,'supdup': 1,'uucp_path': 1,'Z39_50': 1,'csnet_ns': 1,'uucp': 1,'netbios_dgm': 1,'urp_i': 0,'domain': 0.96,'bgp':1,'gopher': 1,'vmnet': 1,'systat': 1,'http_443': 1,'efs': 1,'whois': 1,'imap4': 1,'echo': 1,'link': 1,'login': 1,'kshell': 1,'sql_net': 1,'time': 0.88,'hostnames': 1,'exec': 1,'ntp_u': 0,'nntp': 1,'ctf': 1,'ssh': 1,'daytime': 1,'shell': 1,'netstat': 1,'nnsp': 1,'IRC': 0,'pop_2': 1,'printer': 1,'tim_i': 0.33,'pm_dump': 1,'red_i': 0,'netbios_ssn': 1,'rje': 1,'X11': 0.04,'urh_i': 0,'http_8001': 1,'aol': 1,'http_2784': 1,'tftp_u': 0,'harvest': 1}
+    data[1] = [servers[item] for item in data[1]]
+
+    servers_error  = {'REJ': 0.519, 'SF': 0.016, 'S0': 0.998, 'RSTR': 0.882, 'RSTO': 0.886,'SH': 0.993,'S1': 0.008,'RSTOS0': 1,'S3': 0.08,'S2': 0.05,'OTH': 0.729} 
+    data[2] = [servers_error[item] for item in data[2]]
+
+    #Attacks
+    attackType  = {'normal': "normal", 'neptune': "abnormal", 'warezclient': "abnormal", 'ipsweep': "abnormal",'back': "abnormal", 'smurf': "abnormal", 'rootkit': "abnormal",'satan': "abnormal", 'guess_passwd': "abnormal",'portsweep': "abnormal",'teardrop': "abnormal",'nmap': "abnormal",'pod': "abnormal",'ftp_write': "abnormal",'multihop': "abnormal",'buffer_overflow': "abnormal",'imap': "abnormal",'warezmaster': "abnormal",'phf': "abnormal",'land': "abnormal",'loadmodule': "abnormal",'spy': "abnormal",'perl': "abnormal"} 
+    #attackType  = {'normal': "normal", 'neptune': "DoS", 'warezclient': "R2L", 'ipsweep': "Probe",'back': "DoS", 'smurf': "DoS", 'rootkit': "U2R",'satan': "Probe", 'guess_passwd': "R2L",'portsweep': "Probe",'teardrop': "DoS",'nmap': "Probe",'pod': "DoS",'ftp_write': "R2L",'multihop': "R2L",'buffer_overflow': "U2R",'imap': "R2L",'warezmaster': "R2L",'phf': "R2L",'land': "DoS",'loadmodule': "U2R",'spy': "R2L",'perl': "U2R"} 
+    labels[:] = [attackType[item] for item in labels[:]]
+    
+    #attackEncodingCluster  = {'normal': 0,'DoS': 1,'Probe': 2,'R2L': 3, 'U2R': 4} #Main Categories
+    attackEncodingCluster  = {'normal': 0,'abnormal': 1}  #Binary Categories
+    labels[:] = [attackEncodingCluster[item] for item in labels[:]]
+    
+    return data,labels
+#########################################################################
+riskVal,labels = riskEncodingData(riskVal,labels)
+#########################################################################
+
+
+
+
+def normalizing(data): #Scalign the data with the normalize method
+    
+    from sklearn.preprocessing import Normalizer
+    #Because we are using numerical-value-only clustering techniques to analyze the NSL-KDD dataset,
+    #we need to normalize the values in the dataset, as Ibrahim., et. al. describe (page 112).
+    #Normalize works by scaling the features in a range of [0,1]
+    #We complete the normalization process below:
+    normalizer = Normalizer().fit(data)
+    data = normalizer.transform(data)
+    data = pd.DataFrame(data)
+    
+    return data
+#########################################################################
+#data = normalizing(data) #CategoricalData
+noCatg = normalizing(noCatg) #No categorical data
+#noServ = normalizing(noServ) #No Server Type
+#riskVal = normalizing(riskVal) #Risk values with no protocols colum
+#########################################################################
+
+
+
+def featureSelection(data):
+    from sklearn.feature_selection import VarianceThreshold
+    
+    selection = noCatg[[0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37]]
+    selector = VarianceThreshold()#You can specify the treshold you want
+    selection = selector.fit_transform(selection)
+    return selection
+
+#########################################################################
+noCatg = featureSelection(noCatg) #Dimensionality reduction , low variance filter technique on no categorical data
+#data = featureSelection(data) #Dimensionality reduction , low variance filter technique on no categorical data
+
+#########################################################################
+
+
+def kmeansClustering(data): #K-means algorithm 
+    from sklearn.cluster import KMeans
+    #KMeans algorithm
+    KMEANS = KMeans(n_clusters = 5, init = 'k-means++',max_iter = 300,n_init = 10,random_state = 0)
+    kmeans = KMEANS.fit(data)
+    klabels = kmeans.labels_
+    return klabels
+#########################################################################
+#KMEANS
+klabels = kmeansClustering(data) #Categorical data Kmeans Algorithm
+#klabels = kmeansClustering(noCatg) #No Categorical Data, Kmeans Algorithm
+#klabels = kmeansClustering(noServ) #No server Type Data, Kmeans Algorithm
+#klabels = kmeansClustering(riskVal) #Risk values with no protocols colum Data, Kmeans Algorithm
+
+
+#Kmeans Results
+kmeansR = pd.crosstab(labels,klabels)
+kmeansR.idxmax()
+#########################################################################
+
+
+
+
+
+def kF1(klabels,labels): #F1 Score for Kmeans
+    from sklearn.metrics import f1_score
+    #Encoding data to F-score
+    #normal = 0
+    #DoS = 1
+    #Probe = 2
+    #R2L = 3
+    #U2R = 4
+    attackEncodingCluster  = {0: 0, 1: 1, 2: 1, 3: 1, 4: 1}
+    klabels[:] = [attackEncodingCluster[item] for item in klabels[:]]
+    
+    labels = np.array(labels,dtype = int)
+    f1 = f1_score(labels,klabels, average = 'weighted') #[None, 'micro', 'macro', 'weighted']
+    print(f1)
+    
+    return f1
+#########################################################################
+#F1 Score kmeans
+kmeansF1 = kF1(klabels,labels)
+kmeansF1
+#########################################################################
+
+
+
+
+def dbscanClustering(data): #DBSCAN algorithm
+    from sklearn.cluster import DBSCAN
+    
+    #Compute DBSCAN
+    db = DBSCAN(eps=0.2, min_samples = 2000).fit(data)
+    core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
+    core_samples_mask[db.core_sample_indices_] = True
+    dblabels = db.labels_
+    # Number of clusters in labels, ignoring noise if present.
+    n_clusters_ = len(set(dblabels)) - (1 if -1 in dblabels else 0)
+    n_noise_ = list(dblabels).count(-1)
+    return dblabels,n_clusters_,n_noise_
+#########################################################################
 #DBSCAN
-from sklearn.cluster import DBSCAN
-# #############################################################################
-# Compute DBSCAN
-db = DBSCAN(eps=0.2, min_samples = 1000).fit(trainData)
-core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
-core_samples_mask[db.core_sample_indices_] = True
-labels = db.labels_
-# Number of clusters in labels, ignoring noise if present.
-n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
-n_noise_ = list(labels).count(-1)
-# Analyzing Results of DBSCAN by Crosstab
-crostab = pd.crosstab(attacks,labels)
+#dblabels = dbscanClustering(data) #Categorical Data DBSCAN Algorithm
+#dblabels,nClusters,nNoises = dbscanClustering(noCatg) #No Categorical Data, DBSCAN Algorithm
+#dblabels,nClusters,nNoises = dbscanClustering(noServ) #No Server Type Data, DBSCAN Algorithm
+dblabels,nClusters,nNoises = dbscanClustering(riskVal) #Risk values with no protocols colum Data,DBSCAN Algorithm
 
 
-# F-Score implementation
-from sklearn.metrics import f1_score
-f1 = f1_score(Y,kmeans.labels_, average="weighted") #[None, 'micro', 'macro', 'weighted']
-f1
+#DBSCAN Results
+dbscanR = pd.crosstab(labels,dblabels)
+dbscanR.idxmax()
+#########################################################################
+
+
+
+def dbF1(dblabels,labels): #F1 score for DBSCAN
+    from sklearn.metrics import f1_score
+    #Encoding data to F-score
+    #normal = 0
+    #DoS = 1
+    #Probe = 2
+    #R2L = 3
+    #U2R = 4
+    attackEncodingCluster  = {-1: 0, 0: 1, 1: 0, 2: 0, 3: 0, 4: 1, 5: 0, 6: 1}
+    dblabels[:] = [attackEncodingCluster[item] for item in dblabels[:]]
+    
+    labels = np.array(labels,dtype = int)
+    f1 = f1_score(labels,dblabels, average = 'weighted') #[None, 'micro', 'macro', 'weighted']
+    
+    return f1
+#########################################################################
+#F1 Score dbscan
+dbscanF1 = dbF1(dblabels,labels)
+dbscanF1
+#########################################################################
