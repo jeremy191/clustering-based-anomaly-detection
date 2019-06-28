@@ -16,6 +16,17 @@ def readingData(path):
     dataSet = pd.read_csv(path, header = None)
     
     return dataSet
+#########################################################################
+#trainData = pd.read_csv("/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/NSL-KDD/KDDTrain+.csv", header = None)
+dataSet = readingData("/Users/jeremyperez/Jupyter/NSL-KDD/KDDTrain+.csv")
+
+#Run a Missing Value Ratio test to determine if any feature is missing values.
+#If all ratios = 0.0, then data is not missing any values for any features.
+dataSet.isnull().sum()/len(dataSet)*100
+#########################################################################
+
+
+
 
 #Getting The data we want to test for the clustering algorithms
 def gettingVariables(dataSet):
@@ -33,6 +44,9 @@ def gettingVariables(dataSet):
     R = dataSet.iloc[:,[0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40]].values
 
     return X,Y,Z,W,R
+#########################################################################
+data,labels,noCatg,noServ,riskVal  = gettingVariables(dataSet) #Getting the Data we want to use for the algorithms
+#########################################################################
 
 
 #Encoding the data using one hot encoding and using Main attacks categories or binary categories
@@ -65,6 +79,12 @@ def encodingData(data,labels):
     labels[:] = [attackEncodingCluster[item] for item in labels[:]]
     
     return data,labels
+#########################################################################
+data,labels = encodingData(data,labels) #One hot Encode with the complete data
+#noServ,labels = encodingData(noServ,labels) #One hot Encode with no Server Type
+#########################################################################
+
+
 
 
 def riskEncodingData(data,labels): #This function is only for risk testing only
@@ -86,6 +106,11 @@ def riskEncodingData(data,labels): #This function is only for risk testing only
     labels[:] = [attackEncodingCluster[item] for item in labels[:]]
     
     return data,labels
+#########################################################################
+riskVal,labels = riskEncodingData(riskVal,labels)
+#########################################################################
+
+
 
 
 def normalizing(data): #Scalign the data with the normalize method
@@ -93,34 +118,83 @@ def normalizing(data): #Scalign the data with the normalize method
     from sklearn.preprocessing import Normalizer
     #Because we are using numerical-value-only clustering techniques to analyze the NSL-KDD dataset,
     #we need to normalize the values in the dataset, as Ibrahim., et. al. describe (page 112).
+    #Normalize works by scaling the features in a range of [0,1]
     #We complete the normalization process below:
     normalizer = Normalizer().fit(data)
     data = normalizer.transform(data)
-    #data = np.array(data)
+    data = pd.DataFrame(data)
     
     return data
+#########################################################################
+#data = normalizing(data) #CategoricalData
+noCatg = normalizing(noCatg) #No categorical data
+#noServ = normalizing(noServ) #No Server Type
+#riskVal = normalizing(riskVal) #Risk values with no protocols colum
+#########################################################################
+
+
+
+def featureSelection(data):
+    from sklearn.feature_selection import VarianceThreshold
+    
+    selection = noCatg[[0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37]]
+    selector = VarianceThreshold()#You can specify the treshold you want
+    selection = selector.fit_transform(selection)
+    return selection
+
+#########################################################################
+noCatg = featureSelection(noCatg) #Dimensionality reduction , low variance filter technique on no categorical data
+#data = featureSelection(data) #Dimensionality reduction , low variance filter technique on no categorical data
+
+#########################################################################
+
 
 def kmeansClustering(data): #K-means algorithm 
     from sklearn.cluster import KMeans
-    #Elbow Method
-    #Elbow method to find the best number of culster
-#    wcss = []
-#    for i in range(1,11):
-#        kmeans = KMeans(n_clusters = i, init = 'k-means++',max_iter = 300,n_init = 10,random_state = 0)
-#        kmeans.fit(data)
-#        wcss.append(kmeans.inertia_)
-#    plt.plot(range(1,11),wcss)
-#    plt.title('The Elbow Method')
-#    plt.xlabel('Number of clusters')
-#    plt.ylabel('WCSS')
-#    plt.show()
-    
     #KMeans algorithm
-    #Applying K-mea(n_clusters = 5)
     KMEANS = KMeans(n_clusters = 5, init = 'k-means++',max_iter = 300,n_init = 10,random_state = 0)
     kmeans = KMEANS.fit(data)
     klabels = kmeans.labels_
     return klabels
+#########################################################################
+#KMEANS
+klabels = kmeansClustering(data) #Categorical data Kmeans Algorithm
+#klabels = kmeansClustering(noCatg) #No Categorical Data, Kmeans Algorithm
+#klabels = kmeansClustering(noServ) #No server Type Data, Kmeans Algorithm
+#klabels = kmeansClustering(riskVal) #Risk values with no protocols colum Data, Kmeans Algorithm
+
+
+#Kmeans Results
+kmeansR = pd.crosstab(labels,klabels)
+kmeansR.idxmax()
+#########################################################################
+
+
+
+
+
+def kF1(klabels,labels): #F1 Score for Kmeans
+    from sklearn.metrics import f1_score
+    #Encoding data to F-score
+    #normal = 0
+    #DoS = 1
+    #Probe = 2
+    #R2L = 3
+    #U2R = 4
+    attackEncodingCluster  = {0: 0, 1: 1, 2: 1, 3: 1, 4: 1}
+    klabels[:] = [attackEncodingCluster[item] for item in klabels[:]]
+    
+    labels = np.array(labels,dtype = int)
+    f1 = f1_score(labels,klabels, average = 'weighted') #[None, 'micro', 'macro', 'weighted']
+    print(f1)
+    
+    return f1
+#########################################################################
+#F1 Score kmeans
+kmeansF1 = kF1(klabels,labels)
+kmeansF1
+#########################################################################
+
 
 
 
@@ -136,77 +210,19 @@ def dbscanClustering(data): #DBSCAN algorithm
     n_clusters_ = len(set(dblabels)) - (1 if -1 in dblabels else 0)
     n_noise_ = list(dblabels).count(-1)
     return dblabels,n_clusters_,n_noise_
-
-
-
-
-#Running functions
-#trainData = pd.read_csv("/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/NSL-KDD/KDDTrain+.csv", header = None)
-dataSet = readingData("/Users/jeremyperez/Jupyter/NSL-KDD/KDDTrain+.csv")
-    
-#Run a Missing Value Ratio test to determine if any feature is missing values.
-#If all ratios = 0.0, then data is not missing any values for any features.
-#data.isnull().sum()/len(data)*100
-    
-data,labels,noCatg,noServ,riskVal  = gettingVariables(dataSet) #Getting the Data we want to use for the algorithms
-  
-  
-#data,labels = encodingData(data,labels) #One hot Encode with the complete data
-#noServ,labels = encodingData(noServ,labels) #One hot Encode with no Server Type
-
-riskVal,labels = riskEncodingData(riskVal,labels)
-
-    
-#data = normalizing(data) #CategoricalData
-#noCatg = normalizing(noCatg) #No categorical data
-#noServ = normalizing(noServ) #No Server Type
-riskVal = normalizing(riskVal) #Risk values with no protocols colum
-
-
-
-#KMEANS
-#klabels = kmeansClustering(data) #Categorical data Kmeans Algorithm
-#klabels = kmeansClustering(noCatg) #No Categorical Data, Kmeans Algorithm
-#klabels = kmeansClustering(noServ) #No server Type Data, Kmeans Algorithm
-klabels = kmeansClustering(riskVal) #Risk values with no protocols colum Data, Kmeans Algorithm
-
-
-#Kmeans Results
-kmeansR = pd.crosstab(labels,klabels)
-kmeansR.idxmax()
-
+#########################################################################
 #DBSCAN
 #dblabels = dbscanClustering(data) #Categorical Data DBSCAN Algorithm
 #dblabels,nClusters,nNoises = dbscanClustering(noCatg) #No Categorical Data, DBSCAN Algorithm
 #dblabels,nClusters,nNoises = dbscanClustering(noServ) #No Server Type Data, DBSCAN Algorithm
 dblabels,nClusters,nNoises = dbscanClustering(riskVal) #Risk values with no protocols colum Data,DBSCAN Algorithm
 
+
 #DBSCAN Results
 dbscanR = pd.crosstab(labels,dblabels)
 dbscanR.idxmax()
+#########################################################################
 
-
-def kF1(klabels,labels): #F1 Score for Kmeans
-    from sklearn.metrics import f1_score
-    #Encoding data to F-score
-    #normal = 0
-    #DoS = 1
-    #Probe = 2
-    #R2L = 3
-    #U2R = 4
-    attackEncodingCluster  = {0: 0, 1: 1, 2: 0, 3: 0, 4: 0}
-    klabels[:] = [attackEncodingCluster[item] for item in klabels[:]]
-    
-    labels = np.array(labels,dtype = int)
-    f1 = f1_score(labels,klabels, average = 'weighted') #[None, 'micro', 'macro', 'weighted']
-    print(f1)
-    
-    return f1
-
-
-#F1 Score kmeans
-kmeansF1 = kF1(klabels,labels)
-kmeansF1
 
 
 def dbF1(dblabels,labels): #F1 score for DBSCAN
@@ -224,8 +240,8 @@ def dbF1(dblabels,labels): #F1 score for DBSCAN
     f1 = f1_score(labels,dblabels, average = 'weighted') #[None, 'micro', 'macro', 'weighted']
     
     return f1
-
-
+#########################################################################
 #F1 Score dbscan
 dbscanF1 = dbF1(dblabels,labels)
 dbscanF1
+#########################################################################
