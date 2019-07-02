@@ -4,14 +4,13 @@
 
 import numpy as np
 import pandas as pd 
-import matplotlib.pyplot as plt
-
+#import matplotlib.pyplot as plt
 
 
 def readingData(path):
     
-    #Reading the Train Dataset and Checking if has missing Values
-    ###############################################################################################
+    #Reading the Train Dataset
+    
     #trainData = pd.read_csv("/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/NSL-KDD/KDDTrain+.csv", header = None)
     dataSet = pd.read_csv(path, header = None)
     
@@ -49,8 +48,40 @@ data,labels,noCatg,noServ,riskVal  = gettingVariables(dataSet) #Getting the Data
 #########################################################################
 
 
+
+def encodingLabels(labels):
+    #Binary Categories
+    attackType  = {'normal': "normal", 'neptune': "abnormal", 'warezclient': "abnormal", 'ipsweep': "abnormal",'back': "abnormal", 'smurf': "abnormal", 'rootkit': "abnormal",'satan': "abnormal", 'guess_passwd': "abnormal",'portsweep': "abnormal",'teardrop': "abnormal",'nmap': "abnormal",'pod': "abnormal",'ftp_write': "abnormal",'multihop': "abnormal",'buffer_overflow': "abnormal",'imap': "abnormal",'warezmaster': "abnormal",'phf': "abnormal",'land': "abnormal",'loadmodule': "abnormal",'spy': "abnormal",'perl': "abnormal"} 
+    attackEncodingCluster  = {'normal': 0,'abnormal': 1}
+    
+    labels[:] = [attackEncodingCluster[item] for item in labels[:]]#Changing the names of the labels to binary labels normal and abnormal
+    labels[:] = [attackType[item] for item in labels[:]] #Encoding the binary data
+
+    #4 Main Categories
+    #attackType  = {'normal': "normal", 'neptune': "DoS", 'warezclient': "R2L", 'ipsweep': "Probe",'back': "DoS", 'smurf': "DoS", 'rootkit': "U2R",'satan': "Probe", 'guess_passwd': "R2L",'portsweep': "Probe",'teardrop': "DoS",'nmap': "Probe",'pod': "DoS",'ftp_write': "R2L",'multihop': "R2L",'buffer_overflow': "U2R",'imap': "R2L",'warezmaster': "R2L",'phf': "R2L",'land': "DoS",'loadmodule': "U2R",'spy': "R2L",'perl': "U2R"} 
+    #attackEncodingCluster  = {'normal': 0,'DoS': 1,'Probe': 2,'R2L': 3, 'U2R': 4} #Main Categories
+    
+    #labels[:] = [attackEncodingCluster[item] for item in labels[:]]# Changing the names of attacks into 4 main categories
+    #labels[:] = [attackType[item] for item in labels[:]] #Encoding the main 4 categories
+    
+    #normal = 0
+    #DoS = 1
+    #Probe = 2
+    #R2L = 3
+    #U2R = 4
+    
+    return labels
+
+#########################################################################
+labels = encodingLabels(labels)
+#########################################################################
+
+
+
+
+
 #Encoding the data using one hot encoding and using Main attacks categories or binary categories
-def encodingData(data,labels): 
+def oneHotEncodingData(data): 
     from sklearn.preprocessing import OneHotEncoder
     from sklearn.compose import ColumnTransformer
     
@@ -63,25 +94,10 @@ def encodingData(data,labels):
     #Encoding the Independient Variable
     transform = ColumnTransformer([("Servers", OneHotEncoder(categories = "auto"), [1,2,3])], remainder="passthrough")
     data = transform.fit_transform(data)
-
-
-    #Attacks
-    
-    #Binary Categories
-    attackType  = {'normal': "normal", 'neptune': "abnormal", 'warezclient': "abnormal", 'ipsweep': "abnormal",'back': "abnormal", 'smurf': "abnormal", 'rootkit': "abnormal",'satan': "abnormal", 'guess_passwd': "abnormal",'portsweep': "abnormal",'teardrop': "abnormal",'nmap': "abnormal",'pod': "abnormal",'ftp_write': "abnormal",'multihop': "abnormal",'buffer_overflow': "abnormal",'imap': "abnormal",'warezmaster': "abnormal",'phf': "abnormal",'land': "abnormal",'loadmodule': "abnormal",'spy': "abnormal",'perl': "abnormal"} 
-    #4 Main Categories
-    #attackType  = {'normal': "normal", 'neptune': "DoS", 'warezclient': "R2L", 'ipsweep': "Probe",'back': "DoS", 'smurf': "DoS", 'rootkit': "U2R",'satan': "Probe", 'guess_passwd': "R2L",'portsweep': "Probe",'teardrop': "DoS",'nmap': "Probe",'pod': "DoS",'ftp_write': "R2L",'multihop': "R2L",'buffer_overflow': "U2R",'imap': "R2L",'warezmaster': "R2L",'phf': "R2L",'land': "DoS",'loadmodule': "U2R",'spy': "R2L",'perl': "U2R"} 
-    labels[:] = [attackType[item] for item in labels[:]] #Changing the names from the data set with the choosen Categories
-    
-    #attackEncodingCluster  = {'normal': 0,'DoS': 1,'Probe': 2,'R2L': 3, 'U2R': 4} #Main Categories
-    attackEncodingCluster  = {'normal': 0,'abnormal': 1}  #Binary Categories
-    
-    labels[:] = [attackEncodingCluster[item] for item in labels[:]]
-    
-    return data,labels
+    return data
 #########################################################################
-data,labels = encodingData(data,labels) #One hot Encode with the complete data
-#noServ,labels = encodingData(noServ,labels) #One hot Encode with no Server Type
+data= oneHotEncodingData(data) #One hot Encode with the complete data
+#noServ = encodingData(noServ) #One hot Encode with no Server Type
 #########################################################################
 
 
@@ -141,12 +157,11 @@ def featureSelection(data):
     selector = VarianceThreshold()#You can specify the treshold you want
     selection = selector.fit_transform(selection)
     return selection
-
 #########################################################################
 noCatg = featureSelection(noCatg) #Dimensionality reduction , low variance filter technique on no categorical data
 #data = featureSelection(data) #Dimensionality reduction , low variance filter technique on no categorical data
-
 #########################################################################
+
 
 
 def kmeansClustering(data): #K-means algorithm 
@@ -202,7 +217,7 @@ def dbscanClustering(data): #DBSCAN algorithm
     from sklearn.cluster import DBSCAN
     
     #Compute DBSCAN
-    db = DBSCAN(eps=0.2, min_samples = 2000).fit(data)
+    db = DBSCAN(eps=0.2, min_samples = 1500).fit(data)
     core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
     core_samples_mask[db.core_sample_indices_] = True
     dblabels = db.labels_
@@ -213,9 +228,9 @@ def dbscanClustering(data): #DBSCAN algorithm
 #########################################################################
 #DBSCAN
 #dblabels = dbscanClustering(data) #Categorical Data DBSCAN Algorithm
-#dblabels,nClusters,nNoises = dbscanClustering(noCatg) #No Categorical Data, DBSCAN Algorithm
+dblabels,nClusters,nNoises = dbscanClustering(noCatg) #No Categorical Data, DBSCAN Algorithm
 #dblabels,nClusters,nNoises = dbscanClustering(noServ) #No Server Type Data, DBSCAN Algorithm
-dblabels,nClusters,nNoises = dbscanClustering(riskVal) #Risk values with no protocols colum Data,DBSCAN Algorithm
+#dblabels,nClusters,nNoises = dbscanClustering(riskVal) #Risk values with no protocols colum Data,DBSCAN Algorithm
 
 
 #DBSCAN Results
@@ -233,7 +248,7 @@ def dbF1(dblabels,labels): #F1 score for DBSCAN
     #Probe = 2
     #R2L = 3
     #U2R = 4
-    attackEncodingCluster  = {-1: 0, 0: 1, 1: 0, 2: 0, 3: 0, 4: 1, 5: 0, 6: 1}
+    attackEncodingCluster  = {-1: 1, 0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1,7:1}
     dblabels[:] = [attackEncodingCluster[item] for item in dblabels[:]]
     
     labels = np.array(labels,dtype = int)
