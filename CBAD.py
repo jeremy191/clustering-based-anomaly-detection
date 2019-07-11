@@ -193,16 +193,12 @@ def kF1(klabels,labels): #F1 Score for Kmeans
     #Probe = 2
     #R2L = 3
     #U2R = 4
-    
-    #Binary
-    #
-    
+
     attackEncodingCluster  = {0: 0, 1: 1, 2: 0, 3: 0, 4: 0}
     klabels[:] = [attackEncodingCluster[item] for item in klabels[:]]
     
     labels = np.array(labels,dtype = int)
     f1 = f1_score(labels,klabels, average = 'weighted') #[None, 'micro', 'macro', 'weighted']
-    print(f1)
     
     return f1
 #########################################################################
@@ -223,8 +219,8 @@ def kAUC(klabels,labels):
     AUC = roc_auc_score(labels, klabels, average = 'weighted')
     return AUC
 #########################################################################
-AUC = kAUC(klabels,labels)
-AUC
+kmeansAUC = kAUC(klabels,labels)
+kmeansAUC
 #########################################################################
 
 
@@ -240,8 +236,23 @@ def kMNI(klabels,labels):
     
     return MNI
 #########################################################################
-MNI = kMNI(klabels,labels)
-MNI
+kmeansMNI = kMNI(klabels,labels)
+kmeansMNI
+#########################################################################
+
+
+def kARS(klabels,labels):
+    from sklearn.metrics import adjusted_rand_score
+    
+    attackEncodingCluster  = {0: 0, 1: 1, 2: 1, 3: 1, 4: 1}
+    klabels[:] = [attackEncodingCluster[item] for item in klabels[:]]
+    
+    ars = adjusted_rand_score(labels, klabels)
+    
+    return ars
+#########################################################################
+kmeansARS = kARS(klabels,labels)
+kmeansARS
 #########################################################################
 
 
@@ -283,7 +294,7 @@ def dbF1(dblabels,labels): #F1 score for DBSCAN
     #Probe = 2
     #R2L = 3
     #U2R = 4
-    attackEncodingCluster  = {-1: 0, 0: 0, 1: 1, 2: 0, 3: 0, 4: 2, 5: 0, 6: 1,7:0}
+    attackEncodingCluster  = {-1: 0, 0: 0, 1: 1, 2: 0, 3: 0, 4: 1, 5: 0, 6: 1, 7: 0}
     dblabels[:] = [attackEncodingCluster[item] for item in dblabels[:]]
     
     labels = np.array(labels,dtype = int)
@@ -296,6 +307,53 @@ dbscanF1 = dbF1(dblabels,labels)
 dbscanF1
 #########################################################################
 
+
+
+def dbAUC(dblabels,labels):
+    from sklearn.metrics import roc_auc_score
+    
+    attackEncodingCluster  = {-1: 0, 0: 0, 1: 1, 2: 0, 3: 0, 4: 1, 5: 0, 6: 1, 7: 0}
+    dblabels[:] = [attackEncodingCluster[item] for item in dblabels[:]]
+    
+    labels = np.array(labels,dtype = int)
+    AUC = roc_auc_score(labels, dblabels, average = 'weighted')
+    return AUC
+#########################################################################
+dbscanAUC = dbAUC(dblabels,labels)
+dbscanAUC
+#########################################################################
+
+
+
+
+def dbMNI(dblabels,labels):
+    from sklearn.metrics import normalized_mutual_info_score
+    
+    attackEncodingCluster  = {-1: 0, 0: 0, 1: 1, 2: 0, 3: 0, 4: 1, 5: 0, 6: 1,7: 0}
+    dblabels[:] = [attackEncodingCluster[item] for item in dblabels[:]]
+    
+    MNI = normalized_mutual_info_score(labels, dblabels, average_method='min')
+    
+    return MNI
+#########################################################################
+dbscanMNI = dbMNI(dblabels,labels)
+dbscanMNI
+#########################################################################
+
+
+def dbARS(dblabels,labels):
+    from sklearn.metrics import adjusted_rand_score
+    
+    attackEncodingCluster  = {-1: 0, 0: 0, 1: 1, 2: 0, 3: 0, 4: 1, 5: 0, 6: 1,7: 0}
+    dblabels[:] = [attackEncodingCluster[item] for item in dblabels[:]]
+    
+    ars = adjusted_rand_score(labels, dblabels)
+    
+    return ars
+#########################################################################
+dbscanARS = dbARS(dblabels,labels)
+dbscanARS
+#########################################################################
 
 
 def isolationForest(data):
