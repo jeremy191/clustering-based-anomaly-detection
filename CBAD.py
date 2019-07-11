@@ -1,6 +1,6 @@
 #@authors: jeremyperez,bethanydanner
 
-#reset -f
+reset -f
 
 import numpy as np
 import pandas as pd 
@@ -8,7 +8,6 @@ import pandas as pd
 
 
 def readingData(path):
-    
     #Reading the Train Dataset
     
     #trainData = pd.read_csv("/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/NSL-KDD/KDDTrain+.csv", header = None)
@@ -32,9 +31,12 @@ def gettingVariables(dataSet):
     #Getting the Dependent and independent Variables
     X = dataSet.iloc[:,:-2].values # Data, Get all the rows and all the clums except all the colums - 2
     Y = dataSet.iloc[:,42].values# Labels
-
+    
     #Removing Categorical data from the data set
     Z = dataSet.iloc[:,[0,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40]].values
+    Z = pd.DataFrame(Z)
+
+
     
     #Removing server types
     W = dataSet.iloc[:,[0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40]].values
@@ -49,20 +51,23 @@ data,labels,noCatg,noServ,riskVal  = gettingVariables(dataSet) #Getting the Data
 
 
 
+
 def encodingLabels(labels):
     #Binary Categories
+
+    
     attackType  = {'normal': "normal", 'neptune': "abnormal", 'warezclient': "abnormal", 'ipsweep': "abnormal",'back': "abnormal", 'smurf': "abnormal", 'rootkit': "abnormal",'satan': "abnormal", 'guess_passwd': "abnormal",'portsweep': "abnormal",'teardrop': "abnormal",'nmap': "abnormal",'pod': "abnormal",'ftp_write': "abnormal",'multihop': "abnormal",'buffer_overflow': "abnormal",'imap': "abnormal",'warezmaster': "abnormal",'phf': "abnormal",'land': "abnormal",'loadmodule': "abnormal",'spy': "abnormal",'perl': "abnormal"} 
     attackEncodingCluster  = {'normal': 0,'abnormal': 1}
     
-    labels[:] = [attackEncodingCluster[item] for item in labels[:]]#Changing the names of the labels to binary labels normal and abnormal
     labels[:] = [attackType[item] for item in labels[:]] #Encoding the binary data
+    labels[:] = [attackEncodingCluster[item] for item in labels[:]]#Changing the names of the labels to binary labels normal and abnormal
 
-    #4 Main Categories
-    #attackType  = {'normal': "normal", 'neptune': "DoS", 'warezclient': "R2L", 'ipsweep': "Probe",'back': "DoS", 'smurf': "DoS", 'rootkit': "U2R",'satan': "Probe", 'guess_passwd': "R2L",'portsweep': "Probe",'teardrop': "DoS",'nmap': "Probe",'pod': "DoS",'ftp_write': "R2L",'multihop': "R2L",'buffer_overflow': "U2R",'imap': "R2L",'warezmaster': "R2L",'phf': "R2L",'land': "DoS",'loadmodule': "U2R",'spy': "R2L",'perl': "U2R"} 
-    #attackEncodingCluster  = {'normal': 0,'DoS': 1,'Probe': 2,'R2L': 3, 'U2R': 4} #Main Categories
-    
-    #labels[:] = [attackEncodingCluster[item] for item in labels[:]]# Changing the names of attacks into 4 main categories
-    #labels[:] = [attackType[item] for item in labels[:]] #Encoding the main 4 categories
+#    #4 Main Categories
+#    attackType  = {'normal': "normal", 'neptune': "DoS", 'warezclient': "R2L", 'ipsweep': "Probe",'back': "DoS", 'smurf': "DoS", 'rootkit': "U2R",'satan': "Probe", 'guess_passwd': "R2L",'portsweep': "Probe",'teardrop': "DoS",'nmap': "Probe",'pod': "DoS",'ftp_write': "R2L",'multihop': "R2L",'buffer_overflow': "U2R",'imap': "R2L",'warezmaster': "R2L",'phf': "R2L",'land': "DoS",'loadmodule': "U2R",'spy': "R2L",'perl': "U2R"} 
+#    attackEncodingCluster  = {'normal': 0,'DoS': 1,'Probe': 2,'R2L': 3, 'U2R': 4} #Main Categories
+#    
+#    labels[:] = [attackType[item] for item in labels[:]] #Encoding the main 4 categories
+#    labels[:] = [attackEncodingCluster[item] for item in labels[:]]# Changing the names of attacks into 4 main categories
     
     #normal = 0
     #DoS = 1
@@ -75,8 +80,6 @@ def encodingLabels(labels):
 #########################################################################
 labels = encodingLabels(labels)
 #########################################################################
-
-
 
 
 
@@ -137,12 +140,10 @@ def normalizing(data): #Scalign the data with the normalize method
     #Normalize works by scaling the features in a range of [0,1]
     #We complete the normalization process below:
     normalizer = Normalizer().fit(data)
-    data = normalizer.transform(data)
-    data = pd.DataFrame(data)
-    
+    data = normalizer.transform(data)    
     return data
 #########################################################################
-#data = normalizing(data) #CategoricalData
+data = normalizing(data) #CategoricalData
 noCatg = normalizing(noCatg) #No categorical data
 #noServ = normalizing(noServ) #No Server Type
 #riskVal = normalizing(riskVal) #Risk values with no protocols colum
@@ -150,18 +151,13 @@ noCatg = normalizing(noCatg) #No categorical data
 
 
 
-def featureSelection(data):
-    from sklearn.feature_selection import VarianceThreshold
-    
-    selection = noCatg[[0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37]]
-    selector = VarianceThreshold()#You can specify the treshold you want
-    selection = selector.fit_transform(selection)
-    return selection
+def shuffleData(X):
+    np.random.shuffle(X)
+    return X
 #########################################################################
-noCatg = featureSelection(noCatg) #Dimensionality reduction , low variance filter technique on no categorical data
-#data = featureSelection(data) #Dimensionality reduction , low variance filter technique on no categorical data
+data = shuffleData(data)
+noCatg = shuffleData(noCatg)
 #########################################################################
-
 
 
 def kmeansClustering(data): #K-means algorithm 
@@ -173,8 +169,8 @@ def kmeansClustering(data): #K-means algorithm
     return klabels
 #########################################################################
 #KMEANS
-klabels = kmeansClustering(data) #Categorical data Kmeans Algorithm
-#klabels = kmeansClustering(noCatg) #No Categorical Data, Kmeans Algorithm
+#klabels = kmeansClustering(data) #Categorical data Kmeans Algorithm
+klabels = kmeansClustering(noCatg) #No Categorical Data, Kmeans Algorithm
 #klabels = kmeansClustering(noServ) #No server Type Data, Kmeans Algorithm
 #klabels = kmeansClustering(riskVal) #Risk values with no protocols colum Data, Kmeans Algorithm
 
@@ -191,12 +187,17 @@ kmeansR.idxmax()
 def kF1(klabels,labels): #F1 Score for Kmeans
     from sklearn.metrics import f1_score
     #Encoding data to F-score
+    #Main Categories
     #normal = 0
     #DoS = 1
     #Probe = 2
     #R2L = 3
     #U2R = 4
-    attackEncodingCluster  = {0: 0, 1: 1, 2: 1, 3: 1, 4: 1}
+    
+    #Binary
+    #
+    
+    attackEncodingCluster  = {0: 0, 1: 1, 2: 0, 3: 0, 4: 0}
     klabels[:] = [attackEncodingCluster[item] for item in klabels[:]]
     
     labels = np.array(labels,dtype = int)
@@ -212,12 +213,44 @@ kmeansF1
 
 
 
+def kAUC(klabels,labels):
+    from sklearn.metrics import roc_auc_score
+    
+    attackEncodingCluster  = {0: 0, 1: 1, 2: 0, 3: 0, 4: 0}
+    klabels[:] = [attackEncodingCluster[item] for item in klabels[:]]
+    
+    labels = np.array(labels,dtype = int)
+    AUC = roc_auc_score(labels, klabels, average = 'weighted')
+    return AUC
+#########################################################################
+AUC = kAUC(klabels,labels)
+AUC
+#########################################################################
+
+
+
+
+def kMNI(klabels,labels):
+    from sklearn.metrics import normalized_mutual_info_score
+    
+    attackEncodingCluster  = {0: 0, 1: 1, 2: 1, 3: 1, 4: 1}
+    klabels[:] = [attackEncodingCluster[item] for item in klabels[:]]
+    
+    MNI = normalized_mutual_info_score(labels, klabels, average_method='min')
+    
+    return MNI
+#########################################################################
+MNI = kMNI(klabels,labels)
+MNI
+#########################################################################
+
+
 
 def dbscanClustering(data): #DBSCAN algorithm
     from sklearn.cluster import DBSCAN
     
     #Compute DBSCAN
-    db = DBSCAN(eps=0.2, min_samples = 1500).fit(data)
+    db = DBSCAN(eps=0.2, min_samples = 1300,algorithm = 'ball_tree').fit(data) #{auto’, ‘ball_tree’, ‘kd_tree’, ‘brute’}
     core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
     core_samples_mask[db.core_sample_indices_] = True
     dblabels = db.labels_
@@ -227,7 +260,7 @@ def dbscanClustering(data): #DBSCAN algorithm
     return dblabels,n_clusters_,n_noise_
 #########################################################################
 #DBSCAN
-#dblabels = dbscanClustering(data) #Categorical Data DBSCAN Algorithm
+#dblabels,nClusters,nNoises = dbscanClustering(data) #Categorical Data DBSCAN Algorithm
 dblabels,nClusters,nNoises = dbscanClustering(noCatg) #No Categorical Data, DBSCAN Algorithm
 #dblabels,nClusters,nNoises = dbscanClustering(noServ) #No Server Type Data, DBSCAN Algorithm
 #dblabels,nClusters,nNoises = dbscanClustering(riskVal) #Risk values with no protocols colum Data,DBSCAN Algorithm
@@ -235,6 +268,8 @@ dblabels,nClusters,nNoises = dbscanClustering(noCatg) #No Categorical Data, DBSC
 
 #DBSCAN Results
 dbscanR = pd.crosstab(labels,dblabels)
+dbscanR
+
 dbscanR.idxmax()
 #########################################################################
 
@@ -248,7 +283,7 @@ def dbF1(dblabels,labels): #F1 score for DBSCAN
     #Probe = 2
     #R2L = 3
     #U2R = 4
-    attackEncodingCluster  = {-1: 1, 0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1,7:1}
+    attackEncodingCluster  = {-1: 0, 0: 0, 1: 1, 2: 0, 3: 0, 4: 2, 5: 0, 6: 1,7:0}
     dblabels[:] = [attackEncodingCluster[item] for item in dblabels[:]]
     
     labels = np.array(labels,dtype = int)
@@ -260,3 +295,80 @@ def dbF1(dblabels,labels): #F1 score for DBSCAN
 dbscanF1 = dbF1(dblabels,labels)
 dbscanF1
 #########################################################################
+
+
+
+def isolationForest(data):
+    from sklearn.ensemble import IsolationForest
+    
+    isolationForest = IsolationForest(n_estimators = 100,max_samples = "auto",behaviour = "new",contamination = "auto")
+    IF = isolationForest.fit_predict(data) 
+    IF = np.array(IF,dtype = object)
+    return IF
+#########################################################################
+ifLabels = isolationForest(noCatg)
+ifR = pd.crosstab(labels,ifLabels)
+ifR.idxmax()
+#########################################################################
+
+
+
+def ifF1(ifLabels,labels): #F1 Score for Kmeans
+    from sklearn.metrics import f1_score
+    attackEncodingCluster  = {-1: 1, 1:0}
+    ifLabels[:] = [attackEncodingCluster[item] for item in ifLabels[:]]
+    labels = np.array(labels,dtype = int)
+    ifLabels = np.array(ifLabels,dtype = int)
+    f1 = f1_score(labels,ifLabels, average = 'weighted') #[None, 'micro', 'macro', 'weighted']
+    
+    return f1
+#########################################################################
+#F1 Score kmeans
+ifF1 = ifF1(ifLabels,labels)
+ifF1
+
+
+
+
+def LOF(data):
+    from sklearn.neighbors import LocalOutlierFactor 
+    LOF = LocalOutlierFactor(contamination = "auto")
+    lof = LOF.fit(data)
+    lofOutlier = lof.negative_outlier_factor_
+    
+    return lofOutlier
+#########################################################################
+lof = LOF(noCatg)
+lofR = pd.crosstab(labels,lof)
+lofR.idxmax()
+#########################################################################
+
+
+
+def lofF1(lof,labels):
+    from sklearn.metrics import f1_score
+    i = 0
+    for item in lof:
+        if item >= -1.5:
+            lof[i] = 0
+        elif item < -1.5:
+            lof[i] = 1
+        i+= 1
+    labels = np.array(labels,dtype = int)
+    lof = np.array(lof,dtype = int)
+    f1 = f1_score(labels,lof, average = 'weighted') #[None, 'micro', 'macro', 'weighted']
+    return f1
+#########################################################################
+lofF1 = lofF1(lof,labels)
+lofF1
+#########################################################################
+    
+    
+
+    
+    
+    
+    
+    
+
+    
