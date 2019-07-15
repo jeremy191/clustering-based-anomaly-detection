@@ -660,6 +660,7 @@ def main():
     #########################################################################
     #//Users/jeremyperez/Desktop/CICIDS2017.csv
     #/Users/jeremyperez/Jupyter/NSL-KDD/KDDTrain+.csv
+    #/Users/bethanydanner/Google_Drive/documents/python_code/codeLines_newData/CICIDS2017.csv
     #/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/NSL-KDD/KDDTrain+.csv", header = None)
     dataSet = readingData(path)
     clear()
