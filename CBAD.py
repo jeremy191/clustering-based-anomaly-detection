@@ -7,27 +7,72 @@ import numpy as np
 import pandas as pd 
 import os
 #import matplotlib.pyplot as plt
+clear = lambda: os.system('clear')
+
+def getDataSet():
+    print("**************************************************")
+    print("DATA SET MENU")
+    print("**************************************************")
+    print("NSL-KDD")
+    print("IDS 2017")
+    
+    path = input("Path of the File: ")
+    print("\n\nReading Dataset...")
+    
+    return path
 
 def readingData(path):
     #Reading the Train Dataset
-    
-    #trainData = pd.read_csv("/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/NSL-KDD/KDDTrain+.csv", header = None)
-    dataSet = pd.read_csv(path, header = None)
+    dataSet = pd.read_csv(path, header = None,low_memory=False)
     
     return dataSet
 
 
+def checkMissingData(dataSet):
+    
+   isMissing = str(dataSet.isnull().values.any()) #Using String instead of Boolean because ("cannot unpack non-iterable numpy.bool object")
+   
+   if isMissing == 'True':
+        #if data set has infinity values replace them with none
+        dataSet = dataSet.replace('Infinity', np.nan) #Replacing Infinity values with nan values
+       
+        n = 0
+        missingRowsIndex = []
+        total = dataSet.isnull().sum().sum()
+        
+        for rows in dataSet:
+            
+            if dataSet[n].isnull().sum() == 0: # Rows that have missing values
+                n += 1
+                
+            elif dataSet[n].isnull().sum() != 0:
+                
+                missingRowsIndex.append(n)
+                n += 1
+        print("**************************************************")
+        print("Data has missing values")
+        print("**************************************************")
+        print("Rows with missing values: ",missingRowsIndex)
+        print("\nTotal missing Values -> " , total,"\n\n")
+        
+        return missingRowsIndex,isMissing
+        
+   elif isMissing == 'False':
+      return isMissing 
+   
+    
+def manageMissingData(dataSet):
+    print("Working on it")
+    
 
-
-clear = lambda: os.system('clear')
 #Getting The data we want to test for the clustering algorithms
 def gettingVariables(dataSet):
     
     while True:
         print("Variables Menu\n")
-        print("1.Data set with Categorical data and True Labels")
-        print("2.Data set without Categorical data and True Labels")
-        print("3.Data set without protocols to start  using risk Values and True labels\n")
+        print("1.Data set with Categorical data")
+        print("2.Data set without Categorical data")
+        print("3.Data set without protocols to start  using risk Values\n")
         option = input("Enter option : ")
         
         
@@ -134,9 +179,6 @@ def oneHotEncodingData(data,dataOption):
         
     else:
         return data #return data with no changes
-
-
-
 
 
 def riskEncodingData(data,labels,dataOption): #This function is only for risk testing only
@@ -612,21 +654,31 @@ def dbARS(dblabels,labels,dbClusters,maxDBvalue):
 
 
 def main():
-    
     #########################################################################
-    #trainData = pd.read_csv("/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/NSL-KDD/KDDTrain+.csv", header = None)
-    dataSet = readingData("/Users/jeremyperez/Jupyter/NSL-KDD/KDDTrain+.csv")
+    path = getDataSet()
+    #########################################################################
+    #########################################################################
+    #//Users/jeremyperez/Desktop/CICIDS2017.csv
+    #/Users/jeremyperez/Jupyter/NSL-KDD/KDDTrain+.csv
+    #/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/NSL-KDD/KDDTrain+.csv", header = None)
+    dataSet = readingData(path)
     clear()
-    #Run a Missing Value Ratio test to determine if any feature is missing values.
-    #If all ratios = 0.0, then data is not missing any values for any features.
-    dataSet.isnull().sum()/len(dataSet)*100
     #########################################################################
-    
+    #########################################################################
+    try:
+        missingRowsIndex,isMissing = checkMissingData(dataSet)
+    except ValueError:
+        isMissing = checkMissingData(dataSet)
+    #########################################################################
+    #########################################################################
+    if isMissing == 'True':
+            manageMissingData(dataSet)
+            
+    #########################################################################
     #########################################################################
     data,labels,dataOption = gettingVariables(dataSet) #Getting the Data we want to use for the algorithms
     clear()
     #########################################################################
-    
     #########################################################################
     try:
         labels,encodeOption = encodingLabels(labels,dataOption) #Encoding the true labels
@@ -635,19 +687,15 @@ def main():
         
     clear()
     #########################################################################
-    
     #########################################################################
     data = shuffleData(data)
     #########################################################################
-    
     #########################################################################
     data = oneHotEncodingData(data,dataOption) #One hot Encode with the complete data
     #########################################################################
-    
     #########################################################################
     data,labels = riskEncodingData(data,labels,dataOption)
     #########################################################################
-    
     #########################################################################
     data = normalizing(data)
     #########################################################################
@@ -754,6 +802,13 @@ def main():
             #########################################################################
             #DBSCAN
             dblabels,dbClusters,nNoises,dbscanR,maxDBvalue = dbscanClustering(data,labels) 
+            clear()
+            print("#########################################################################")
+            print("DBSCAN RESULTS\n\n")
+            print("Clusters -> ",dbClusters,"\n")
+            print(dbscanR,"\n\n")
+            print("Max True Label","\n\n",maxDBvalue)
+            print("\n#########################################################################\n\n\n")
             #########################################################################
             
             
