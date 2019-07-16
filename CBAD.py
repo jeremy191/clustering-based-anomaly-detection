@@ -1,4 +1,4 @@
-#@authors: jeremyperez,bethanydanner
+#@authors:jeremyperez,bethanydanner
 
 #reset -f
 
@@ -7,158 +7,240 @@ import numpy as np
 import pandas as pd 
 import os
 #import matplotlib.pyplot as plt
-clear = lambda: os.system('clear')
+clear = lambda:os.system('clear')
 
 def getDataSet():
     print("**************************************************")
     print("DATA SET MENU")
     print("**************************************************")
-    print("NSL-KDD")
-    print("IDS 2017")
+    print("1.NSL-KDD")
+    print("2.IDS 2017")
     
-    path = input("Path of the File: ")
+    option = input("Option:")
+    
+    path = input("Path of the File:")
     print("\n\nReading Dataset...")
     
-    return path
+    return path,option
 
-def readingData(path):
+def readingData(path,dataSetOption):
     #Reading the Train Dataset
-    dataSet = pd.read_csv(path, header = None,low_memory=False)
+
+        
+    if dataSetOption == "2":#Checking if data set has header
+        dataSet = pd.read_csv(path,low_memory=False)
+    
+    elif dataSetOption == "1":
+        dataSet = pd.read_csv(path, header = None,low_memory=False)
+        
+    
     
     return dataSet
 
 
-def checkMissingData(dataSet):
-    
-   isMissing = str(dataSet.isnull().values.any()) #Using String instead of Boolean because ("cannot unpack non-iterable numpy.bool object")
-   
-   if isMissing == 'True':
-        #if data set has infinity values replace them with none
-        dataSet = dataSet.replace('Infinity', np.nan) #Replacing Infinity values with nan values
-       
-        n = 0
-        missingRowsIndex = []
-        total = dataSet.isnull().sum().sum()
-        
-        for rows in dataSet:
-            
-            if dataSet[n].isnull().sum() == 0: # Rows that have missing values
-                n += 1
-                
-            elif dataSet[n].isnull().sum() != 0:
-                
-                missingRowsIndex.append(n)
-                n += 1
-        print("**************************************************")
-        print("Data has missing values")
-        print("**************************************************")
-        print("Rows with missing values: ",missingRowsIndex)
-        print("\nTotal missing Values -> " , total,"\n\n")
-        
-        return missingRowsIndex,isMissing
-        
-   elif isMissing == 'False':
-      return isMissing 
-   
-    
-def manageMissingData(dataSet):
-    print("Working on it")
-    
-
 #Getting The data we want to test for the clustering algorithms
-def gettingVariables(dataSet):
-    
-    while True:
-        print("Variables Menu\n")
-        print("1.Data set with Categorical data")
-        print("2.Data set without Categorical data")
-        print("3.Data set without protocols to start  using risk Values\n")
-        option = input("Enter option : ")
-        
-        
-        if option == "1" or option == "2" or option == "3":
-            break
-        else:
-            clear()
-            print("Error\n\n")
-        
-    
-    if option == "1":
-        #Getting the Dependent and independent Variables
-        X = dataSet.iloc[:,:-2].values # Data, Get all the rows and all the clums except all the colums - 2
-        Y = dataSet.iloc[:,42].values# Labels
-        return X,Y,option
-    
-    elif option == "2":
-        #Removing Categorical data from the data set
-        X = dataSet.iloc[:,[0,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40]].values
-        X = pd.DataFrame(X)
-        Y = dataSet.iloc[:,42].values# Labels
-        
-        return X,Y,option
-    
-    elif option == "3":
-        #Removing Protocols to start using risk Values
-        X = dataSet.iloc[:,[0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40]].values
-        Y = dataSet.iloc[:,42].values# Labels
-        
-        return X,Y,option
-    
+def gettingVariables(dataSet,datasetOption):
 
-
-
-
-    
-def encodingLabels(labels,dataOption):
-    if dataOption == "1" or dataOption == "2" or dataOption == "3":
-        
+    if datasetOption == "1":
         while True:
-            print("Encoding Menu\n")
-            print("1.Binary Encode true labels - > 'normal = 0','abnormal = 1'")
-            print("2.Five main categories encode true labels -> normal = 0,DoS = 1,Probe = 2,R2L = 3,U2R = 4'")
-            encodeOption = input("Enter option : ") 
-
-            if encodeOption == "1" or encodeOption == "2":
+            print("Variables Menu\n")
+            print("1.Data set with Categorical data")
+            print("2.Data set without Categorical data")
+            print("3.Data set without protocols to start  using risk Values\n")
+            option = input("Enter option :")
+            
+            
+            if option == "1" or option == "2" or option == "3":
                 break
             else:
                 clear()
                 print("Error\n\n")
+            
+        
+        if option == "1":
+            #Getting the Dependent and independent Variables
+            X = dataSet.iloc[:,:-2].values # Data, Get all the rows and all the clums except all the colums - 2
+            Y = dataSet.iloc[:,42].values# Labels
+            return X,Y,option
+        
+        elif option == "2":
+            #Removing Categorical data from the data set
+            X = dataSet.iloc[:,[0,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40]].values
+            X = pd.DataFrame(X)
+            Y = dataSet.iloc[:,42].values# Labels
+            
+            return X,Y,option
+        
+        elif option == "3":
+            #Removing Protocols to start using risk Values
+            X = dataSet.iloc[:,[0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40]].values
+            Y = dataSet.iloc[:,42].values# Labels
+            
+            return X,Y,option
+    
+    elif datasetOption == "2":
+    #############################################################################
+    #CHECK IF  MISSING DATA
+    ############################################################################# 
+        isMissing = str(dataSet.isnull().values.any()) #Using String instead of Boolean because ("cannot unpack non-iterable numpy.bool object")
+       
+        if isMissing == 'True':
+            #if data set has infinity values replace them with none
+            dataSet = dataSet.replace('Infinity', np.nan) #Replacing Infinity values with nan values
+           
+            missingValIndex = []
+            total = dataSet.isnull().sum().sum()
+            
+            for rows in dataSet:
+                    
+                if dataSet[rows].isnull().sum() != 0:
+                    missingValIndex.append(rows)
+            print("**************************************************")
+            print("Data has missing values")
+            print("**************************************************")
+            print("Rows with missing values:",missingValIndex)
+            print("Total missing Values -> " , total,"\n\n")
+    #############################################################################
+    #END OF CHECK IF  MISSING DATA
+    ############################################################################# 
+            
+    #############################################################################
+    #MANAGE MISSING DATA
+    #############################################################################        
+        while True:
+            print("**************************************************")
+            print("Manage Missing Values ")
+            print("**************************************************")
+            print("1.Eliminate Catg. w/ Missing Values")
+            print("2.Impute 0 for Missing Values")
+            print("3.Impute Mean for Missing Values")
+            print("4.Impute Median for Missing Values")
+            print("5.Impute Mode for Missing Values")
+            missingDataOption = input("Option:")
+    
+            if missingDataOption == "1" or missingDataOption == "2" or missingDataOption == "3" or missingDataOption == "4" or missingDataOption == "5":
+                break
+    
+    
+        if missingDataOption == "1":
+            for row in missingValIndex:
+                del dataSet[row]
+        
+            print("#########################################################################")
+            print("Columns Succesfully Removed")
+            print("#########################################################################")
+    
+        elif missingDataOption == "2":
+            for row in missingValIndex:
+                dataSet[row] = dataSet[row].fillna(0)
+        
+            print("#########################################################################")
+            print("Sucessfully Filled Missing Values with 0")
+            print("#########################################################################")
+    
+    
+        elif missingDataOption == "3":
+            for row in missingValIndex:
+                dataSet[row] = dataSet[row].fillna(dataSet[row].mean())
+        
+            print("#########################################################################")
+            print("Sucessfully Filled Missing Values with Mean")
+            print("#########################################################################")
+    
+        elif missingDataOption == "4":
+            for row in missingValIndex:
+                median = dataSet[row].median()
+                dataSet[row].fillna(median, inplace=True)
+            print("#########################################################################")
+            print("Sucessfully Filled Missing Values with Median")
+            print("#########################################################################")
+    
+        elif missingDataOption == "5":
+    
+            for row in missingValIndex:
+                dataSet[row] = dataSet[row].fillna(dataSet[row].mode()[0])
+    
+            print("#########################################################################")
+            print("Sucessfully Filled Missing Values with Mode ")
+            print("#########################################################################")
+       
+#############################################################################
+#END OF MISSING DATA
+#############################################################################
+        if missingDataOption == "1":#Check if missing data was removed
+            X = dataSet.iloc[:,:-1].values
+            Y = dataSet.iloc[:,76].values#Labels
+            option = "None"
+        else: #If it was another Option that do not remove data rows
+        
+            X = dataSet.iloc[:,:-1].values
+            Y = dataSet.iloc[:,78].values#Labels
+            option = "None" #This data does not have categorical features so dataOption is none
+        
+        return X,Y,option
+    
 
 
-        if encodeOption == "1":
-            #Binary Categories
-            attackType  = {'normal': "normal", 'neptune': "abnormal", 'warezclient': "abnormal", 'ipsweep': "abnormal",'back': "abnormal", 'smurf': "abnormal", 'rootkit': "abnormal",'satan': "abnormal", 'guess_passwd': "abnormal",'portsweep': "abnormal",'teardrop': "abnormal",'nmap': "abnormal",'pod': "abnormal",'ftp_write': "abnormal",'multihop': "abnormal",'buffer_overflow': "abnormal",'imap': "abnormal",'warezmaster': "abnormal",'phf': "abnormal",'land': "abnormal",'loadmodule': "abnormal",'spy': "abnormal",'perl': "abnormal"} 
-            attackEncodingCluster  = {'normal': 0,'abnormal': 1}
 
-            labels[:] = [attackType[item] for item in labels[:]] #Encoding the binary data
-            labels[:] = [attackEncodingCluster[item] for item in labels[:]]#Changing the names of the labels to binary labels normal and abnormal
-            return labels,encodeOption
 
-        elif encodeOption == "2":
-            #4 Main Categories
-            #normal = 0
-            #DoS = 1
-            #Probe = 2
-            #R2L = 3
-            #U2R = 4
-
-            attackType  = {'normal': "normal", 'neptune': "DoS", 'warezclient': "R2L", 'ipsweep': "Probe",'back': "DoS", 'smurf': "DoS", 'rootkit': "U2R",'satan': "Probe", 'guess_passwd': "R2L",'portsweep': "Probe",'teardrop': "DoS",'nmap': "Probe",'pod': "DoS",'ftp_write': "R2L",'multihop': "R2L",'buffer_overflow': "U2R",'imap': "R2L",'warezmaster': "R2L",'phf': "R2L",'land': "DoS",'loadmodule': "U2R",'spy': "R2L",'perl': "U2R"} 
-            attackEncodingCluster  = {'normal': 0,'DoS': 1,'Probe': 2,'R2L': 3, 'U2R': 4} #Main Categories
-
-            labels[:] = [attackType[item] for item in labels[:]] #Encoding the main 4 categories
-            labels[:] = [attackEncodingCluster[item] for item in labels[:]]# Changing the names of attacks into 4 main categories
-            return labels,encodeOption
-    else:
+    
+def encodingLabels(labels,dataOption,datasetOption):
+    
+    if datasetOption == "1": #Check if the data set choosen is NSL-KDD or IDS2017
+        
+        if dataOption == "1" or dataOption == "2" or dataOption == "3":
+            
+            while True:
+                print("Encoding Menu\n")
+                print("1.Binary Encode true labels - > 'normal = 0','abnormal = 1'")
+                print("2.Five main categories encode true labels -> normal = 0,DoS = 1,Probe = 2,R2L = 3,U2R = 4'")
+                encodeOption = input("Enter option :") 
+    
+                if encodeOption == "1" or encodeOption == "2":
+                    break
+                else:
+                    clear()
+                    print("Error\n\n")
+    
+    
+            if encodeOption == "1":
+                #Binary Categories
+                attackType  = {'normal':"normal", 'neptune':"abnormal", 'warezclient':"abnormal", 'ipsweep':"abnormal",'back':"abnormal", 'smurf':"abnormal", 'rootkit':"abnormal",'satan':"abnormal", 'guess_passwd':"abnormal",'portsweep':"abnormal",'teardrop':"abnormal",'nmap':"abnormal",'pod':"abnormal",'ftp_write':"abnormal",'multihop':"abnormal",'buffer_overflow':"abnormal",'imap':"abnormal",'warezmaster':"abnormal",'phf':"abnormal",'land':"abnormal",'loadmodule':"abnormal",'spy':"abnormal",'perl':"abnormal"} 
+                attackEncodingCluster  = {'normal':0,'abnormal':1}
+    
+                labels[:] = [attackType[item] for item in labels[:]] #Encoding the binary data
+                labels[:] = [attackEncodingCluster[item] for item in labels[:]]#Changing the names of the labels to binary labels normal and abnormal
+                return labels,encodeOption
+    
+            elif encodeOption == "2":
+                #4 Main Categories
+                #normal = 0
+                #DoS = 1
+                #Probe = 2
+                #R2L = 3
+                #U2R = 4
+    
+                attackType  = {'normal':"normal", 'neptune':"DoS", 'warezclient':"R2L", 'ipsweep':"Probe",'back':"DoS", 'smurf':"DoS", 'rootkit':"U2R",'satan':"Probe", 'guess_passwd':"R2L",'portsweep':"Probe",'teardrop':"DoS",'nmap':"Probe",'pod':"DoS",'ftp_write':"R2L",'multihop':"R2L",'buffer_overflow':"U2R",'imap':"R2L",'warezmaster':"R2L",'phf':"R2L",'land':"DoS",'loadmodule':"U2R",'spy':"R2L",'perl':"U2R"} 
+                attackEncodingCluster  = {'normal':0,'DoS':1,'Probe':2,'R2L':3, 'U2R':4} #Main Categories
+    
+                labels[:] = [attackType[item] for item in labels[:]] #Encoding the main 4 categories
+                labels[:] = [attackEncodingCluster[item] for item in labels[:]]# Changing the names of attacks into 4 main categories
+                return labels,encodeOption
+        else:
+            return labels
+    
+    
+    elif datasetOption == "2":#Check if the data set choosen is NSL-KDD or IDS2017
+        labels = np.array(labels,dtype= object)
+        attackEncoding  = {'BENIGN': 0,'DoS slowloris': 1,'DoS Slowhttptest': 2,'DoS Hulk': 3, 'DoS GoldenEye': 4, 'Heartbleed': 5} #Main Categories
+        labels[:] = [attackEncoding[item] for item in labels[:]]# Changing the names of attacks into 4 main categories
+    
         return labels
 
 
 
-
-
-
-
 #Encoding the data using one hot encoding and using Main attacks categories or binary categories
-def oneHotEncodingData(data,dataOption): 
+def oneHotEncodingData(data,dataOption):
         
     from sklearn.preprocessing import OneHotEncoder
     from sklearn.compose import ColumnTransformer
@@ -168,7 +250,7 @@ def oneHotEncodingData(data,dataOption):
     #The numbers are replaced by 1s and 0s, depending on which column has what value
     #We don't need to do a label encoded step because ColumnTransformer do one hot encode and label encode!
     #Encoding the Independient Variable
-    if dataOption == "1":
+    if dataOption == "1": #Only for dataset with Categorical Data
         transform = ColumnTransformer([("Servers", OneHotEncoder(categories = "auto"), [1,2,3])], remainder="passthrough")
         data = transform.fit_transform(data)
         print("#########################################################################")
@@ -181,14 +263,14 @@ def oneHotEncodingData(data,dataOption):
         return data #return data with no changes
 
 
-def riskEncodingData(data,labels,dataOption): #This function is only for risk testing only
+def riskEncodingData(data,labels,dataOption):#This function is only for risk testing only
     #Manually Encoding for the attacks types only
-    if dataOption == "3":
+    if dataOption == "3": #if data option is risk Value
         data = pd.DataFrame(data)
-        servers  = {'http': 0.01, 'domain_u': 0, 'sunrpc': 1, 'smtp': 0.01, 'ecr_i': 0.87, 'iso_tsap': 1, 'private': 0.97, 'finger': 0.27, 'ftp': 0.26, 'telnet': 0.48,'other': 0.12,'discard': 1, 'courier': 1, 'pop_3': 0.53, 'ldap': 1, 'eco_i': 0.8, 'ftp_data': 0.06, 'klogin': 1, 'auth': 0.31, 'mtp': 1, 'name': 1, 'netbios_ns': 1,'remote_job': 1,'supdup': 1,'uucp_path': 1,'Z39_50': 1,'csnet_ns': 1,'uucp': 1,'netbios_dgm': 1,'urp_i': 0,'domain': 0.96,'bgp':1,'gopher': 1,'vmnet': 1,'systat': 1,'http_443': 1,'efs': 1,'whois': 1,'imap4': 1,'echo': 1,'link': 1,'login': 1,'kshell': 1,'sql_net': 1,'time': 0.88,'hostnames': 1,'exec': 1,'ntp_u': 0,'nntp': 1,'ctf': 1,'ssh': 1,'daytime': 1,'shell': 1,'netstat': 1,'nnsp': 1,'IRC': 0,'pop_2': 1,'printer': 1,'tim_i': 0.33,'pm_dump': 1,'red_i': 0,'netbios_ssn': 1,'rje': 1,'X11': 0.04,'urh_i': 0,'http_8001': 1,'aol': 1,'http_2784': 1,'tftp_u': 0,'harvest': 1}
+        servers  = {'http':0.01, 'domain_u':0, 'sunrpc':1, 'smtp':0.01, 'ecr_i':0.87, 'iso_tsap':1, 'private':0.97, 'finger':0.27, 'ftp':0.26, 'telnet':0.48,'other':0.12,'discard':1, 'courier':1, 'pop_3':0.53, 'ldap':1, 'eco_i':0.8, 'ftp_data':0.06, 'klogin':1, 'auth':0.31, 'mtp':1, 'name':1, 'netbios_ns':1,'remote_job':1,'supdup':1,'uucp_path':1,'Z39_50':1,'csnet_ns':1,'uucp':1,'netbios_dgm':1,'urp_i':0,'domain':0.96,'bgp':1,'gopher':1,'vmnet':1,'systat':1,'http_443':1,'efs':1,'whois':1,'imap4':1,'echo':1,'link':1,'login':1,'kshell':1,'sql_net':1,'time':0.88,'hostnames':1,'exec':1,'ntp_u':0,'nntp':1,'ctf':1,'ssh':1,'daytime':1,'shell':1,'netstat':1,'nnsp':1,'IRC':0,'pop_2':1,'printer':1,'tim_i':0.33,'pm_dump':1,'red_i':0,'netbios_ssn':1,'rje':1,'X11':0.04,'urh_i':0,'http_8001':1,'aol':1,'http_2784':1,'tftp_u':0,'harvest':1}
         data[1] = [servers[item] for item in data[1]]
 
-        servers_Error  = {'REJ': 0.519, 'SF': 0.016, 'S0': 0.998, 'RSTR': 0.882, 'RSTO': 0.886,'SH': 0.993,'S1': 0.008,'RSTOS0': 1,'S3': 0.08,'S2': 0.05,'OTH': 0.729} 
+        servers_Error  = {'REJ':0.519, 'SF':0.016, 'S0':0.998, 'RSTR':0.882, 'RSTO':0.886,'SH':0.993,'S1':0.008,'RSTOS0':1,'S3':0.08,'S2':0.05,'OTH':0.729} 
         data[2] = [servers_Error[item] for item in data[2]]
 
         print("#########################################################################")
@@ -204,7 +286,7 @@ def riskEncodingData(data,labels,dataOption): #This function is only for risk te
     
 
 
-def normalizing(data): #Scalign the data with the normalize method
+def normalizing(data):#Scalign the data with the normalize method
     
     from sklearn.preprocessing import Normalizer
     #Because we are using numerical-value-only clustering techniques to analyze the NSL-KDD dataset,
@@ -224,7 +306,7 @@ def normalizing(data): #Scalign the data with the normalize method
     
 def shuffleData(X):
     while True:
-        option = input("Suffle Data [y]/[n] : ")
+        option = input("Suffle Data [y]/[n] :")
         
         if option == "y" or option == "n":
             break
@@ -247,7 +329,7 @@ def shuffleData(X):
 
 
 
-def kmeansClustering(data,labels): #K-means algorithm 
+def kmeansClustering(data,labels):#K-means algorithm 
     from sklearn.cluster import KMeans
 
     while True:
@@ -255,7 +337,7 @@ def kmeansClustering(data,labels): #K-means algorithm
         print("KMEANS ALGORITHM")
         print("#########################################################################\n\n")
               
-        nClusters = input("Numbers of clusters: ")
+        nClusters = input("Numbers of clusters:")
         
         try:
             nClusters = int(nClusters)
@@ -268,13 +350,13 @@ def kmeansClustering(data,labels): #K-means algorithm
             n = 0
             clusterArray = []
             
-            while n < nClusters: #Converting nCluster into an array of n clusters [n]
+            while n < nClusters:#Converting nCluster into an array of n clusters [n]
                 clusterArray.append(n)
                 n+=1
             break
         
     while True:
-        init = input("Initialization method [k-means++,random]: ")
+        init = input("Initialization method [k-means++,random]:")
         
         if init == "k-means++" or init == "random":
             
@@ -295,7 +377,7 @@ def kmeansClustering(data,labels): #K-means algorithm
 
 
 
-def kF1(klabels,labels,maxKvalue,nClusters): #F1 Score for Kmeans
+def kF1(klabels,labels,maxKvalue,nClusters):#F1 Score for Kmeans
     from sklearn.metrics import f1_score
     #Encoding data to F-score
     
@@ -304,7 +386,7 @@ def kF1(klabels,labels,maxKvalue,nClusters): #F1 Score for Kmeans
     dictionaryCluster  = {} # creating an empty dictionary 
     
     
-    while n < len(nClusters): # while counter < number of clusters
+    while n < len(nClusters):# while counter < number of clusters
         dictionaryCluster[nClusters[n]] = maxKvalue[n] #creating key(cluster index) with value (max number of the clustering results) for every iteration
         n+=1
         
@@ -314,7 +396,7 @@ def kF1(klabels,labels,maxKvalue,nClusters): #F1 Score for Kmeans
     
     while True:
         
-        average = input("Average Method[weighted,None,micro,macro]: ")
+        average = input("Average Method[weighted,None,micro,macro]:")
         
         if average == "weighted" or average == "micro" or average == "macro" or average == "None":
             break
@@ -332,7 +414,7 @@ def kAUC(klabels,labels,maxKvalue,nClusters):
     n = 0 # counter
     dictionaryCluster  = {} # creating an empty dictionary 
     
-    while n < len(nClusters): # while counter < number of clusters
+    while n < len(nClusters):# while counter < number of clusters
         dictionaryCluster[nClusters[n]] = maxKvalue[n] #creating key(cluster index) with value (max number of the clustering results) for every iteration
         n+=1
         
@@ -343,7 +425,7 @@ def kAUC(klabels,labels,maxKvalue,nClusters):
     
     while True:
         
-        average = input("Average Method[None,micro,macro,weighted]: ")
+        average = input("Average Method[None,micro,macro,weighted]:")
         
         if average == "None" or average == "micro" or average == "macro" or average == "weighted":
             break
@@ -361,7 +443,7 @@ def kMNI(klabels,labels,maxKvalue,nClusters):
     n = 0 # counter
     dictionaryCluster  = {} # creating an empty dictionary 
     
-    while n < len(nClusters): # while counter < number of clusters
+    while n < len(nClusters):# while counter < number of clusters
         dictionaryCluster[nClusters[n]] = maxKvalue[n] #creating key(cluster index) with value (max number of the clustering results) for every iteration
         n+=1
         
@@ -371,7 +453,7 @@ def kMNI(klabels,labels,maxKvalue,nClusters):
     
     while True:
         
-        average = input("Average Method[geometric,min,arithmetic,max]: ")
+        average = input("Average Method[geometric,min,arithmetic,max]:")
         
         if average == "geometric" or average == "min" or average == "arithmetic" or average == "max":
             break
@@ -388,7 +470,7 @@ def kARS(klabels,labels,maxKvalue,nClusters):
     n = 0 # counter
     dictionaryCluster  = {} # creating an empty dictionary 
     
-    while n < len(nClusters): # while counter < number of clusters
+    while n < len(nClusters):# while counter < number of clusters
         dictionaryCluster[nClusters[n]] = maxKvalue[n] #creating key(cluster index) with value (max number of the clustering results) for every iteration
         n+=1
         
@@ -402,7 +484,7 @@ def kARS(klabels,labels,maxKvalue,nClusters):
 
 
 
-def dbscanClustering(data,labels): #DBSCAN algorithm
+def dbscanClustering(data,labels):#DBSCAN algorithm
     from sklearn.cluster import DBSCAN
     
     while True:
@@ -411,7 +493,7 @@ def dbscanClustering(data,labels): #DBSCAN algorithm
         print("DBSCAN ALGORITHM")
         print("#########################################################################\n\n")
               
-        epsilon = input("epsilon[Decimal]: ")
+        epsilon = input("epsilon[Decimal]:")
         
         try:
             epsilon = float(epsilon)
@@ -425,7 +507,7 @@ def dbscanClustering(data,labels): #DBSCAN algorithm
             break
         
     while True:
-        minSamples = input("Min Samples[Integer]: ")
+        minSamples = input("Min Samples[Integer]:")
         
         try:
             minSamples = int(minSamples)
@@ -438,7 +520,7 @@ def dbscanClustering(data,labels): #DBSCAN algorithm
             break
         
     while True:
-        algorithm = input("Algorithm['auto’, ‘ball_tree’, ‘kd_tree’, 'brute']: ")
+        algorithm = input("Algorithm['auto’, ‘ball_tree’, ‘kd_tree’, 'brute']:")
             
         if algorithm == "auto" or algorithm == "ball_tree" or algorithm == "kd_tree" or algorithm == "brute":
             break
@@ -473,7 +555,7 @@ def dbscanClustering(data,labels): #DBSCAN algorithm
 
 
 
-def dbF1(dblabels,labels,dbClusters,maxDBvalue): #F1 score for DBSCAN
+def dbF1(dblabels,labels,dbClusters,maxDBvalue):#F1 score for DBSCAN
     from sklearn.metrics import f1_score
     #Encoding data to F-score
     
@@ -482,7 +564,7 @@ def dbF1(dblabels,labels,dbClusters,maxDBvalue): #F1 score for DBSCAN
     c = -1 # - counter max Value has negative index
     dictionaryCluster  = {} # creating an empty dictionary 
     
-    while n < len(dbClusters): # while counter < number of clusters
+    while n < len(dbClusters):# while counter < number of clusters
         dictionaryCluster[dbClusters[n]] = maxDBvalue[c] #creating key(cluster index) with value (max number of the clustering results) for every iteration
         n+=1
         c+=1
@@ -493,7 +575,7 @@ def dbF1(dblabels,labels,dbClusters,maxDBvalue): #F1 score for DBSCAN
     labels = np.array(labels,dtype = int) #Making sure that labels are in a int array
     while True:
         
-        average = input("Average Method[weighted,None,micro,macro]: ")
+        average = input("Average Method[weighted,None,micro,macro]:")
         
         if average == "weighted" or average == "micro" or average == "macro" or average == "None":
             break
@@ -516,7 +598,7 @@ def dbAUC(dblabels,labels,dbClusters,maxDBvalue):
     c = -1 # - counter max Value has negative index
     dictionaryCluster  = {} # creating an empty dictionary 
     
-    while n < len(dbClusters): # while counter < number of clusters
+    while n < len(dbClusters):# while counter < number of clusters
         dictionaryCluster[dbClusters[n]] = maxDBvalue[c] #creating key(cluster index) with value (max number of the clustering results) for every iteration
         n+=1
         c+=1
@@ -527,7 +609,7 @@ def dbAUC(dblabels,labels,dbClusters,maxDBvalue):
     
     while True:
         
-        average = input("Average Method[None,micro,macro,weighted]: ")
+        average = input("Average Method[None,micro,macro,weighted]:")
         
         if average == "None" or average == "micro" or average == "macro" or average == "weighted":
             break
@@ -550,7 +632,7 @@ def dbMNI(dblabels,labels,dbClusters,maxDBvalue):
     c = -1 # - counter max Value has negative index
     dictionaryCluster  = {} # creating an empty dictionary 
     
-    while n < len(dbClusters): # while counter < number of clusters
+    while n < len(dbClusters):# while counter < number of clusters
         dictionaryCluster[dbClusters[n]] = maxDBvalue[c] #creating key(cluster index) with value (max number of the clustering results) for every iteration
         n+=1
         c+=1
@@ -561,7 +643,7 @@ def dbMNI(dblabels,labels,dbClusters,maxDBvalue):
 
     while True:
         
-        average = input("Average Method[geometric,min,arithmetic,max]: ")
+        average = input("Average Method[geometric,min,arithmetic,max]:")
         
         if average == "geometric" or average == "min" or average == "arithmetic" or average == "max":
             break
@@ -582,7 +664,7 @@ def dbARS(dblabels,labels,dbClusters,maxDBvalue):
     c = -1 # - counter max Value has negative index
     dictionaryCluster  = {} # creating an empty dictionary 
     
-    while n < len(dbClusters): # while counter < number of clusters
+    while n < len(dbClusters):# while counter < number of clusters
         dictionaryCluster[dbClusters[n]] = maxDBvalue[c] #creating key(cluster index) with value (max number of the clustering results) for every iteration
         n+=1
         c+=1
@@ -611,7 +693,7 @@ def dbARS(dblabels,labels,dbClusters,maxDBvalue):
 #    
 #    return ifLabels,ifR,MaxIfVal,nClusters
 
-#def ifF1(ifLabels,labels,dbClusters,MaxIfVal,nClusters): 
+#def ifF1(ifLabels,labels,dbClusters,MaxIfVal,nClusters):
 #    from sklearn.metrics import f1_score
 #    #Encoding data to F-score
     
@@ -654,37 +736,25 @@ def dbARS(dblabels,labels,dbClusters,maxDBvalue):
 
 
 def main():
+    ##########################################################################
+    path,dataSetOption = getDataSet()
     #########################################################################
-    path = getDataSet()
     #########################################################################
-    #########################################################################
-    #//Users/jeremyperez/Desktop/CICIDS2017.csv
+    #/Users/jeremyperez/Desktop/CICIDS2017.csv
     #/Users/jeremyperez/Jupyter/NSL-KDD/KDDTrain+.csv
     #/Users/bethanydanner/Google_Drive/documents/python_code/codeLines_newData/CICIDS2017.csv
     #/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/NSL-KDD/KDDTrain+.csv", header = None)
-    dataSet = readingData(path)
+    dataSet = readingData(path,dataSetOption)
     clear()
     #########################################################################
     #########################################################################
-    try:
-        missingRowsIndex,isMissing = checkMissingData(dataSet)
-    except ValueError:
-        isMissing = checkMissingData(dataSet)
-    #########################################################################
-    #########################################################################
-    if isMissing == 'True':
-            manageMissingData(dataSet)
-            
-    #########################################################################
-    #########################################################################
-    data,labels,dataOption = gettingVariables(dataSet) #Getting the Data we want to use for the algorithms
-    clear()
+    data,labels,dataOption = gettingVariables(dataSet,dataSetOption) #Getting the Data we want to use for the algorithms
     #########################################################################
     #########################################################################
     try:
-        labels,encodeOption = encodingLabels(labels,dataOption) #Encoding the true labels
+        labels,encodeOption = encodingLabels(labels,dataOption,dataSetOption) #Encoding the true labels
     except ValueError:
-        labels = encodingLabels(labels,dataOption) #Encoding the true labels
+        labels = encodingLabels(labels,dataOption,dataSetOption) #Encoding the true labels
         
     clear()
     #########################################################################
@@ -701,7 +771,7 @@ def main():
     data = normalizing(data)
     #########################################################################
     
-    while True:   
+    while True:  
         while True:
             print("#########################################################################")
             print("Algorithm Menu")
@@ -712,7 +782,7 @@ def main():
             print("3.Isolation Forest")
             print("4.Local Factor Outlier")
             
-            algrithmOption = input("option: ")
+            algrithmOption = input("option:")
             
             if algrithmOption == "1" or algrithmOption == "2" or algrithmOption == "3" or algrithmOption == "4":
                     break
@@ -747,7 +817,7 @@ def main():
                 print("3.Normalized Mutual Info Score")
                 print("4.Adjusted Rand Score")
             
-                kScoreOption = input("option: ")
+                kScoreOption = input("option:")
                 
                 if kScoreOption == "1" or kScoreOption == "2" or kScoreOption == "3" or kScoreOption == "4":
                     break
@@ -774,7 +844,7 @@ def main():
                         print("#########################################################################")
                         print("AUC Score -> ",kmeansAUC)
                         print("#########################################################################")
-                    except Exception as Error: 
+                    except Exception as Error:
                         print("\n*************************************************************************")
                         print(Error)
                         print("*************************************************************************")
@@ -824,7 +894,7 @@ def main():
             
             while True:
                 
-                dbScoreOption = input("option: ")
+                dbScoreOption = input("option:")
                 
                 if dbScoreOption == "1" or dbScoreOption == "2" or dbScoreOption == "3" or dbScoreOption == "4":
                     break
@@ -848,7 +918,7 @@ def main():
                     print("#########################################################################")
                     print("DBSCAN AUC Score -> ",dbscanAUC)
                     print("#########################################################################")
-                except Exception as Error: 
+                except Exception as Error:
                     print("\n*************************************************************************")
                     print(Error)
                     print("*************************************************************************")
@@ -884,7 +954,7 @@ def main():
         
         while True:
             
-            decision = input("You want to another Test[y/n]: ")
+            decision = input("You want to another Test[y/n]:")
             
             if decision == "y" or  decision == "n":
                 break
