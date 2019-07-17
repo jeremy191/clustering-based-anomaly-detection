@@ -6,17 +6,23 @@
 import numpy as np
 import pandas as pd 
 import os
+import warnings
 #import matplotlib.pyplot as plt
 clear = lambda:os.system('clear')
+#warnings.filterwarnings('ignore')
 
 def getDataSet():
-    print("**************************************************")
-    print("DATA SET MENU")
-    print("**************************************************")
-    print("1.NSL-KDD")
-    print("2.IDS 2017")
-    
-    option = input("Option:")
+    while True:
+        print("**************************************************")
+        print("DATA SET MENU")
+        print("**************************************************")
+        print("1.NSL-KDD")
+        print("2.IDS 2017")
+        
+        option = input("Option:")
+        
+        if option == "1" or option == "2":
+            break
     
     path = input("Path of the File:")
     print("\n\nReading Dataset...")
@@ -53,7 +59,7 @@ def gettingVariables(dataSet,datasetOption):
             if option == "1" or option == "2" or option == "3":
                 break
             else:
-                clear()
+                
                 print("Error\n\n")
             
         
@@ -99,7 +105,7 @@ def gettingVariables(dataSet,datasetOption):
             print("Data has missing values")
             print("**************************************************")
             print("Rows with missing values:",missingValIndex)
-            print("Total missing Values -> " , total,"\n\n")
+            print("Total missing Values -> " , total)
     #############################################################################
     #END OF CHECK IF  MISSING DATA
     ############################################################################# 
@@ -108,7 +114,7 @@ def gettingVariables(dataSet,datasetOption):
     #MANAGE MISSING DATA
     #############################################################################        
         while True:
-            print("**************************************************")
+            print("\n**************************************************")
             print("Manage Missing Values ")
             print("**************************************************")
             print("1.Eliminate Catg. w/ Missing Values")
@@ -141,6 +147,7 @@ def gettingVariables(dataSet,datasetOption):
     
         elif missingDataOption == "3":
             for row in missingValIndex:
+                dataSet[row] = dataSet[row].astype(float)
                 dataSet[row] = dataSet[row].fillna(dataSet[row].mean())
         
             print("#########################################################################")
@@ -199,7 +206,7 @@ def encodingLabels(labels,dataOption,datasetOption):
                 if encodeOption == "1" or encodeOption == "2":
                     break
                 else:
-                    clear()
+                    
                     print("Error\n\n")
     
     
@@ -311,11 +318,11 @@ def shuffleData(X):
         if option == "y" or option == "n":
             break
         else:
-            clear()
+            
             print("Error\n\n")
     
     if option == "y":
-        clear()
+        
         np.random.shuffle(X)
         print("#########################################################################")
         print("Data has been Successfully Shuffled")
@@ -343,7 +350,7 @@ def kmeansClustering(data,labels):#K-means algorithm
             nClusters = int(nClusters)
             
         except ValueError:
-            clear()
+            
             print("Error\n\n")
             
         if type(nClusters) == int:
@@ -401,7 +408,7 @@ def kF1(klabels,labels,maxKvalue,nClusters):#F1 Score for Kmeans
         if average == "weighted" or average == "micro" or average == "macro" or average == "None":
             break
         
-    f1 = f1_score(labels,klabels, average = average)
+    f1 = f1_score(labels,klabels, average = average,labels=np.unique(klabels))
     
     return f1
 
@@ -499,7 +506,7 @@ def dbscanClustering(data,labels):#DBSCAN algorithm
             epsilon = float(epsilon)
             
         except ValueError:
-            clear()
+            
             print("Enter a Decimal number")
             
             
@@ -513,7 +520,7 @@ def dbscanClustering(data,labels):#DBSCAN algorithm
             minSamples = int(minSamples)
             
         except ValueError:
-            clear()
+            
             print("Enter a Integer Number")
             
         if type(minSamples) == int:
@@ -525,7 +532,7 @@ def dbscanClustering(data,labels):#DBSCAN algorithm
         if algorithm == "auto" or algorithm == "ball_tree" or algorithm == "kd_tree" or algorithm == "brute":
             break
         else:
-            clear()
+            
             print("Error\n\n")
             
     
@@ -581,10 +588,10 @@ def dbF1(dblabels,labels,dbClusters,maxDBvalue):#F1 score for DBSCAN
             break
         
         else:
-            clear()
+            
             print("Error\n\n")
     
-    f1 = f1_score(labels,dblabels, average = average)
+    f1 = f1_score(labels,dblabels, average = average,labels=np.unique(dblabels))
     
     return f1
 
@@ -615,7 +622,7 @@ def dbAUC(dblabels,labels,dbClusters,maxDBvalue):
             break
         
         else:
-            clear()
+            
             print("Error\n\n")
         
     AUC = roc_auc_score(labels, dblabels, average = 'weighted')
@@ -648,7 +655,7 @@ def dbMNI(dblabels,labels,dbClusters,maxDBvalue):
         if average == "geometric" or average == "min" or average == "arithmetic" or average == "max":
             break
         else:
-            clear()
+            
             print("Error\n\n")
         
     MNI = normalized_mutual_info_score(labels, dblabels, average_method='min')
@@ -745,7 +752,7 @@ def main():
     #/Users/bethanydanner/Google_Drive/documents/python_code/codeLines_newData/CICIDS2017.csv
     #/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/NSL-KDD/KDDTrain+.csv", header = None)
     dataSet = readingData(path,dataSetOption)
-    clear()
+    
     #########################################################################
     #########################################################################
     data,labels,dataOption = gettingVariables(dataSet,dataSetOption) #Getting the Data we want to use for the algorithms
@@ -756,7 +763,7 @@ def main():
     except ValueError:
         labels = encodingLabels(labels,dataOption,dataSetOption) #Encoding the true labels
         
-    clear()
+    
     #########################################################################
     #########################################################################
     data = shuffleData(data)
@@ -787,7 +794,7 @@ def main():
             if algrithmOption == "1" or algrithmOption == "2" or algrithmOption == "3" or algrithmOption == "4":
                     break
             else:
-                clear()
+                
                 print("Error\n\n")
     
         
@@ -796,7 +803,7 @@ def main():
             #KMEANS
             
             klabels,kClusters,kmeansR,maxKvalue = kmeansClustering(data,labels)
-            clear()
+            
             print("#########################################################################")
             print("KMEANS RESULTS\n\n")
             print("Clusters -> ",kClusters,"\n")
@@ -822,7 +829,7 @@ def main():
                 if kScoreOption == "1" or kScoreOption == "2" or kScoreOption == "3" or kScoreOption == "4":
                     break
                 else:
-                    clear()
+                    
                     print("Error\n\n")
         
             
@@ -873,7 +880,7 @@ def main():
             #########################################################################
             #DBSCAN
             dblabels,dbClusters,nNoises,dbscanR,maxDBvalue = dbscanClustering(data,labels) 
-            clear()
+            
             print("#########################################################################")
             print("DBSCAN RESULTS\n\n")
             print("Clusters -> ",dbClusters,"\n")
@@ -899,7 +906,7 @@ def main():
                 if dbScoreOption == "1" or dbScoreOption == "2" or dbScoreOption == "3" or dbScoreOption == "4":
                     break
                 else:
-                    clear()
+                    
                     print("Error\n\n")
         
             if dbScoreOption == "1":
@@ -959,13 +966,13 @@ def main():
             if decision == "y" or  decision == "n":
                 break
             else:
-                clear()
+                
                 print("Error\n\n")
         
         
         if decision == "n":
             break
-        clear()
+        
         
       
 #*************
