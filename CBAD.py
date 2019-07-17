@@ -6,10 +6,8 @@
 import numpy as np
 import pandas as pd 
 import os
-import warnings
 #import matplotlib.pyplot as plt
 clear = lambda:os.system('clear')
-#warnings.filterwarnings('ignore')
 
 def getDataSet():
     while True:
@@ -78,8 +76,8 @@ def gettingVariables(dataSet,datasetOption):
             return X,Y,option
         
         elif option == "3":
-            #Removing Protocols to start using risk Values
-            X = dataSet.iloc[:,[0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40]].values
+            #Risk Encode Categorical features
+            X = dataSet.iloc[:,:-2].values
             Y = dataSet.iloc[:,42].values# Labels
             
             return X,Y,option
@@ -265,6 +263,13 @@ def oneHotEncodingData(data,dataOption):
         print("#########################################################################\n\n")
 
         return data
+    elif dataOption == "3": #Only for risk data
+        transform = ColumnTransformer([("Servers", OneHotEncoder(categories = "auto"), [1])], remainder="passthrough")
+        data = transform.fit_transform(data)
+        print("#########################################################################")
+        print("Data has been Successfully One Hot Encoded")
+        print("#########################################################################\n\n")
+        return data
         
     else:
         return data #return data with no changes
@@ -275,10 +280,10 @@ def riskEncodingData(data,labels,dataOption):#This function is only for risk tes
     if dataOption == "3": #if data option is risk Value
         data = pd.DataFrame(data)
         servers  = {'http':0.01, 'domain_u':0, 'sunrpc':1, 'smtp':0.01, 'ecr_i':0.87, 'iso_tsap':1, 'private':0.97, 'finger':0.27, 'ftp':0.26, 'telnet':0.48,'other':0.12,'discard':1, 'courier':1, 'pop_3':0.53, 'ldap':1, 'eco_i':0.8, 'ftp_data':0.06, 'klogin':1, 'auth':0.31, 'mtp':1, 'name':1, 'netbios_ns':1,'remote_job':1,'supdup':1,'uucp_path':1,'Z39_50':1,'csnet_ns':1,'uucp':1,'netbios_dgm':1,'urp_i':0,'domain':0.96,'bgp':1,'gopher':1,'vmnet':1,'systat':1,'http_443':1,'efs':1,'whois':1,'imap4':1,'echo':1,'link':1,'login':1,'kshell':1,'sql_net':1,'time':0.88,'hostnames':1,'exec':1,'ntp_u':0,'nntp':1,'ctf':1,'ssh':1,'daytime':1,'shell':1,'netstat':1,'nnsp':1,'IRC':0,'pop_2':1,'printer':1,'tim_i':0.33,'pm_dump':1,'red_i':0,'netbios_ssn':1,'rje':1,'X11':0.04,'urh_i':0,'http_8001':1,'aol':1,'http_2784':1,'tftp_u':0,'harvest':1}
-        data[1] = [servers[item] for item in data[1]]
+        data[2] = [servers[item] for item in data[2]]
 
         servers_Error  = {'REJ':0.519, 'SF':0.016, 'S0':0.998, 'RSTR':0.882, 'RSTO':0.886,'SH':0.993,'S1':0.008,'RSTOS0':1,'S3':0.08,'S2':0.05,'OTH':0.729} 
-        data[2] = [servers_Error[item] for item in data[2]]
+        data[3] = [servers_Error[item] for item in data[3]]
 
         print("#########################################################################")
         print("Data has ben risk Encoded Successfully")
@@ -312,6 +317,7 @@ def normalizing(data):#Scalign the data with the normalize method
 
     
 def shuffleData(X):
+    from sklearn.utils import shuffle
     while True:
         option = input("Suffle Data [y]/[n] :")
         
@@ -323,7 +329,11 @@ def shuffleData(X):
     
     if option == "y":
         
-        np.random.shuffle(X)
+        X = pd.DataFrame(X)
+        X = shuffle(X)
+        X.reset_index(inplace=True,drop=True)
+        X = np.array(X)
+        
         print("#########################################################################")
         print("Data has been Successfully Shuffled")
         print("#########################################################################\n\n")
@@ -540,8 +550,10 @@ def dbscanClustering(data,labels):#DBSCAN algorithm
     
     #Compute DBSCAN
     db = DBSCAN(eps= epsilon, min_samples = minSamples,algorithm = algorithm).fit(data) #{auto, ball_tree, kd_tree, brute}
+    
     core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
     core_samples_mask[db.core_sample_indices_] = True
+    
     dblabels = db.labels_
     # Number of clusters in labels, ignoring noise if present.
     n_clusters = len(set(dblabels))
@@ -681,6 +693,19 @@ def dbARS(dblabels,labels,dbClusters,maxDBvalue):
     return ars
 
 
+def OPTICSclustering(data,labels):
+    from sklearn.cluster import OPTICS
+    
+    optics = OPTICS(min_samples=3000).fit(data)
+    opticsLabels = optics.labels_
+    
+    # Number of clusters in labels, ignoring noise if present.
+    n_clusters = len(set(opticsLabels))
+    n_noise_ = list(opticsLabels).count(-1)
+    
+    return opticsLabels,n_clusters,n_noise_
+
+
 #def isolationForest(data,labels):
 #    from sklearn.ensemble import IsolationForest
 #    
@@ -766,16 +791,16 @@ def main():
     
     #########################################################################
     #########################################################################
-    data = shuffleData(data)
+    data,labels = riskEncodingData(data,labels,dataOption)
     #########################################################################
     #########################################################################
     data = oneHotEncodingData(data,dataOption) #One hot Encode with the complete data
     #########################################################################
     #########################################################################
-    data,labels = riskEncodingData(data,labels,dataOption)
-    #########################################################################
-    #########################################################################
     data = normalizing(data)
+    #########################################################################
+    #########################################################################
+    data = shuffleData(data)
     #########################################################################
     
     while True:  
@@ -789,16 +814,16 @@ def main():
             print("3.Isolation Forest")
             print("4.Local Factor Outlier")
             
-            algrithmOption = input("option:")
+            algorithmOption = input("option:")
             
-            if algrithmOption == "1" or algrithmOption == "2" or algrithmOption == "3" or algrithmOption == "4":
+            if algorithmOption == "1" or algorithmOption == "2" or algorithmOption == "3" or algorithmOption == "4":
                     break
             else:
                 
                 print("Error\n\n")
     
         
-        if algrithmOption == "1":
+        if algorithmOption == "1":
             #########################################################################
             #KMEANS
             
@@ -876,7 +901,7 @@ def main():
                 #########################################################################
             
             
-        elif algrithmOption == "2":
+        elif algorithmOption == "2":
             #########################################################################
             #DBSCAN
             dblabels,dbClusters,nNoises,dbscanR,maxDBvalue = dbscanClustering(data,labels) 
@@ -950,14 +975,15 @@ def main():
                 #########################################################################
                 
             
-        elif algrithmOption == "3":
+            
+        elif algorithmOption == "3":
             #########################################################################
             #ifLabels,ifR,MaxIfVal,ifNclusters = isolationForest(data,labels)
             #########################################################################
             print("x")
-    
-        elif algrithmOption == "4":
-            print("x")
+        
+        elif  algorithmOption == "4":
+            print("X")
         
         while True:
             
