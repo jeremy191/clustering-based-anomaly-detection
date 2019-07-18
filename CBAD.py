@@ -453,6 +453,7 @@ def kF1(klabels,labels,maxKvalue,nClusters):#F1 Score for Kmeans
             break
         
     f1 = f1_score(labels,klabels, average = average,labels=np.unique(klabels))
+    print("Dictionary -> ",dictionaryCluster)
     
     return f1
 
@@ -602,7 +603,7 @@ def dbscanClustering(data,labels):#DBSCAN algorithm
     #DBSCAN Results
     dbscanR = pd.crosstab(labels,dblabels)
     maxValue = dbscanR.idxmax()
-
+    
     return dblabels,dbClusterArray,n_noise_,dbscanR,maxValue
 
 
@@ -638,7 +639,7 @@ def dbF1(dblabels,labels,dbClusters,maxDBvalue):#F1 score for DBSCAN
             print("Error\n\n")
     
     f1 = f1_score(labels,dblabels, average = average,labels=np.unique(dblabels))
-    
+    print(dictionaryCluster)
     return f1
 
 
@@ -845,313 +846,306 @@ def lofF1(lofLabels,labels,lofCluster,maxLOFvalue):
 
 
 
-def main():
-    ##########################################################################
-    path,dataSetOption = getDataSet()
-    #########################################################################
-    #########################################################################
-    #/Users/jeremyperez/Desktop/CICIDS2017.csv
-    #/Users/jeremyperez/Jupyter/NSL-KDD/KDDTrain+.csv
-    #/Users/bethanydanner/Google_Drive/documents/python_code/codeLines_newData/CICIDS2017.csv
-    #/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/NSL-KDD/KDDTrain+.csv", header = None)
-    dataSet = readingData(path,dataSetOption)
+
+##########################################################################
+path,dataSetOption = getDataSet()
+#########################################################################
+#########################################################################
+#/Users/jeremyperez/Desktop/CICIDS2017.csv
+#/Users/jeremyperez/Jupyter/NSL-KDD/KDDTrain+.csv
+#/Users/bethanydanner/Google_Drive/documents/python_code/codeLines_newData/CICIDS2017.csv
+#/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/NSL-KDD/KDDTrain+.csv", header = None)
+dataSet = readingData(path,dataSetOption)
+
+#########################################################################
+#########################################################################
+data,labels,dataOption = gettingVariables(dataSet,dataSetOption) #Getting the Data we want to use for the algorithms
+#########################################################################
+#########################################################################
+try:
+    labels,encodeOption = encodingLabels(labels,dataOption,dataSetOption) #Encoding the true labels
+except ValueError:
+    labels = encodingLabels(labels,dataOption,dataSetOption) #Encoding the true labels
     
-    #########################################################################
-    #########################################################################
-    data,labels,dataOption = gettingVariables(dataSet,dataSetOption) #Getting the Data we want to use for the algorithms
-    #########################################################################
-    #########################################################################
-    try:
-        labels,encodeOption = encodingLabels(labels,dataOption,dataSetOption) #Encoding the true labels
-    except ValueError:
-        labels = encodingLabels(labels,dataOption,dataSetOption) #Encoding the true labels
+
+#########################################################################
+#########################################################################
+data,labels = riskEncodingData(data,labels,dataOption)
+#########################################################################
+#########################################################################
+data = oneHotEncodingData(data,dataOption) #One hot Encode with the complete data
+#########################################################################
+#########################################################################
+data = normalizing(data)
+#########################################################################
+#########################################################################
+data = shuffleData(data)
+#########################################################################
+
+while True:  
+    while True:
+        print("#########################################################################")
+        print("Algorithm Menu")
+        print("#########################################################################\n\n")
         
+        print("1.Kmeans")
+        print("2.Dbscan")
+        print("3.Isolation Forest")
+        print("4.Local Factor Outlier")
+        
+        algorithmOption = input("option:")
+        
+        if algorithmOption == "1" or algorithmOption == "2" or algorithmOption == "3" or algorithmOption == "4":
+                break
+        else:
+            
+            print("Error\n\n")
+
     
-    #########################################################################
-    #########################################################################
-    data,labels = riskEncodingData(data,labels,dataOption)
-    #########################################################################
-    #########################################################################
-    data = oneHotEncodingData(data,dataOption) #One hot Encode with the complete data
-    #########################################################################
-    #########################################################################
-    data = normalizing(data)
-    #########################################################################
-    #########################################################################
-    data = shuffleData(data)
-    #########################################################################
-    
-    while True:  
+    if algorithmOption == "1":
+        #########################################################################
+        #KMEANS
+        start_time = time.time()
+        klabels,kClusters,kmeansR,maxKvalue = kmeansClustering(data,labels)
+        print("#########################################################################")
+        print("KMEANS RESULTS\n\n")
+        print("Clusters -> ",kClusters,"\n")
+        print(kmeansR,"\n\n")
+        print("Max True Label","\n\n",maxKvalue)
+        print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
+        print("\n#########################################################################\n\n\n")
+
+        #########################################################################
+        
+        
         while True:
             print("#########################################################################")
-            print("Algorithm Menu")
+            print("Kmeans Score Metrics Menu")
             print("#########################################################################\n\n")
+        
+            print("1.F1 Score")
+            print("2.AUC")
+            print("3.Normalized Mutual Info Score")
+            print("4.Adjusted Rand Score")
+        
+            kScoreOption = input("option:")
             
-            print("1.Kmeans")
-            print("2.Dbscan")
-            print("3.Isolation Forest")
-            print("4.Local Factor Outlier")
-            
-            algorithmOption = input("option:")
-            
-            if algorithmOption == "1" or algorithmOption == "2" or algorithmOption == "3" or algorithmOption == "4":
-                    break
+            if kScoreOption == "1" or kScoreOption == "2" or kScoreOption == "3" or kScoreOption == "4":
+                break
             else:
                 
                 print("Error\n\n")
     
         
-        if algorithmOption == "1":
-            #########################################################################
-            #KMEANS
-            start_time = time.time()
-            klabels,kClusters,kmeansR,maxKvalue = kmeansClustering(data,labels)
-            print("#########################################################################")
-            print("KMEANS RESULTS\n\n")
-            print("Clusters -> ",kClusters,"\n")
-            print(kmeansR,"\n\n")
-            print("Max True Label","\n\n",maxKvalue)
-            print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
-            print("\n#########################################################################\n\n\n")
-
-            #########################################################################
-            
-            
-            while True:
-                print("#########################################################################")
-                print("Kmeans Score Metrics Menu")
-                print("#########################################################################\n\n")
-            
-                print("1.F1 Score")
-                print("2.AUC")
-                print("3.Normalized Mutual Info Score")
-                print("4.Adjusted Rand Score")
-            
-                kScoreOption = input("option:")
-                
-                if kScoreOption == "1" or kScoreOption == "2" or kScoreOption == "3" or kScoreOption == "4":
-                    break
-                else:
-                    
-                    print("Error\n\n")
         
-            
-            
-            
-            if kScoreOption == "1":
-                    #########################################################################
-                    #F1 Score
-                    kmeansF1 = kF1(klabels,labels,maxKvalue,kClusters)
-                    print("#########################################################################")
-                    print("KMEANS F1 Score -> ",kmeansF1)
-                    print("#########################################################################")
-                    #########################################################################
-            
-            elif kScoreOption == "2":
-                    #########################################################################
-                    try:
-                        kmeansAUC = kAUC(klabels,labels,maxKvalue,kClusters)
-                        print("#########################################################################")
-                        print("AUC Score -> ",kmeansAUC)
-                        print("#########################################################################")
-                    except Exception as Error:
-                        print("\n*************************************************************************")
-                        print(Error)
-                        print("*************************************************************************")
-
-                    #########################################################################
-            
-            elif kScoreOption == "3":
-                    #########################################################################
-                    kmeansMNI = kMNI(klabels,labels,maxKvalue,kClusters)
-                    print("#########################################################################")
-                    print("KMEANS Normalized Mutual Info Score -> ",kmeansMNI)
-                    print("#########################################################################")
-                    #########################################################################
         
-            elif kScoreOption == "4":
-                
+        if kScoreOption == "1":
                 #########################################################################
-                kmeansARS = kARS(klabels,labels,maxKvalue,kClusters)
+                #F1 Score
+                kmeansF1 = kF1(klabels,labels,maxKvalue,kClusters)
                 print("#########################################################################")
-                print("KMEANS Adjusted Rand Score -> ",kmeansARS)
+                print("KMEANS F1 Score -> ",kmeansF1)
                 print("#########################################################################")
                 #########################################################################
-            
-            
-        elif algorithmOption == "2":
-            #########################################################################
-            #DBSCAN
-            start_time = time.time()
-            dblabels,dbClusters,nNoises,dbscanR,maxDBvalue = dbscanClustering(data,labels) 
-            
-            print("#########################################################################")
-            print("DBSCAN RESULTS\n\n")
-            print("Clusters -> ",dbClusters,"\n")
-            print(dbscanR,"\n\n")
-            print("Max True Label","\n\n",maxDBvalue)
-            print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
-            print("\n#########################################################################\n\n\n")
-            #########################################################################
-            
-            
-            print("#########################################################################")
-            print("Dscan Score Metrics Menu")
-            print("#########################################################################\n\n")
-            
-            print("1.F1 Score")
-            print("2.AUC")
-            print("3.Normalized Mutual Info Score")
-            print("4.Adjusted Rand Score")
-            
-            while True:
-                
-                dbScoreOption = input("option:")
-                
-                if dbScoreOption == "1" or dbScoreOption == "2" or dbScoreOption == "3" or dbScoreOption == "4":
-                    break
-                else:
-                    
-                    print("Error\n\n")
         
-            if dbScoreOption == "1":
-                #########################################################################
-                #F1 Score dbscan
-                dbscanF1 = dbF1(dblabels,labels,dbClusters,maxDBvalue)
-                print("#########################################################################")
-                print("DBSCAN F1 Score -> ",dbscanF1)
-                print("#########################################################################")
-                #########################################################################
-                
-            elif dbScoreOption == "2":
+        elif kScoreOption == "2":
                 #########################################################################
                 try:
-                    dbscanAUC = dbAUC(dblabels,labels,dbClusters,maxDBvalue)
+                    kmeansAUC = kAUC(klabels,labels,maxKvalue,kClusters)
                     print("#########################################################################")
-                    print("DBSCAN AUC Score -> ",dbscanAUC)
+                    print("AUC Score -> ",kmeansAUC)
                     print("#########################################################################")
                 except Exception as Error:
                     print("\n*************************************************************************")
                     print(Error)
                     print("*************************************************************************")
-                    
-                
+
                 #########################################################################
-            
-            elif dbScoreOption == "3":
+        
+        elif kScoreOption == "3":
                 #########################################################################
-                dbscanMNI = dbMNI(dblabels,labels,dbClusters,maxDBvalue)
+                kmeansMNI = kMNI(klabels,labels,maxKvalue,kClusters)
                 print("#########################################################################")
-                print("DBSCAN Normalized Mutual Info Score -> ",dbscanMNI)
-                print("#########################################################################")
-                #########################################################################
-            
-            elif dbScoreOption == "4":
-                #########################################################################
-                dbscanARS = dbARS(dblabels,labels)
-                print("#########################################################################")
-                print("DBSCAN Adjusted Rand Score -> ",dbscanARS)
+                print("KMEANS Normalized Mutual Info Score -> ",kmeansMNI)
                 print("#########################################################################")
                 #########################################################################
-                
+    
+        elif kScoreOption == "4":
             
-            
-        elif algorithmOption == "3":
             #########################################################################
-            start_time = time.time()
-            ifLabels,ifR,MaxIfVal,ifNclusters = isolationForest(data,labels)
+            kmeansARS = kARS(klabels,labels,maxKvalue,kClusters)
             print("#########################################################################")
-            print("Isolation Forest RESULTS\n\n")
-            print("Clusters -> ",ifNclusters,"\n")
-            print(ifR,"\n\n")
-            print("Max True Label","\n\n",MaxIfVal)
-            print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
-            print("\n#########################################################################\n\n\n")
+            print("KMEANS Adjusted Rand Score -> ",kmeansARS)
+            print("#########################################################################")
             #########################################################################
-            print("#########################################################################")
-            print("Isolation Forest Score Metrics Menu")
-            print("#########################################################################\n\n")
-            
-            print("1.F1 Score")
-            print("2.AUC")
-            print("3.Normalized Mutual Info Score")
-            print("4.Adjusted Rand Score")
-            
-            while True:
-                
-                ifScoreOption = input("option:")
-                
-                if ifScoreOption == "1" or ifScoreOption == "2" or ifScoreOption == "3" or ifScoreOption == "4":
-                    break
-                else:
-                    
-                    print("Error\n\n")
-            
-            if ifScoreOption == "1":
-                
-                ##########################################################################
-                isolationForestF1 = ifF1(ifLabels,labels,ifNclusters,MaxIfVal)
-                print("#########################################################################")
-                print("LOF F1 Score -> ",isolationForestF1)
-                print("#########################################################################")
-                ##########################################################################
-            
-        elif algorithmOption == "4":
-            #########################################################################
-            LOFlabels,lofR,maxLOFvalue,lofClusters = LOF(data,labels)
-            print("#########################################################################")
-            print("Local Outlier Factor RESULTS\n\n")
-            print("Clusters -> ",lofClusters,"\n")
-            print(lofR,"\n\n")
-            print("Max True Label","\n\n",maxLOFvalue)
-            print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
-            print("\n#########################################################################\n\n\n")
-            #########################################################################
-            print("#########################################################################")
-            print("LOF Score Metrics Menu")
-            print("#########################################################################\n\n")
-            
-            print("1.F1 Score")
-            print("2.AUC")
-            print("3.Normalized Mutual Info Score")
-            print("4.Adjusted Rand Score")
-            
-            while True:
-                
-                lofScoreOption = input("option:")
-                
-                if lofScoreOption == "1" or lofScoreOption == "2" or lofScoreOption == "3" or lofScoreOption == "4":
-                    break
-                else:
-                    
-                    print("Error\n\n")
-            
-            if lofScoreOption == "1":
-                
-                ##########################################################################
-                LOFf1 = lofF1(LOFlabels,labels,lofClusters,maxLOFvalue)
-                print("#########################################################################")
-                print("LOF F1 Score -> ",LOFf1)
-                print("#########################################################################")
-                ##########################################################################
-                    
+        
+        
+    elif algorithmOption == "2":
+        #########################################################################
+        #DBSCAN
+        start_time = time.time()
+        dblabels,dbClusters,nNoises,dbscanR,maxDBvalue = dbscanClustering(data,labels) 
+        
+        print("#########################################################################")
+        print("DBSCAN RESULTS\n\n")
+        print("Clusters -> ",dbClusters,"\n")
+        print(dbscanR,"\n\n")
+        print("Max True Label","\n\n",maxDBvalue)
+        print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
+        print("\n#########################################################################\n\n\n")
+        #########################################################################
+        
+        
+        print("#########################################################################")
+        print("Dscan Score Metrics Menu")
+        print("#########################################################################\n\n")
+        
+        print("1.F1 Score")
+        print("2.AUC")
+        print("3.Normalized Mutual Info Score")
+        print("4.Adjusted Rand Score")
+        
         while True:
             
-            decision = input("You want to another Test[y/n]:")
+            dbScoreOption = input("option:")
             
-            if decision == "y" or  decision == "n":
+            if dbScoreOption == "1" or dbScoreOption == "2" or dbScoreOption == "3" or dbScoreOption == "4":
+                break
+            else:
+                
+                print("Error\n\n")
+    
+        if dbScoreOption == "1":
+            #########################################################################
+            #F1 Score dbscan
+            dbscanF1 = dbF1(dblabels,labels,dbClusters,maxDBvalue)
+            print("#########################################################################")
+            print("DBSCAN F1 Score -> ",dbscanF1)
+            print("#########################################################################")
+            #########################################################################
+            
+        elif dbScoreOption == "2":
+            #########################################################################
+            try:
+                dbscanAUC = dbAUC(dblabels,labels,dbClusters,maxDBvalue)
+                print("#########################################################################")
+                print("DBSCAN AUC Score -> ",dbscanAUC)
+                print("#########################################################################")
+            except Exception as Error:
+                print("\n*************************************************************************")
+                print(Error)
+                print("*************************************************************************")
+                
+            
+            #########################################################################
+        
+        elif dbScoreOption == "3":
+            #########################################################################
+            dbscanMNI = dbMNI(dblabels,labels,dbClusters,maxDBvalue)
+            print("#########################################################################")
+            print("DBSCAN Normalized Mutual Info Score -> ",dbscanMNI)
+            print("#########################################################################")
+            #########################################################################
+        
+        elif dbScoreOption == "4":
+            #########################################################################
+            dbscanARS = dbARS(dblabels,labels)
+            print("#########################################################################")
+            print("DBSCAN Adjusted Rand Score -> ",dbscanARS)
+            print("#########################################################################")
+            #########################################################################
+            
+        
+        
+    elif algorithmOption == "3":
+        #########################################################################
+        start_time = time.time()
+        ifLabels,ifR,MaxIfVal,ifNclusters = isolationForest(data,labels)
+        print("#########################################################################")
+        print("Isolation Forest RESULTS\n\n")
+        print("Clusters -> ",ifNclusters,"\n")
+        print(ifR,"\n\n")
+        print("Max True Label","\n\n",MaxIfVal)
+        print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
+        print("\n#########################################################################\n\n\n")
+        #########################################################################
+        print("#########################################################################")
+        print("Isolation Forest Score Metrics Menu")
+        print("#########################################################################\n\n")
+        
+        print("1.F1 Score")
+        print("2.AUC")
+        print("3.Normalized Mutual Info Score")
+        print("4.Adjusted Rand Score")
+        
+        while True:
+            
+            ifScoreOption = input("option:")
+            
+            if ifScoreOption == "1" or ifScoreOption == "2" or ifScoreOption == "3" or ifScoreOption == "4":
                 break
             else:
                 
                 print("Error\n\n")
         
+        if ifScoreOption == "1":
+            
+            ##########################################################################
+            isolationForestF1 = ifF1(ifLabels,labels,ifNclusters,MaxIfVal)
+            print("#########################################################################")
+            print("LOF F1 Score -> ",isolationForestF1)
+            print("#########################################################################")
+            ##########################################################################
         
-        if decision == "n":
+    elif algorithmOption == "4":
+        #########################################################################
+        LOFlabels,lofR,maxLOFvalue,lofClusters = LOF(data,labels)
+        print("#########################################################################")
+        print("Local Outlier Factor RESULTS\n\n")
+        print("Clusters -> ",lofClusters,"\n")
+        print(lofR,"\n\n")
+        print("Max True Label","\n\n",maxLOFvalue)
+        print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
+        print("\n#########################################################################\n\n\n")
+        #########################################################################
+        print("#########################################################################")
+        print("LOF Score Metrics Menu")
+        print("#########################################################################\n\n")
+        
+        print("1.F1 Score")
+        print("2.AUC")
+        print("3.Normalized Mutual Info Score")
+        print("4.Adjusted Rand Score")
+        
+        while True:
+            
+            lofScoreOption = input("option:")
+            
+            if lofScoreOption == "1" or lofScoreOption == "2" or lofScoreOption == "3" or lofScoreOption == "4":
+                break
+            else:
+                
+                print("Error\n\n")
+        
+        if lofScoreOption == "1":
+            
+            ##########################################################################
+            LOFf1 = lofF1(LOFlabels,labels,lofClusters,maxLOFvalue)
+            print("#########################################################################")
+            print("LOF F1 Score -> ",LOFf1)
+            print("#########################################################################")
+            ##########################################################################
+                
+    while True:
+        
+        decision = input("You want to another Test[y/n]:")
+        
+        if decision == "y" or  decision == "n":
             break
-        
-        
-      
-#*************
-#    MAIN
-#*************
-main()
+        else:
+            
+            print("Error\n\n")
+    
+    
+    if decision == "n":
+        break
