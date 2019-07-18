@@ -5,6 +5,7 @@
 
 import numpy as np
 import pandas as pd 
+import time
 import os
 #import matplotlib.pyplot as plt
 clear = lambda:os.system('clear')
@@ -236,11 +237,29 @@ def encodingLabels(labels,dataOption,datasetOption):
     
     
     elif datasetOption == "2":#Check if the data set choosen is NSL-KDD or IDS2017
-        labels = np.array(labels,dtype= object)
-        attackEncoding  = {'BENIGN': 0,'DoS slowloris': 1,'DoS Slowhttptest': 2,'DoS Hulk': 3, 'DoS GoldenEye': 4, 'Heartbleed': 5} #Main Categories
-        labels[:] = [attackEncoding[item] for item in labels[:]]# Changing the names of attacks into 4 main categories
+        print("Encoding Menu\n")
+        print("1.Binary Encode true labels - > 'normal = 0','abnormal = 1'")
+        print("2.Five main categories encode true labels -> BENIGN= 0,DoS slowloris= 1,DoS Slowhttptest= 2,DoS Hulk= 3, DoS GoldenEye= 4, Heartbleed= 5")
+        encodeOption = input("Enter option :")
+
+        if encodeOption == "1":
+            labels = np.array(labels,dtype= object)
+            attackEncoding  = {'BENIGN': 0,'DoS slowloris': 1,'DoS Slowhttptest': 2,'DoS Hulk': 3, 'DoS GoldenEye': 4, 'Heartbleed': 5} #Main Categories
+            labels[:] = [attackEncoding[item] for item in labels[:]]# Changing the names of attacks into 4 main categories
     
-        return labels
+            return labels,encodeOption
+        
+        elif encodeOption == "2":
+            labels = np.array(labels,dtype= object)
+            attackType  = {'BENIGN': 'normal','DoS slowloris': 'abnormal','DoS Slowhttptest': 'abnormal','DoS Hulk': 'abnormal', 'DoS GoldenEye': 'abnormal', 'Heartbleed': 'abnormal'} #Binary Categories
+            attackEncoding = {'normal': 0, 'abnormal': 1}
+            
+            labels[:] = [attackType[item] for item in labels[:]]# Changing the names of attacks into binary categories
+            labels[:] = [attackEncoding[item] for item in labels[:]]# Changing the names of attacks into binary categories
+            return labels,encodeOption
+        
+        else:
+            return labels
 
 
 
@@ -301,17 +320,32 @@ def riskEncodingData(data,labels,dataOption):#This function is only for risk tes
 def normalizing(data):#Scalign the data with the normalize method
     
     from sklearn.preprocessing import Normalizer
-    #Because we are using numerical-value-only clustering techniques to analyze the NSL-KDD dataset,
-    #we need to normalize the values in the dataset, as Ibrahim., et. al. describe (page 112).
-    #Normalize works by scaling the features in a range of [0,1]
-    #We complete the normalization process below:
-    normalizer = Normalizer().fit(data)
-    data = normalizer.transform(data)   
-    print("#########################################################################")
-    print("Data has ben Successfully normalized")
-    print("#########################################################################\n\n")
-
-    return data
+    while True:
+            
+            decision = input("You want to Normalize the data[y/n]:")
+            
+            if decision == "y" or  decision == "n":
+                break
+            else:
+                
+                print("Error\n\n")
+    
+    if decision == "y":
+        
+        #Because we are using numerical-value-only clustering techniques to analyze the NSL-KDD dataset,
+        #we need to normalize the values in the dataset, as Ibrahim., et. al. describe (page 112).
+        #Normalize works by scaling the features in a range of [0,1]
+        #We complete the normalization process below:
+        normalizer = Normalizer().fit(data)
+        data = normalizer.transform(data)   
+        print("#########################################################################")
+        print("Data has ben Successfully normalized")
+        print("#########################################################################\n\n")
+    
+        return data
+    
+    else:
+        return data
 
 
 
@@ -693,76 +727,120 @@ def dbARS(dblabels,labels,dbClusters,maxDBvalue):
     return ars
 
 
-def OPTICSclustering(data,labels):
-    from sklearn.cluster import OPTICS
+
+def opticsF1(opticsLabels,labels,opticsClusters,maxOpticsValue):#F1 score for DBSCAN
+    from sklearn.metrics import f1_score
+    #Encoding data to F-score
     
-    optics = OPTICS(min_samples=3000).fit(data)
-    opticsLabels = optics.labels_
     
-    # Number of clusters in labels, ignoring noise if present.
-    n_clusters = len(set(opticsLabels))
-    n_noise_ = list(opticsLabels).count(-1)
+    n = 0 # counter
+    c = -1 # - counter max Value has negative index
+    dictionaryCluster  = {} # creating an empty dictionary 
     
-    return opticsLabels,n_clusters,n_noise_
+    while n < len(opticsClusters):# while counter < number of clusters
+        dictionaryCluster[opticsClusters[n]] = maxOpticsValue[c] #creating key(cluster index) with value (max number of the clustering results) for every iteration
+        n+=1
+        c+=1
+    
+        
+    opticsClusters[:] = [dictionaryCluster[item] for item in opticsClusters[:]] # match key with the index of klabels and replace it with key value
+    
+    labels = np.array(labels,dtype = int) #Making sure that labels are in a int array
+    while True:
+        
+        average = input("Average Method[weighted,None,micro,macro]:")
+        
+        if average == "weighted" or average == "micro" or average == "macro" or average == "None":
+            break
+        
+        else:
+            
+            print("Error\n\n")
+    
+    f1 = f1_score(labels,opticsClusters, average = average,labels=np.unique(opticsClusters))
+    
+    return f1
 
 
-#def isolationForest(data,labels):
-#    from sklearn.ensemble import IsolationForest
-#    
-#    isolationForest = IsolationForest(n_estimators = 500,max_samples = "auto",behaviour = "new",contamination = "auto")
-#    ifLabels = isolationForest.fit_predict(data)
-#    
-#    
-#    ifLabels = np.array(ifLabels,dtype = object)
-#
-#    ifR = pd.crosstab(labels,ifLabels)
-#    
-#    MaxIfVal = ifR.idxmax()
-#    MaxIfVal.reset_index(drop=True)
-#    
-#    nClusters = len(ifR)
-#    
-#    
-#    return ifLabels,ifR,MaxIfVal,nClusters
+def isolationForest(data,labels):
+    from sklearn.ensemble import IsolationForest
+    
+    ifLabels = IsolationForest(n_estimators = 500,max_samples = "auto",behaviour = "new",contamination = "auto").fit_predict(data)
+    
+    ifLabels = np.array(ifLabels,dtype = object)
 
-#def ifF1(ifLabels,labels,dbClusters,MaxIfVal,nClusters):
-#    from sklearn.metrics import f1_score
-#    #Encoding data to F-score
+    ifR = pd.crosstab(labels,ifLabels)
+    
+    MaxIfVal = ifR.idxmax()
+    MaxIfVal.reset_index(drop=True)
+    
+    n = -1  # Isolation Forest return index -1 and 1 cluster
+    ifNclusters = []
+    while n < len(ifR):
+        ifNclusters.append(n)
+        n += 2
+    
+    
+    return ifLabels,ifR,MaxIfVal,ifNclusters
+
+def ifF1(ifLabels,labels,ifNclusters,MaxIfVal):
+    from sklearn.metrics import f1_score
+    
+    n = 0 # counter
+    c = -1 # - counter max Value has negative index
+    dictionaryCluster  = {} # creating an empty dictionary 
+    
+    while n < len(ifNclusters): # Since we got -1 and 1 clusters , in order to assing the corrects result counter starts at -1 and it increments by 2 so it can have the 1 index of maxLOFvalue
+        dictionaryCluster[ifNclusters[n]] = MaxIfVal[c] 
+        n+=1
+        c+=2
+        
+    ifNclusters[:] = [dictionaryCluster[item] for item in ifNclusters[:]] # match key with the index of klabels and replace it with key value
+    labels = np.array(labels,dtype = int)
+    ifLabels = np.array(ifLabels,dtype = int)
+    ifNclusters = np.array(ifNclusters,dtype = int)
+    f1 = f1_score(labels,ifLabels, average = 'weighted') #[None, 'micro', 'macro', 'weighted']
+    
+    return f1
     
 
 
-#def LOF(data):
-#    from sklearn.neighbors import LocalOutlierFactor 
-#    LOF = LocalOutlierFactor(contamination = "auto")
-#    lof = LOF.fit(data)
-#    lofOutlier = lof.negative_outlier_factor_
-#    
-#    return lofOutlier
-##########################################################################
-#lof = LOF(data)
-#lofR = pd.crosstab(labels,lof)
-#lofR.idxmax()
-##########################################################################
-#
-#
-#
-#def lofF1(lof,labels):
-#    from sklearn.metrics import f1_score
-#    i = 0
-#    for item in lof:
-#        if item >= -1.5:
-#            lof[i] = 0
-#        elif item < -1.5:
-#           lof[i] = 1
-#        i+= 1
-#    labels = np.array(labels,dtype = int)
-#    lof = np.array(lof,dtype = int)
-#    f1 = f1_score(labels,lof, average = 'weighted') #[None, 'micro', 'macro', 'weighted']
-#    return f1
-###########################################################################
-#lofF1 = lofF1(lof,labels)
-#lofF1
-###########################################################################
+def LOF(data,labels):
+    from sklearn.neighbors import LocalOutlierFactor 
+    lof = LocalOutlierFactor(n_neighbors=100,contamination = "auto",algorithm = 'auto').fit_predict(data)
+    lofR = pd.crosstab(labels,lof)
+    maxLOFvalue = lofR.idxmax()
+    
+    
+    n = -1  # LOF return index -1 and 1 cluster
+    lofCluster = []
+    while n < len(lofR):
+        lofCluster.append(n)
+        n += 2
+    
+    return lof,lofR,maxLOFvalue,lofCluster
+    
+
+
+def lofF1(lofLabels,labels,lofCluster,maxLOFvalue):
+    from sklearn.metrics import f1_score
+    
+    n = 0 # counter
+    c = -1 # - counter max Value has negative index
+    dictionaryCluster  = {} # creating an empty dictionary 
+    
+    while n < len(lofCluster): # Since we got -1 and 1 clusters , in order to assing the corrects result counter starts at -1 and it increments by 2 so it can have the 1 index of maxLOFvalue
+        dictionaryCluster[lofCluster[n]] = maxLOFvalue[c] 
+        n+=1
+        c+=2
+        
+    lofCluster[:] = [dictionaryCluster[item] for item in lofCluster[:]] # match key with the index of klabels and replace it with key value
+    labels = np.array(labels,dtype = int)
+    lofLabels = np.array(lofLabels,dtype = int)
+    f1 = f1_score(labels,lofLabels, average = 'weighted') #[None, 'micro', 'macro', 'weighted']
+    
+    return f1
+
 
 
 
@@ -826,14 +904,14 @@ def main():
         if algorithmOption == "1":
             #########################################################################
             #KMEANS
-            
+            start_time = time.time()
             klabels,kClusters,kmeansR,maxKvalue = kmeansClustering(data,labels)
-            
             print("#########################################################################")
             print("KMEANS RESULTS\n\n")
             print("Clusters -> ",kClusters,"\n")
             print(kmeansR,"\n\n")
             print("Max True Label","\n\n",maxKvalue)
+            print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
             print("\n#########################################################################\n\n\n")
 
             #########################################################################
@@ -904,6 +982,7 @@ def main():
         elif algorithmOption == "2":
             #########################################################################
             #DBSCAN
+            start_time = time.time()
             dblabels,dbClusters,nNoises,dbscanR,maxDBvalue = dbscanClustering(data,labels) 
             
             print("#########################################################################")
@@ -911,6 +990,7 @@ def main():
             print("Clusters -> ",dbClusters,"\n")
             print(dbscanR,"\n\n")
             print("Max True Label","\n\n",maxDBvalue)
+            print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
             print("\n#########################################################################\n\n\n")
             #########################################################################
             
@@ -978,13 +1058,83 @@ def main():
             
         elif algorithmOption == "3":
             #########################################################################
-            #ifLabels,ifR,MaxIfVal,ifNclusters = isolationForest(data,labels)
+            start_time = time.time()
+            ifLabels,ifR,MaxIfVal,ifNclusters = isolationForest(data,labels)
+            print("#########################################################################")
+            print("Isolation Forest RESULTS\n\n")
+            print("Clusters -> ",ifNclusters,"\n")
+            print(ifR,"\n\n")
+            print("Max True Label","\n\n",MaxIfVal)
+            print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
+            print("\n#########################################################################\n\n\n")
             #########################################################################
-            print("x")
-        
-        elif  algorithmOption == "4":
-            print("X")
-        
+            print("#########################################################################")
+            print("Isolation Forest Score Metrics Menu")
+            print("#########################################################################\n\n")
+            
+            print("1.F1 Score")
+            print("2.AUC")
+            print("3.Normalized Mutual Info Score")
+            print("4.Adjusted Rand Score")
+            
+            while True:
+                
+                ifScoreOption = input("option:")
+                
+                if ifScoreOption == "1" or ifScoreOption == "2" or ifScoreOption == "3" or ifScoreOption == "4":
+                    break
+                else:
+                    
+                    print("Error\n\n")
+            
+            if ifScoreOption == "1":
+                
+                ##########################################################################
+                isolationForestF1 = ifF1(ifLabels,labels,ifNclusters,MaxIfVal)
+                print("#########################################################################")
+                print("LOF F1 Score -> ",isolationForestF1)
+                print("#########################################################################")
+                ##########################################################################
+            
+        elif algorithmOption == "4":
+            #########################################################################
+            LOFlabels,lofR,maxLOFvalue,lofClusters = LOF(data,labels)
+            print("#########################################################################")
+            print("Local Outlier Factor RESULTS\n\n")
+            print("Clusters -> ",lofClusters,"\n")
+            print(lofR,"\n\n")
+            print("Max True Label","\n\n",maxLOFvalue)
+            print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
+            print("\n#########################################################################\n\n\n")
+            #########################################################################
+            print("#########################################################################")
+            print("LOF Score Metrics Menu")
+            print("#########################################################################\n\n")
+            
+            print("1.F1 Score")
+            print("2.AUC")
+            print("3.Normalized Mutual Info Score")
+            print("4.Adjusted Rand Score")
+            
+            while True:
+                
+                lofScoreOption = input("option:")
+                
+                if lofScoreOption == "1" or lofScoreOption == "2" or lofScoreOption == "3" or lofScoreOption == "4":
+                    break
+                else:
+                    
+                    print("Error\n\n")
+            
+            if lofScoreOption == "1":
+                
+                ##########################################################################
+                LOFf1 = lofF1(LOFlabels,labels,lofClusters,maxLOFvalue)
+                print("#########################################################################")
+                print("LOF F1 Score -> ",LOFf1)
+                print("#########################################################################")
+                ##########################################################################
+                    
         while True:
             
             decision = input("You want to another Test[y/n]:")
