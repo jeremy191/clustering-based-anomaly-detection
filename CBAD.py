@@ -317,12 +317,12 @@ def riskEncodingData(data,labels,dataOption):#This function is only for risk tes
     
 
 
-def normalizing(data):#Scalign the data with the normalize method
+def scaling(data):#Scalign the data with the normalize method
     
-    from sklearn.preprocessing import Normalizer
+
     while True:
             
-            decision = input("You want to Normalize the data[y/n]:")
+            decision = input("You want to Scale the data[y/n]:")
             
             if decision == "y" or  decision == "n":
                 break
@@ -332,22 +332,16 @@ def normalizing(data):#Scalign the data with the normalize method
     
     if decision == "y":
         
-        #Because we are using numerical-value-only clustering techniques to analyze the NSL-KDD dataset,
-        #we need to normalize the values in the dataset, as Ibrahim., et. al. describe (page 112).
-        #Normalize works by scaling the features in a range of [0,1]
-        #We complete the normalization process below:
-        normalizer = Normalizer().fit(data)
-        data = normalizer.transform(data)   
-        print("#########################################################################")
-        print("Data has ben Successfully normalized")
-        print("#########################################################################\n\n")
-    
-        return data
-    
+            from sklearn.preprocessing import MinMaxScaler
+            #Transforms features by scaling each feature to a given range.
+            data =  MinMaxScaler(feature_range=(0, 1)).fit_transform(data)
+            print("#########################################################################")
+            print("Data has ben Successfully Scaled")
+            print("#########################################################################\n\n")
+            return data
+        
     else:
         return data
-
-
 
     
 def shuffleData(X):
@@ -452,40 +446,10 @@ def kF1(klabels,labels,maxKvalue,nClusters):#F1 Score for Kmeans
         if average == "weighted" or average == "micro" or average == "macro" or average == "None":
             break
         
-    f1 = f1_score(labels,klabels, average = average,labels=np.unique(klabels)) #Forget the labels that where not predicted and gives lables that were predicted at least once
+    f1 = f1_score(labels,klabels, average = average) #Forget the labels that where not predicted and gives lables that were predicted at least once
     print("Dictionary -> ",dictionaryCluster)
     
     return f1
-
-
-
-
-def kAUC(klabels,labels,maxKvalue,nClusters):
-    from sklearn.metrics import roc_auc_score
-
-    n = 0 # counter
-    dictionaryCluster  = {} # creating an empty dictionary 
-    
-    while n < len(nClusters):# while counter < number of clusters
-        dictionaryCluster[nClusters[n]] = maxKvalue[n] #creating key(cluster index) with value (max number of the clustering results) for every iteration
-        n+=1
-        
-    klabels[:] = [dictionaryCluster[item] for item in klabels[:]] # match key with the index of klabels and replace it with key value
-    
-    
-    labels = np.array(labels,dtype = int) #Making sure that labels are in a int array
-    
-    while True:
-        
-        average = input("Average Method[None,micro,macro,weighted]:")
-        
-        if average == "None" or average == "micro" or average == "macro" or average == "weighted":
-            break
-        
-    AUC = roc_auc_score(labels, klabels, average = average)
-    return AUC
-
-
 
 
 
@@ -638,45 +602,9 @@ def dbF1(dblabels,labels,dbClusters,maxDBvalue):#F1 score for DBSCAN
             
             print("Error\n\n")
     
-    f1 = f1_score(labels,dblabels, average = average,labels=np.unique(dblabels))
+    f1 = f1_score(labels,dblabels, average = average)
     print(dictionaryCluster)
     return f1
-
-
-
-
-def dbAUC(dblabels,labels,dbClusters,maxDBvalue):
-    from sklearn.metrics import roc_auc_score
-    
-    n = 0 # counter
-    c = -1 # - counter max Value has negative index
-    dictionaryCluster  = {} # creating an empty dictionary 
-    
-    while n < len(dbClusters):# while counter < number of clusters
-        dictionaryCluster[dbClusters[n]] = maxDBvalue[c] #creating key(cluster index) with value (max number of the clustering results) for every iteration
-        n+=1
-        c+=1
-        
-    dblabels[:] = [dictionaryCluster[item] for item in dblabels[:]] # match key with the index of klabels and replace it with key value
-    
-    labels = np.array(labels,dtype = int)#Making sure that labels are in a int array
-    
-    while True:
-        
-        average = input("Average Method[None,micro,macro,weighted]:")
-        
-        if average == "None" or average == "micro" or average == "macro" or average == "weighted":
-            break
-        
-        else:
-            
-            print("Error\n\n")
-        
-    AUC = roc_auc_score(labels, dblabels, average = 'weighted')
-    
-    return AUC
-
-
 
 
 def dbMNI(dblabels,labels,dbClusters,maxDBvalue):
@@ -764,7 +692,7 @@ def ifF1(ifLabels,labels,ifNclusters,MaxIfVal):
     ifLabels[:] = [dictionaryCluster[item] for item in ifLabels[:]] # match key with the index of klabels and replace it with key value
     labels = np.array(labels,dtype = int)
     ifLabels = np.array(ifLabels,dtype = int)
-    f1 = f1_score(labels,ifLabels, average = 'weighted',labels=np.unique(ifLabels)) #[None, 'micro', 'macro', 'weighted']
+    f1 = f1_score(labels,ifLabels, average = 'weighted') #[None, 'micro', 'macro', 'weighted']
     
     return f1
     
@@ -802,7 +730,7 @@ def lofF1(lofLabels,labels,lofCluster,maxLOFvalue):
     lofLabels[:] = [dictionaryCluster[item] for item in lofLabels[:]] # match key with the index of klabels and replace it with key value
     labels = np.array(labels,dtype = int)
     lofLabels = np.array(lofLabels,dtype = int)
-    f1 = f1_score(labels,lofLabels, average = 'weighted',labels=np.unique(lofLabels)) #[None, 'micro', 'macro', 'weighted']
+    f1 = f1_score(labels,lofLabels, average = 'weighted') #[None, 'micro', 'macro', 'weighted']
     
     return f1
 
@@ -840,7 +768,7 @@ data,labels = riskEncodingData(data,labels,dataOption)
 data = oneHotEncodingData(data,dataOption) #One hot Encode with the complete data
 #########################################################################
 #########################################################################
-data = normalizing(data)
+data = scaling(data)
 #########################################################################
 #########################################################################
 data = shuffleData(data)
@@ -871,12 +799,12 @@ while True:
         #KMEANS
         start_time = time.time()
         klabels,kClusters,kmeansR,maxKvalue = kmeansClustering(data,labels)
+        print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
         print("#########################################################################")
         print("KMEANS RESULTS\n\n")
         print("Clusters -> ",kClusters,"\n")
         print(kmeansR,"\n\n")
         print("Max True Label","\n\n",maxKvalue)
-        print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
         print("\n#########################################################################\n\n\n")
 
         #########################################################################
@@ -888,19 +816,17 @@ while True:
             print("#########################################################################\n\n")
         
             print("1.F1 Score")
-            print("2.AUC")
-            print("3.Normalized Mutual Info Score")
-            print("4.Adjusted Rand Score")
+            print("2.Normalized Mutual Info Score")
+            print("3.Adjusted Rand Score")
         
             kScoreOption = input("option:")
             
-            if kScoreOption == "1" or kScoreOption == "2" or kScoreOption == "3" or kScoreOption == "4":
+            if kScoreOption == "1" or kScoreOption == "2" or kScoreOption == "3":
                 break
             else:
                 
                 print("Error\n\n")
-    
-        
+     
         
         
         if kScoreOption == "1":
@@ -914,27 +840,13 @@ while True:
         
         elif kScoreOption == "2":
                 #########################################################################
-                try:
-                    kmeansAUC = kAUC(klabels,labels,maxKvalue,kClusters)
-                    print("#########################################################################")
-                    print("AUC Score -> ",kmeansAUC)
-                    print("#########################################################################")
-                except Exception as Error:
-                    print("\n*************************************************************************")
-                    print(Error)
-                    print("*************************************************************************")
-
-                #########################################################################
-        
-        elif kScoreOption == "3":
-                #########################################################################
                 kmeansMNI = kMNI(klabels,labels,maxKvalue,kClusters)
                 print("#########################################################################")
                 print("KMEANS Normalized Mutual Info Score -> ",kmeansMNI)
                 print("#########################################################################")
                 #########################################################################
     
-        elif kScoreOption == "4":
+        elif kScoreOption == "3":
             
             #########################################################################
             kmeansARS = kARS(klabels,labels,maxKvalue,kClusters)
@@ -965,15 +877,14 @@ while True:
         print("#########################################################################\n\n")
         
         print("1.F1 Score")
-        print("2.AUC")
-        print("3.Normalized Mutual Info Score")
-        print("4.Adjusted Rand Score")
+        print("2.Normalized Mutual Info Score")
+        print("3.Adjusted Rand Score")
         
         while True:
             
             dbScoreOption = input("option:")
             
-            if dbScoreOption == "1" or dbScoreOption == "2" or dbScoreOption == "3" or dbScoreOption == "4":
+            if dbScoreOption == "1" or dbScoreOption == "2" or dbScoreOption == "3":
                 break
             else:
                 
@@ -987,23 +898,9 @@ while True:
             print("DBSCAN F1 Score -> ",dbscanF1)
             print("#########################################################################")
             #########################################################################
-            
-        elif dbScoreOption == "2":
-            #########################################################################
-            try:
-                dbscanAUC = dbAUC(dblabels,labels,dbClusters,maxDBvalue)
-                print("#########################################################################")
-                print("DBSCAN AUC Score -> ",dbscanAUC)
-                print("#########################################################################")
-            except Exception as Error:
-                print("\n*************************************************************************")
-                print(Error)
-                print("*************************************************************************")
-                
-            
-            #########################################################################
+
         
-        elif dbScoreOption == "3":
+        elif dbScoreOption == "2":
             #########################################################################
             dbscanMNI = dbMNI(dblabels,labels,dbClusters,maxDBvalue)
             print("#########################################################################")
@@ -1011,7 +908,7 @@ while True:
             print("#########################################################################")
             #########################################################################
         
-        elif dbScoreOption == "4":
+        elif dbScoreOption == "3":
             #########################################################################
             dbscanARS = dbARS(dblabels,labels)
             print("#########################################################################")
@@ -1025,12 +922,13 @@ while True:
         #########################################################################
         start_time = time.time()
         ifLabels,ifR,MaxIfVal,ifNclusters = isolationForest(data,labels)
+        print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
         print("#########################################################################")
         print("Isolation Forest RESULTS\n\n")
         print("Clusters -> ",ifNclusters,"\n")
         print(ifR,"\n\n")
         print("Max True Label","\n\n",MaxIfVal)
-        print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
+        
         print("\n#########################################################################\n\n\n")
         #########################################################################
         print("#########################################################################")
