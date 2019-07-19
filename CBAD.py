@@ -452,7 +452,7 @@ def kF1(klabels,labels,maxKvalue,nClusters):#F1 Score for Kmeans
         if average == "weighted" or average == "micro" or average == "macro" or average == "None":
             break
         
-    f1 = f1_score(labels,klabels, average = average,labels=np.unique(klabels))
+    f1 = f1_score(labels,klabels, average = average,labels=np.unique(klabels)) #Forget the labels that where not predicted and gives lables that were predicted at least once
     print("Dictionary -> ",dictionaryCluster)
     
     return f1
@@ -728,41 +728,6 @@ def dbARS(dblabels,labels,dbClusters,maxDBvalue):
     return ars
 
 
-
-def opticsF1(opticsLabels,labels,opticsClusters,maxOpticsValue):#F1 score for DBSCAN
-    from sklearn.metrics import f1_score
-    #Encoding data to F-score
-    
-    
-    n = 0 # counter
-    c = -1 # - counter max Value has negative index
-    dictionaryCluster  = {} # creating an empty dictionary 
-    
-    while n < len(opticsClusters):# while counter < number of clusters
-        dictionaryCluster[opticsClusters[n]] = maxOpticsValue[c] #creating key(cluster index) with value (max number of the clustering results) for every iteration
-        n+=1
-        c+=1
-    
-        
-    opticsClusters[:] = [dictionaryCluster[item] for item in opticsClusters[:]] # match key with the index of klabels and replace it with key value
-    
-    labels = np.array(labels,dtype = int) #Making sure that labels are in a int array
-    while True:
-        
-        average = input("Average Method[weighted,None,micro,macro]:")
-        
-        if average == "weighted" or average == "micro" or average == "macro" or average == "None":
-            break
-        
-        else:
-            
-            print("Error\n\n")
-    
-    f1 = f1_score(labels,opticsClusters, average = average,labels=np.unique(opticsClusters))
-    
-    return f1
-
-
 def isolationForest(data,labels):
     from sklearn.ensemble import IsolationForest
     
@@ -771,13 +736,13 @@ def isolationForest(data,labels):
     ifLabels = np.array(ifLabels,dtype = object)
 
     ifR = pd.crosstab(labels,ifLabels)
-    
+    ifR = pd.DataFrame(ifR)
     MaxIfVal = ifR.idxmax()
-    MaxIfVal.reset_index(drop=True)
+    
     
     n = -1  # Isolation Forest return index -1 and 1 cluster
     ifNclusters = []
-    while n < len(ifR):
+    while n < len(ifR.columns):
         ifNclusters.append(n)
         n += 2
     
@@ -796,11 +761,10 @@ def ifF1(ifLabels,labels,ifNclusters,MaxIfVal):
         n+=1
         c+=2
         
-    ifNclusters[:] = [dictionaryCluster[item] for item in ifNclusters[:]] # match key with the index of klabels and replace it with key value
+    ifLabels[:] = [dictionaryCluster[item] for item in ifLabels[:]] # match key with the index of klabels and replace it with key value
     labels = np.array(labels,dtype = int)
     ifLabels = np.array(ifLabels,dtype = int)
-    ifNclusters = np.array(ifNclusters,dtype = int)
-    f1 = f1_score(labels,ifLabels, average = 'weighted') #[None, 'micro', 'macro', 'weighted']
+    f1 = f1_score(labels,ifLabels, average = 'weighted',labels=np.unique(ifLabels)) #[None, 'micro', 'macro', 'weighted']
     
     return f1
     
@@ -815,7 +779,7 @@ def LOF(data,labels):
     
     n = -1  # LOF return index -1 and 1 cluster
     lofCluster = []
-    while n < len(lofR):
+    while n < len(lofR.columns):
         lofCluster.append(n)
         n += 2
     
@@ -835,10 +799,10 @@ def lofF1(lofLabels,labels,lofCluster,maxLOFvalue):
         n+=1
         c+=2
         
-    lofCluster[:] = [dictionaryCluster[item] for item in lofCluster[:]] # match key with the index of klabels and replace it with key value
+    lofLabels[:] = [dictionaryCluster[item] for item in lofLabels[:]] # match key with the index of klabels and replace it with key value
     labels = np.array(labels,dtype = int)
     lofLabels = np.array(lofLabels,dtype = int)
-    f1 = f1_score(labels,lofLabels, average = 'weighted') #[None, 'micro', 'macro', 'weighted']
+    f1 = f1_score(labels,lofLabels, average = 'weighted',labels=np.unique(lofLabels)) #[None, 'micro', 'macro', 'weighted']
     
     return f1
 
@@ -1093,7 +1057,7 @@ while True:
             ##########################################################################
             isolationForestF1 = ifF1(ifLabels,labels,ifNclusters,MaxIfVal)
             print("#########################################################################")
-            print("LOF F1 Score -> ",isolationForestF1)
+            print("Isolation Forest F1 Score -> ",isolationForestF1)
             print("#########################################################################")
             ##########################################################################
         
