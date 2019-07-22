@@ -45,8 +45,10 @@ def readingData(path,dataSetOption):
 
 #Getting The data we want to test for the clustering algorithms
 def gettingVariables(dataSet,datasetOption):
-
-    if datasetOption == "1":
+    isMissing = str(dataSet.isnull().values.any()) #Using String instead of Boolean because ("cannot unpack non-iterable numpy.bool object")
+    
+    
+    if isMissing == "False":
         while True:
             print("Variables Menu\n")
             print("1.Data set with Categorical data")
@@ -83,31 +85,28 @@ def gettingVariables(dataSet,datasetOption):
             
             return X,Y,option
     
-    elif datasetOption == "2":
-    #############################################################################
-    #CHECK IF  MISSING DATA
-    ############################################################################# 
-        isMissing = str(dataSet.isnull().values.any()) #Using String instead of Boolean because ("cannot unpack non-iterable numpy.bool object")
-       
-        if isMissing == 'True':
-            #if data set has infinity values replace them with none
-            dataSet = dataSet.replace('Infinity', np.nan) #Replacing Infinity values with nan values
+
+    elif isMissing == "True":
            
-            missingValIndex = []
-            total = dataSet.isnull().sum().sum()
+        
+        #if data set has infinity values replace them with none
+        dataSet = dataSet.replace('Infinity', np.nan) #Replacing Infinity values with nan values
+           
+        missingValIndex = []
+        total = dataSet.isnull().sum().sum()
+        percent = (total / (dataSet.count().sum() + dataSet.isnull().sum().sum())) * 100
             
-            for rows in dataSet:
+        for rows in dataSet:
                     
-                if dataSet[rows].isnull().sum() != 0:
-                    missingValIndex.append(rows)
-            print("**************************************************")
-            print("Data has missing values")
-            print("**************************************************")
-            print("Rows with missing values:",missingValIndex)
-            print("Total missing Values -> " , total)
-    #############################################################################
-    #END OF CHECK IF  MISSING DATA
-    ############################################################################# 
+            if dataSet[rows].isnull().sum() != 0:
+                missingValIndex.append(rows)
+        print("**************************************************")
+        print("Data has missing values")
+        print("**************************************************")
+        print("Features with missing values:",missingValIndex)
+        print("Total missing Values -> " , total)
+        print("Missing Values % -> ",percent)
+
             
     #############################################################################
     #MANAGE MISSING DATA
@@ -121,19 +120,25 @@ def gettingVariables(dataSet,datasetOption):
             print("3.Impute Mean for Missing Values")
             print("4.Impute Median for Missing Values")
             print("5.Impute Mode for Missing Values")
+            print("6.MICE Method")
             missingDataOption = input("Option:")
     
-            if missingDataOption == "1" or missingDataOption == "2" or missingDataOption == "3" or missingDataOption == "4" or missingDataOption == "5":
+            if missingDataOption == "1" or missingDataOption == "2" or missingDataOption == "3" or missingDataOption == "4" or missingDataOption == "5" or missingDataOption == "6":
                 break
     
     
         if missingDataOption == "1":
+            deletedColumns = []
+            numColumns = len(dataSet.columns)
             for row in missingValIndex:
+                deletedColumns.append(row)
                 del dataSet[row]
         
             print("#########################################################################")
             print("Columns Succesfully Removed")
-            print("#########################################################################")
+            print(len(deletedColumns),"of",numColumns,"were deleted")
+            print("Columns Names -> ",deletedColumns)
+            print("#########################################################################\n\n")
     
         elif missingDataOption == "2":
             for row in missingValIndex:
@@ -169,6 +174,16 @@ def gettingVariables(dataSet,datasetOption):
             print("#########################################################################")
             print("Sucessfully Filled Missing Values with Mode ")
             print("#########################################################################")
+        
+        elif missingDataOption == "6": 
+            from statsmodels.imputation.mice import MICE
+            
+            dataSet  = MICE(data).fit(dataSet)
+            print("#########################################################################")
+            print("Sucessfully Used MICED Method")
+            print("#########################################################################")
+            
+            
        
 #############################################################################
 #END OF MISSING DATA
