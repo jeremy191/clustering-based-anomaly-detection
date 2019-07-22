@@ -12,6 +12,7 @@ import os
 clear = lambda:os.system('clear')
 
 def getDataSet():
+    clear()
     while True:
         print("**************************************************")
         print("DATA SET MENU")
@@ -45,7 +46,7 @@ def readingData(path,dataSetOption):
 
 
 #Getting The data we want to test for the clustering algorithms
-def gettingVariables(dataSet,datasetOption):
+def gettingVariables(dataSet):
     isMissing = str(dataSet.isnull().values.any()) #Using String instead of Boolean because ("cannot unpack non-iterable numpy.bool object")
     
     
@@ -431,6 +432,8 @@ def kmeansClustering(data,labels):#K-means algorithm
     #Kmeans Results
     kmeansR = pd.crosstab(labels,klabels)
     maxV = kmeansR.idxmax()
+    
+    clear()
     return klabels,clusterArray,kmeansR,maxV,
 
 
@@ -582,6 +585,7 @@ def dbscanClustering(data,labels):#DBSCAN algorithm
     dbscanR = pd.crosstab(labels,dblabels)
     maxValue = dbscanR.idxmax()
     
+    clear()
     return dblabels,dbClusterArray,n_noise_,dbscanR,maxValue
 
 
@@ -687,9 +691,9 @@ def isolationForest(data,labels):
             break
         
     ifLabels = IsolationForest(n_estimators = nEstimators,max_samples = "auto",behaviour = "new",contamination = "auto").fit_predict(data)
-    
     ifLabels = np.array(ifLabels,dtype = object)
-
+    
+    
     ifR = pd.crosstab(labels,ifLabels)
     ifR = pd.DataFrame(ifR)
     MaxIfVal = ifR.idxmax()
@@ -700,7 +704,9 @@ def isolationForest(data,labels):
     while n < len(ifR.columns):
         ifNclusters.append(n)
         n += 2
-    
+        
+
+    clear()
     
     return ifLabels,ifR,MaxIfVal,ifNclusters
 
@@ -763,7 +769,6 @@ def LOF(data,labels):
             print("Error\n\n")
             
 
-    
     lof = LocalOutlierFactor(n_neighbors = nNeighbors,contamination = "auto",algorithm = algorithm).fit_predict(data)
     lofR = pd.crosstab(labels,lof)
     maxLOFvalue = lofR.idxmax()
@@ -774,6 +779,8 @@ def LOF(data,labels):
     while n < len(lofR.columns):
         lofCluster.append(n)
         n += 2
+    
+    clear()
     
     return lof,lofR,maxLOFvalue,lofCluster
     
@@ -825,7 +832,7 @@ dataSet = readingData(path,dataSetOption)
 
 #########################################################################
 #########################################################################
-data,labels,dataOption = gettingVariables(dataSet,dataSetOption) #Getting the Data we want to use for the algorithms
+data,labels,dataOption = gettingVariables(dataSet) #Getting the Data we want to use for the algorithms
 #########################################################################
 #########################################################################
 try:
@@ -1038,7 +1045,7 @@ while True:
         #########################################################################
         start_time = time.time()
         LOFlabels,lofR,maxLOFvalue,lofClusters = LOF(data,labels)
-        print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
+        print("\n\nRun Time ->","--- %s seconds ---" % (time.time() - start_time))
         
         print("#########################################################################")
         print("Local Outlier Factor RESULTS\n\n")
