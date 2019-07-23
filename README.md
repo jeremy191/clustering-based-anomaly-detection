@@ -1,7 +1,7 @@
 # Clustering Based Anomaly Detection
 
 # Description
-For this clustering based anomaly detection project, we used the NSL-KDD and IDS 2017 datasets to implement clustering algorithms in them, mainly we use K-means and DBSCAN algorithms, then we evaluate those results using evaluation metrics and obtain results.
+For this clustering based anomaly detection project, we used the [NSL-KDD](https://pdfs.semanticscholar.org/1b34/80021c4ab0f632efa99e01a9b073903c5554.pdf) and [IDS 2017](https://www.unb.ca/cic/datasets/ids-2017.html) datasets to implement clustering algorithms in them, mainly we use K-means and DBSCAN algorithms, then we evaluate those results using evaluation metrics and obtain results.
 
 # Prerequisites
 
