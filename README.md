@@ -17,6 +17,7 @@ This clustering based anomaly detection project implements unsupervised clusteri
 ## Installation
 
 For this project, we installed Anaconda-Navigator to use as our package and environment manager. Under the Environments tab in Anaconda, we created an environment and downloaded the libraries listed in the prerequisites for this project.
+This [guide](https://docs.anaconda.com/_downloads/9ee215ff15fde24bf01791d719084950/Anaconda-Starter-Guide.pdf) can help use Anaconda
 
 
 
