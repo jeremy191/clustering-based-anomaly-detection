@@ -53,9 +53,9 @@ def gettingVariables(dataSet):
     if isMissing == "False":
         while True:
             print("Variables Menu\n")
-            print("1.Data set with Categorical data")
-            print("2.Data set without Categorical data")
-            print("3.Data set without protocols to start  using risk Values\n")
+            print("1.Data set with categorical data oneHot encoded")
+            print("2.Data set categorical data removed")
+            print("3.Data set with Risk Values for Server Type and Flag Features; Protocol Data oneHot encoded\n")
             option = input("Enter option :")
             
             
@@ -212,8 +212,8 @@ def encodingLabels(labels,dataOption,datasetOption):
                 print("Encoding Menu\n")
                 print("#########################################################################")
 
-                print("1.Binary Encode true labels - > 'normal = 0','abnormal = 1'")
-                print("2.Five main categories encode true labels -> normal = 0,DoS = 1,Probe = 2,R2L = 3,U2R = 4'")
+                print("1.Binary true labels: normal = 0, abnormal = 1")
+                print("2.Multiclass true labels: normal = 0, DoS = 1, Probe = 2, R2L = 3, U2R = 4")
                 encodeOption = input("Enter option :") 
     
                 if encodeOption == "1" or encodeOption == "2":
@@ -253,8 +253,8 @@ def encodingLabels(labels,dataOption,datasetOption):
         print("#########################################################################")
         print("Encoding Menu\n")
         print("#########################################################################")
-        print("1.Binary Encode true labels - > 'normal = 0','abnormal = 1'")
-        print("2.Five main categories encode true labels -> BENIGN= 0,DoS slowloris= 1,DoS Slowhttptest= 2,DoS Hulk= 3, DoS GoldenEye= 4, Heartbleed= 5")
+        print("1.Binary true labels: normal = 0, abnormal = 1")
+        print("2. Multiclass true labels: BENIGN= 0, DoS slowloris= 1, DoS Slowhttptest= 2, DoS Hulk= 3, DoS GoldenEye= 4, Heartbleed= 5")
         encodeOption = input("Enter option :")
 
         if encodeOption == "1":
@@ -293,7 +293,7 @@ def oneHotEncodingData(data,dataOption):
         transform = ColumnTransformer([("Servers", OneHotEncoder(categories = "auto"), [1,2,3])], remainder="passthrough")
         data = transform.fit_transform(data)
         print("#########################################################################")
-        print("Data has been Successfully One Hot Encoded")
+        print("Data has been successfully One Hot Encoded")
         print("#########################################################################\n\n")
 
         return data
@@ -301,7 +301,7 @@ def oneHotEncodingData(data,dataOption):
         transform = ColumnTransformer([("Servers", OneHotEncoder(categories = "auto"), [1])], remainder="passthrough")
         data = transform.fit_transform(data)
         print("#########################################################################")
-        print("Data has been Successfully One Hot Encoded")
+        print("Data has been successfully One Hot Encoded")
         print("#########################################################################\n\n")
         return data
         
@@ -320,7 +320,7 @@ def riskEncodingData(data,labels,dataOption):#This function is only for risk tes
         data[3] = [servers_Error[item] for item in data[3]]
 
         print("#########################################################################")
-        print("Data has ben risk Encoded Successfully")
+        print("Data has been successfully risk Encoded")
         print("#########################################################################\n\n")
 
         return data,labels
@@ -337,7 +337,7 @@ def scaling(data):#Scalign the data with the normalize method
 
     while True:
             
-            decision = input("You want to Scale the data[y/n]:")
+            decision = input("Scale data [y/n]:")
             
             if decision == "y" or  decision == "n":
                 break
@@ -351,7 +351,7 @@ def scaling(data):#Scalign the data with the normalize method
             #Transforms features by scaling each feature to a given range.
             data =  MinMaxScaler(feature_range=(0, 1)).fit_transform(data)
             print("#########################################################################")
-            print("Data has ben Successfully Scaled")
+            print("Data has been successfully scaled.")
             print("#########################################################################\n\n")
             return data
         
@@ -362,7 +362,7 @@ def scaling(data):#Scalign the data with the normalize method
 def shuffleData(X):
     from sklearn.utils import shuffle
     while True:
-        option = input("Suffle Data [y]/[n] :")
+        option = input("Shuffle data [y]/[n]:")
         
         if option == "y" or option == "n":
             break
@@ -378,7 +378,7 @@ def shuffleData(X):
         X = np.array(X)
         
         print("#########################################################################")
-        print("Data has been Successfully Shuffled")
+        print("Data has been successfully shuffled.")
         print("#########################################################################\n\n")
         return X
     else:
@@ -397,7 +397,7 @@ def kmeansClustering(data,labels):#K-means algorithm
         print("KMEANS ALGORITHM")
         print("#########################################################################\n\n")
               
-        nClusters = input("Numbers of clusters:")
+        nClusters = input("Number of clusters:")
         
         try:
             nClusters = int(nClusters)
@@ -470,7 +470,7 @@ def kF1(klabels,labels,maxKvalue,nClusters):#F1 Score for Kmeans
 
 
 
-def kMNI(klabels,labels,maxKvalue,nClusters):
+def kNMI(klabels,labels,maxKvalue,nClusters):
     from sklearn.metrics import normalized_mutual_info_score
     
     n = 0 # counter
@@ -491,9 +491,9 @@ def kMNI(klabels,labels,maxKvalue,nClusters):
         if average == "geometric" or average == "min" or average == "arithmetic" or average == "max":
             break
     
-    MNI = normalized_mutual_info_score(labels, klabels, average_method = average)
+    NMI = normalized_mutual_info_score(labels, klabels, average_method = average)
     
-    return MNI
+    return NMI
 
 
 
@@ -625,7 +625,7 @@ def dbF1(dblabels,labels,dbClusters,maxDBvalue):#F1 score for DBSCAN
     return f1
 
 
-def dbMNI(dblabels,labels,dbClusters,maxDBvalue):
+def dbNMI(dblabels,labels,dbClusters,maxDBvalue):
     from sklearn.metrics import normalized_mutual_info_score
     
     n = 0 # counter
@@ -651,9 +651,9 @@ def dbMNI(dblabels,labels,dbClusters,maxDBvalue):
             
             print("Error\n\n")
         
-    MNI = normalized_mutual_info_score(labels, dblabels, average_method='min')
+    NMI = normalized_mutual_info_score(labels, dblabels, average_method='min')
     
-    return MNI
+    return NMI
 
 
 
@@ -827,7 +827,7 @@ path,dataSetOption = getDataSet()
 #/Users/jeremyperez/Desktop/CICIDS2017.csv
 #/Users/jeremyperez/Jupyter/NSL-KDD/KDDTrain+.csv
 #/Users/bethanydanner/Google_Drive/documents/python_code/codeLines_newData/CICIDS2017.csv
-#/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/NSL-KDD/KDDTrain+.csv", header = None)
+#/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/KDDTrain+.csv", header = None)
 dataSet = readingData(path,dataSetOption)
 
 #########################################################################
@@ -922,9 +922,9 @@ while True:
         
         elif kScoreOption == "2":
                 #########################################################################
-                kmeansMNI = kMNI(klabels,labels,maxKvalue,kClusters)
+                kmeansNMI = kNMI(klabels,labels,maxKvalue,kClusters)
                 print("#########################################################################")
-                print("KMEANS Normalized Mutual Info Score -> ",kmeansMNI)
+                print("KMEANS Normalized Mutual Info Score -> ",kmeansNMI)
                 print("#########################################################################")
                 #########################################################################
     
@@ -983,9 +983,9 @@ while True:
         
         elif dbScoreOption == "2":
             #########################################################################
-            dbscanMNI = dbMNI(dblabels,labels,dbClusters,maxDBvalue)
+            dbscanNMI = dbNMI(dblabels,labels,dbClusters,maxDBvalue)
             print("#########################################################################")
-            print("DBSCAN Normalized Mutual Info Score -> ",dbscanMNI)
+            print("DBSCAN Normalized Mutual Info Score -> ",dbscanNMI)
             print("#########################################################################")
             #########################################################################
         
