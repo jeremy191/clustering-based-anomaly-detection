@@ -54,8 +54,8 @@ def gettingVariables(dataSet):
         while True:
             print("Variables Menu\n")
             print("1.Data set with categorical data oneHot encoded")
-            print("2.Data set categorical data removed")
-            print("3.Data set with Risk Values for Server Type and Flag Features; Protocol Data oneHot encoded\n")
+            print("2.Data set with categorical data removed")
+            print("3.Data set with Risk Values replacing Server Type and Flag Features; Protocol Data oneHot encoded\n")
             option = input("Enter option :")
             
             
