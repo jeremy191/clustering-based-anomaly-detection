@@ -1125,7 +1125,7 @@ while True:
                 
                 
             while True:
-                scoreAgain = input("Try another Score[y/n]:")
+                scoreAgain = input("Try another metric score[y/n]:")
                 
                 if scoreAgain == "y" or scoreAgain == "n":
                     break
@@ -1136,7 +1136,7 @@ while True:
                 
     while True: # If the user want to Make a new clustering algorithm test
         
-        decision = input("You want to another Test[y/n]:")
+        decision = input("Try another Clustering Algorithm[y/n]:")
         
         if decision == "y" or  decision == "n":
             break
