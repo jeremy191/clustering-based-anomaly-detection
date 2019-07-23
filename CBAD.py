@@ -52,7 +52,9 @@ def gettingVariables(dataSet):
     
     if isMissing == "False":
         while True:
-            print("Variables Menu\n")
+            print("**************************************************")
+            print("Variables Menu")
+            print("**************************************************")
             print("1.Data set with categorical data oneHot encoded")
             print("2.Data set with categorical data removed")
             print("3.Data set with Risk Values replacing Server Type and Flag Features; Protocol Data oneHot encoded\n")
@@ -136,7 +138,7 @@ def gettingVariables(dataSet):
                 deletedColumns.append(row)
                 del dataSet[row]
         
-            print("#########################################################################")
+            print("#\n\n########################################################################")
             print("Columns Succesfully Removed")
             print(len(deletedColumns),"of",numColumns,"were deleted")
             print("Columns Names -> ",deletedColumns)
@@ -146,7 +148,7 @@ def gettingVariables(dataSet):
             for row in missingValIndex:
                 dataSet[row] = dataSet[row].fillna(0)
         
-            print("#########################################################################")
+            print("\n\n#########################################################################")
             print("Sucessfully Filled Missing Values with 0")
             print("#########################################################################")
     
@@ -156,7 +158,7 @@ def gettingVariables(dataSet):
                 dataSet[row] = dataSet[row].astype(float)
                 dataSet[row] = dataSet[row].fillna(dataSet[row].mean())
         
-            print("#########################################################################")
+            print("\n\n#########################################################################")
             print("Sucessfully Filled Missing Values with Mean")
             print("#########################################################################")
     
@@ -164,7 +166,7 @@ def gettingVariables(dataSet):
             for row in missingValIndex:
                 median = dataSet[row].median()
                 dataSet[row].fillna(median, inplace=True)
-            print("#########################################################################")
+            print("\n\n#########################################################################")
             print("Sucessfully Filled Missing Values with Median")
             print("#########################################################################")
     
@@ -173,7 +175,7 @@ def gettingVariables(dataSet):
             for row in missingValIndex:
                 dataSet[row] = dataSet[row].fillna(dataSet[row].mode()[0])
     
-            print("#########################################################################")
+            print("\n\n#########################################################################")
             print("Sucessfully Filled Missing Values with Mode ")
             print("#########################################################################")
         
@@ -208,8 +210,8 @@ def encodingLabels(labels,dataOption,datasetOption):
         if dataOption == "1" or dataOption == "2" or dataOption == "3":
             
             while True:
-                print("#########################################################################")
-                print("Encoding Menu\n")
+                print("\n\n#########################################################################")
+                print("Encoding Menu")
                 print("#########################################################################")
 
                 print("1.Binary true labels: normal = 0, abnormal = 1")
@@ -250,8 +252,8 @@ def encodingLabels(labels,dataOption,datasetOption):
     
     
     elif datasetOption == "2":#Check if the data set choosen is NSL-KDD or IDS2017
-        print("#########################################################################")
-        print("Encoding Menu\n")
+        print("\n\n#########################################################################")
+        print("Encoding Menu")
         print("#########################################################################")
         print("1.Binary true labels: normal = 0, abnormal = 1")
         print("2. Multiclass true labels: BENIGN= 0, DoS slowloris= 1, DoS Slowhttptest= 2, DoS Hulk= 3, DoS GoldenEye= 4, Heartbleed= 5")
@@ -292,7 +294,7 @@ def oneHotEncodingData(data,dataOption):
     if dataOption == "1": #Only for dataset with Categorical Data
         transform = ColumnTransformer([("Servers", OneHotEncoder(categories = "auto"), [1,2,3])], remainder="passthrough")
         data = transform.fit_transform(data)
-        print("#########################################################################")
+        print("\n\n#########################################################################")
         print("Data has been successfully One Hot Encoded")
         print("#########################################################################\n\n")
 
@@ -300,7 +302,7 @@ def oneHotEncodingData(data,dataOption):
     elif dataOption == "3": #Only for risk data
         transform = ColumnTransformer([("Servers", OneHotEncoder(categories = "auto"), [1])], remainder="passthrough")
         data = transform.fit_transform(data)
-        print("#########################################################################")
+        print("\n\n#########################################################################")
         print("Data has been successfully One Hot Encoded")
         print("#########################################################################\n\n")
         return data
@@ -319,7 +321,7 @@ def riskEncodingData(data,labels,dataOption):#This function is only for risk tes
         servers_Error  = {'REJ':0.519, 'SF':0.016, 'S0':0.998, 'RSTR':0.882, 'RSTO':0.886,'SH':0.993,'S1':0.008,'RSTOS0':1,'S3':0.08,'S2':0.05,'OTH':0.729} 
         data[3] = [servers_Error[item] for item in data[3]]
 
-        print("#########################################################################")
+        print("\n\n#########################################################################")
         print("Data has been successfully risk Encoded")
         print("#########################################################################\n\n")
 
@@ -350,7 +352,7 @@ def scaling(data):#Scalign the data with the normalize method
             from sklearn.preprocessing import MinMaxScaler
             #Transforms features by scaling each feature to a given range.
             data =  MinMaxScaler(feature_range=(0, 1)).fit_transform(data)
-            print("#########################################################################")
+            print("\n\n#########################################################################")
             print("Data has been successfully scaled.")
             print("#########################################################################\n\n")
             return data
@@ -377,7 +379,7 @@ def shuffleData(X):
         X.reset_index(inplace=True,drop=True)
         X = np.array(X)
         
-        print("#########################################################################")
+        print("\n\n#########################################################################")
         print("Data has been successfully shuffled.")
         print("#########################################################################\n\n")
         return X
@@ -393,9 +395,9 @@ def kmeansClustering(data,labels):#K-means algorithm
     from sklearn.cluster import KMeans
 
     while True:
-        print("#########################################################################")
+        print("\n\n#########################################################################")
         print("KMEANS ALGORITHM")
-        print("#########################################################################\n\n")
+        print("#############################################################################")
               
         nClusters = input("Number of clusters:")
         
@@ -522,9 +524,9 @@ def dbscanClustering(data,labels):#DBSCAN algorithm
     
     while True:
         
-        print("#########################################################################")
+        print("\n\n#########################################################################")
         print("DBSCAN ALGORITHM")
-        print("#########################################################################\n\n")
+        print("#############################################################################")
               
         epsilon = input("epsilon[Decimal]:")
         
@@ -859,7 +861,7 @@ while True:
     while True:
         print("#########################################################################")
         print("Algorithm Menu")
-        print("#########################################################################\n\n")
+        print("#########################################################################")
         
         print("1.Kmeans")
         print("2.Dbscan")
@@ -891,27 +893,28 @@ while True:
 
         #########################################################################
         
-        
-        while True:
+        while True:#If the user want to continue making score metrics on kmeans results
+            
             print("#########################################################################")
             print("Kmeans Score Metrics Menu")
             print("#########################################################################\n\n")
-        
-            print("1.F1 Score")
-            print("2.Normalized Mutual Info Score")
-            print("3.Adjusted Rand Score")
-        
-            kScoreOption = input("option:")
             
-            if kScoreOption == "1" or kScoreOption == "2" or kScoreOption == "3":
-                break
-            else:
+            while True:
+                print("1.F1 Score")
+                print("2.Normalized Mutual Info Score")
+                print("3.Adjusted Rand Score")
+            
+                kScoreOption = input("option:")
                 
-                print("Error\n\n")
-     
-        
-        
-        if kScoreOption == "1":
+                if kScoreOption == "1" or kScoreOption == "2" or kScoreOption == "3":
+                    break
+                else:
+                    
+                    print("Error\n\n")
+         
+            
+            
+            if kScoreOption == "1":
                 #########################################################################
                 #F1 Score
                 kmeansF1 = kF1(klabels,labels,maxKvalue,kClusters)
@@ -919,23 +922,36 @@ while True:
                 print("KMEANS F1 Score -> ",kmeansF1)
                 print("#########################################################################")
                 #########################################################################
-        
-        elif kScoreOption == "2":
+            
+            elif kScoreOption == "2":
                 #########################################################################
                 kmeansNMI = kNMI(klabels,labels,maxKvalue,kClusters)
                 print("#########################################################################")
                 print("KMEANS Normalized Mutual Info Score -> ",kmeansNMI)
                 print("#########################################################################")
                 #########################################################################
-    
-        elif kScoreOption == "3":
+        
+            elif kScoreOption == "3":
+                
+                #########################################################################
+                kmeansARS = kARS(klabels,labels,maxKvalue,kClusters)
+                print("#########################################################################")
+                print("KMEANS Adjusted Rand Score -> ",kmeansARS)
+                print("#########################################################################")
+                #########################################################################
             
-            #########################################################################
-            kmeansARS = kARS(klabels,labels,maxKvalue,kClusters)
-            print("#########################################################################")
-            print("KMEANS Adjusted Rand Score -> ",kmeansARS)
-            print("#########################################################################")
-            #########################################################################
+            
+            while True:
+                scoreAgain = input("Try another Score[y/n]:")
+                
+                if scoreAgain == "y" or scoreAgain == "n":
+                    break
+            
+            if scoreAgain == "n":
+                break
+            
+        
+        
         
         
     elif algorithmOption == "2":
@@ -953,49 +969,61 @@ while True:
         print("\n#########################################################################\n\n\n")
         #########################################################################
         
-        print("#########################################################################")
-        print("Dscan Score Metrics Menu")
-        print("#########################################################################\n\n")
-        
-        print("1.F1 Score")
-        print("2.Normalized Mutual Info Score")
-        print("3.Adjusted Rand Score")
-        
-        while True:
+        while True: #If the user want to continue making score metrics on dbscan results
+            print("#########################################################################")
+            print("Dscan Score Metrics Menu")
+            print("#########################################################################")
             
-            dbScoreOption = input("option:")
+            print("1.F1 Score")
+            print("2.Normalized Mutual Info Score")
+            print("3.Adjusted Rand Score")
             
-            if dbScoreOption == "1" or dbScoreOption == "2" or dbScoreOption == "3":
-                break
-            else:
+            while True:
                 
-                print("Error\n\n")
+                dbScoreOption = input("option:")
+                
+                if dbScoreOption == "1" or dbScoreOption == "2" or dbScoreOption == "3":
+                    break
+                else:
+                    
+                    print("Error\n\n")
+        
+            if dbScoreOption == "1":
+                #########################################################################
+                #F1 Score dbscan
+                dbscanF1 = dbF1(dblabels,labels,dbClusters,maxDBvalue)
+                print("#########################################################################")
+                print("DBSCAN F1 Score -> ",dbscanF1)
+                print("#########################################################################")
+                #########################################################################
     
-        if dbScoreOption == "1":
-            #########################################################################
-            #F1 Score dbscan
-            dbscanF1 = dbF1(dblabels,labels,dbClusters,maxDBvalue)
-            print("#########################################################################")
-            print("DBSCAN F1 Score -> ",dbscanF1)
-            print("#########################################################################")
-            #########################################################################
-
+            
+            elif dbScoreOption == "2":
+                #########################################################################
+                dbscanNMI = dbNMI(dblabels,labels,dbClusters,maxDBvalue)
+                print("#########################################################################")
+                print("DBSCAN Normalized Mutual Info Score -> ",dbscanNMI)
+                print("#########################################################################")
+                #########################################################################
+            
+            elif dbScoreOption == "3":
+                #########################################################################
+                dbscanARS = dbARS(dblabels,labels)
+                print("#########################################################################")
+                print("DBSCAN Adjusted Rand Score -> ",dbscanARS)
+                print("#########################################################################")
+                #########################################################################
+            
+            while True:
+                scoreAgain = input("Try another Score[y/n]:")
+                
+                if scoreAgain == "y" or scoreAgain == "n":
+                    break
+            
+            if scoreAgain == "n":
+                break
+            
         
-        elif dbScoreOption == "2":
-            #########################################################################
-            dbscanNMI = dbNMI(dblabels,labels,dbClusters,maxDBvalue)
-            print("#########################################################################")
-            print("DBSCAN Normalized Mutual Info Score -> ",dbscanNMI)
-            print("#########################################################################")
-            #########################################################################
-        
-        elif dbScoreOption == "3":
-            #########################################################################
-            dbscanARS = dbARS(dblabels,labels)
-            print("#########################################################################")
-            print("DBSCAN Adjusted Rand Score -> ",dbscanARS)
-            print("#########################################################################")
-            #########################################################################
             
         
         
@@ -1012,34 +1040,45 @@ while True:
         print("Max True Label","\n\n",MaxIfVal)
         print("\n#########################################################################\n\n\n")
         #########################################################################
-        
-        print("#########################################################################")
-        print("Isolation Forest Score Metrics Menu")
-        print("#########################################################################\n\n")
-        
-        print("1.F1 Score")
-        print("2.AUC")
-        print("3.Normalized Mutual Info Score")
-        print("4.Adjusted Rand Score")
-        
-        while True:
+        while True:#If user want to continue making score metrics on Isolation Forest results
             
-            ifScoreOption = input("option:")
+            print("#########################################################################")
+            print("Isolation Forest Score Metrics Menu")
+            print("#########################################################################\n\n")
             
-            if ifScoreOption == "1" or ifScoreOption == "2" or ifScoreOption == "3" or ifScoreOption == "4":
-                break
-            else:
+            print("1.F1 Score")
+            print("2.AUC")
+            print("3.Normalized Mutual Info Score")
+            print("4.Adjusted Rand Score")
+            
+            while True:
                 
-                print("Error\n\n")
-        
-        if ifScoreOption == "1":
+                ifScoreOption = input("option:")
+                
+                if ifScoreOption == "1" or ifScoreOption == "2" or ifScoreOption == "3" or ifScoreOption == "4":
+                    break
+                else:
+                    
+                    print("Error\n\n")
             
-            ##########################################################################
-            isolationForestF1 = ifF1(ifLabels,labels,ifNclusters,MaxIfVal)
-            print("#########################################################################")
-            print("Isolation Forest F1 Score -> ",isolationForestF1)
-            print("#########################################################################")
-            ##########################################################################
+            if ifScoreOption == "1":
+                
+                ##########################################################################
+                isolationForestF1 = ifF1(ifLabels,labels,ifNclusters,MaxIfVal)
+                print("#########################################################################")
+                print("Isolation Forest F1 Score -> ",isolationForestF1)
+                print("#########################################################################")
+                ##########################################################################
+            
+            
+            while True:
+                scoreAgain = input("Try another Score[y/n]:")
+                
+                if scoreAgain == "y" or scoreAgain == "n":
+                    break
+            
+            if scoreAgain == "n":
+                break
         
     elif algorithmOption == "4":
         #########################################################################
@@ -1055,35 +1094,47 @@ while True:
         print("\n#########################################################################\n\n\n")
         #########################################################################
         
-        print("#########################################################################")
-        print("LOF Score Metrics Menu")
-        print("#########################################################################\n\n")
-        
-        print("1.F1 Score")
-        print("2.AUC")
-        print("3.Normalized Mutual Info Score")
-        print("4.Adjusted Rand Score")
-        
-        while True:
+        while True: #If the user want to continue making score metrics on LOF
+            print("#########################################################################")
+            print("LOF Score Metrics Menu")
+            print("#########################################################################\n\n")
             
-            lofScoreOption = input("option:")
+            print("1.F1 Score")
+            print("2.AUC")
+            print("3.Normalized Mutual Info Score")
+            print("4.Adjusted Rand Score")
             
-            if lofScoreOption == "1" or lofScoreOption == "2" or lofScoreOption == "3" or lofScoreOption == "4":
+            while True:
+                
+                lofScoreOption = input("option:")
+                
+                if lofScoreOption == "1" or lofScoreOption == "2" or lofScoreOption == "3" or lofScoreOption == "4":
+                    break
+                else:
+                    
+                    print("Error\n\n")
+            
+            if lofScoreOption == "1":
+                
+                ##########################################################################
+                LOFf1 = lofF1(LOFlabels,labels,lofClusters,maxLOFvalue)
+                print("#########################################################################")
+                print("LOF F1 Score -> ",LOFf1)
+                print("#########################################################################")
+                ##########################################################################
+                
+                
+            while True:
+                scoreAgain = input("Try another Score[y/n]:")
+                
+                if scoreAgain == "y" or scoreAgain == "n":
+                    break
+            
+            if scoreAgain == "n":
                 break
-            else:
-                
-                print("Error\n\n")
-        
-        if lofScoreOption == "1":
             
-            ##########################################################################
-            LOFf1 = lofF1(LOFlabels,labels,lofClusters,maxLOFvalue)
-            print("#########################################################################")
-            print("LOF F1 Score -> ",LOFf1)
-            print("#########################################################################")
-            ##########################################################################
                 
-    while True:
+    while True: # If the user want to Make a new clustering algorithm test
         
         decision = input("You want to another Test[y/n]:")
         
