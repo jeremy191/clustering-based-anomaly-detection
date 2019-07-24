@@ -447,7 +447,7 @@ def kF1(klabels,labels,maxKvalue,nClusters):#F1 Score for Kmeans
     n = 0 # counter
     dictionaryCluster  = {} # creating an empty dictionary 
     f1 = 0 #f1score
-    
+    average = ''
     
     while n < len(nClusters):# while counter < number of clusters
         dictionaryCluster[nClusters[n]] = maxKvalue[n] #creating key(cluster index) with value (max number of the clustering results) for every iteration
@@ -476,6 +476,7 @@ def kNMI(klabels,labels,maxKvalue,nClusters):
     n = 0 # counter
     dictionaryCluster  = {} # creating an empty dictionary 
     NMI = 0
+    average = ''
     
     while n < len(nClusters):# while counter < number of clusters
         dictionaryCluster[nClusters[n]] = maxKvalue[n] #creating key(cluster index) with value (max number of the clustering results) for every iteration
@@ -603,6 +604,7 @@ def dbF1(dblabels,labels,dbClusters,maxDBvalue):#F1 score for DBSCAN
     c = -1 # - counter max Value has negative index
     dictionaryCluster  = {} # creating an empty dictionary 
     f1 = 0
+    average = ''
     
     while n < len(dbClusters):# while counter < number of clusters
         dictionaryCluster[dbClusters[n]] = maxDBvalue[c] #creating key(cluster index) with value (max number of the clustering results) for every iteration
@@ -635,6 +637,7 @@ def dbNMI(dblabels,labels,dbClusters,maxDBvalue):
     c = -1 # - counter max Value has negative index
     NMI = 0
     dictionaryCluster  = {} # creating an empty dictionary 
+    average = ''
     
     while n < len(dbClusters):# while counter < number of clusters
         dictionaryCluster[dbClusters[n]] = maxDBvalue[c] #creating key(cluster index) with value (max number of the clustering results) for every iteration
@@ -656,7 +659,7 @@ def dbNMI(dblabels,labels,dbClusters,maxDBvalue):
             print("Error\n\n")
     
     
-    NMI = normalized_mutual_info_score(labels, dblabels, average_method='min')
+    NMI = normalized_mutual_info_score(labels, dblabels, average_method= average)
     
     return NMI,dictionaryCluster
 
@@ -726,6 +729,7 @@ def ifF1(ifLabels,labels,ifNclusters,MaxIfVal):
     n = 0 # counter
     c = -1 # - counter max Value has negative index
     f1 = 0
+    average = ''
     dictionaryCluster  = {} # creating an empty dictionary 
 
     
@@ -740,9 +744,9 @@ def ifF1(ifLabels,labels,ifNclusters,MaxIfVal):
     
     while True:
         
-        average = input("Average Method[weighted,None,micro,macro]:")
+        average = input("Average Method[weighted,micro,macro]:")
         
-        if average == "weighted" or average == "micro" or average == "macro" or average == "None":
+        if average == "weighted" or average == "micro" or average == "macro":
             break
         
         else:
