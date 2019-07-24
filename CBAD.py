@@ -1128,7 +1128,7 @@ while True:
             if lofScoreOption == "1":
                 
                 ##########################################################################
-                LOFf1
+                LOFf1 = 0
                 LOFf1,clusterAssigned = lofF1(LOFlabels,labels,lofClusters,maxLOFvalue)
                 print("\n\n#########################################################################")
                 print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
