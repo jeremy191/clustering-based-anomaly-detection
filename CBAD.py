@@ -419,7 +419,6 @@ def kmeansClustering(data,labels):#K-means algorithm
         init = input("Initialization method [k-means++,random]:")
         
         if init == "k-means++" or init == "random":
-            
             break
 
     print("\nClustering...\n")
@@ -447,6 +446,7 @@ def kF1(klabels,labels,maxKvalue,nClusters):#F1 Score for Kmeans
     
     n = 0 # counter
     dictionaryCluster  = {} # creating an empty dictionary 
+    f1 = 0 #f1score
     
     
     while n < len(nClusters):# while counter < number of clusters
@@ -475,6 +475,7 @@ def kNMI(klabels,labels,maxKvalue,nClusters):
     
     n = 0 # counter
     dictionaryCluster  = {} # creating an empty dictionary 
+    NMI = 0
     
     while n < len(nClusters):# while counter < number of clusters
         dictionaryCluster[nClusters[n]] = maxKvalue[n] #creating key(cluster index) with value (max number of the clustering results) for every iteration
@@ -502,6 +503,7 @@ def kARS(klabels,labels,maxKvalue,nClusters):
     
     n = 0 # counter
     dictionaryCluster  = {} # creating an empty dictionary 
+    ars = 0
     
     while n < len(nClusters):# while counter < number of clusters
         dictionaryCluster[nClusters[n]] = maxKvalue[n] #creating key(cluster index) with value (max number of the clustering results) for every iteration
@@ -557,8 +559,8 @@ def dbscanClustering(data,labels):#DBSCAN algorithm
             
         if algorithm == "auto" or algorithm == "ball_tree" or algorithm == "kd_tree" or algorithm == "brute":
             break
+        
         else:
-            
             print("Error\n\n")
             
     
@@ -600,6 +602,7 @@ def dbF1(dblabels,labels,dbClusters,maxDBvalue):#F1 score for DBSCAN
     n = 0 # counter
     c = -1 # - counter max Value has negative index
     dictionaryCluster  = {} # creating an empty dictionary 
+    f1 = 0
     
     while n < len(dbClusters):# while counter < number of clusters
         dictionaryCluster[dbClusters[n]] = maxDBvalue[c] #creating key(cluster index) with value (max number of the clustering results) for every iteration
@@ -630,6 +633,7 @@ def dbNMI(dblabels,labels,dbClusters,maxDBvalue):
     
     n = 0 # counter
     c = -1 # - counter max Value has negative index
+    NMI = 0
     dictionaryCluster  = {} # creating an empty dictionary 
     
     while n < len(dbClusters):# while counter < number of clusters
@@ -663,6 +667,7 @@ def dbARS(dblabels,labels,dbClusters,maxDBvalue):
     
     n = 0 # counter
     c = -1 # - counter max Value has negative index
+    ars = 0
     dictionaryCluster  = {} # creating an empty dictionary 
     
     while n < len(dbClusters):# while counter < number of clusters
@@ -720,7 +725,9 @@ def ifF1(ifLabels,labels,ifNclusters,MaxIfVal):
     
     n = 0 # counter
     c = -1 # - counter max Value has negative index
+    f1 = 0
     dictionaryCluster  = {} # creating an empty dictionary 
+
     
     while n < len(ifNclusters): # Since we got -1 and 1 clusters , in order to assing the corrects result counter starts at -1 and it increments by 2 so it can have the 1 index of maxLOFvalue
         dictionaryCluster[ifNclusters[n]] = MaxIfVal[c] 
@@ -800,6 +807,7 @@ def lofF1(lofLabels,labels,lofCluster,maxLOFvalue):
     
     n = 0 # counter
     c = -1 # - counter max Value has negative index
+    f1 = 0
     dictionaryCluster  = {} # creating an empty dictionary 
     
     while n < len(lofCluster): # Since we got -1 and 1 clusters , in order to assing the corrects result counter starts at -1 and it increments by 2 so it can have the 1 index of maxLOFvalue
@@ -917,6 +925,7 @@ while True:
             if kScoreOption == "1":
                 #########################################################################
                 #F1 Score
+                kmeansF1 = 0
                 kmeansF1,clusterAssigned = kF1(klabels,labels,maxKvalue,kClusters)
                 print("\n\n#########################################################################")
                 print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
@@ -926,6 +935,7 @@ while True:
             
             elif kScoreOption == "2":
                 #########################################################################
+                kmeansNMI = 0
                 kmeansNMI,clusterAssigned = kNMI(klabels,labels,maxKvalue,kClusters)
                 print("\n\n#########################################################################")
                 print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
@@ -936,6 +946,7 @@ while True:
             elif kScoreOption == "3":
                 
                 #########################################################################
+                kmeansARS = 0
                 kmeansARS,clusterAssigned = kARS(klabels,labels,maxKvalue,kClusters)
                 print("\n\n#########################################################################")
                 print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
@@ -963,6 +974,7 @@ while True:
         print("DBSCAN RESULTS\n\n")
         print("Clusters -> ",dbClusters,"\n")
         print(dbscanR,"\n\n")
+        print("Noise -> ",nNoises)
         print("Max True Label","\n\n",maxDBvalue)
         print("#########################################################################")
         #########################################################################
@@ -989,6 +1001,7 @@ while True:
             if dbScoreOption == "1":
                 #########################################################################
                 #F1 Score dbscan
+                dbscanF1 = 0
                 dbscanF1,clusterAssigned = dbF1(dblabels,labels,dbClusters,maxDBvalue)
                 print("\n\n#########################################################################")
                 print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
@@ -999,6 +1012,7 @@ while True:
             
             elif dbScoreOption == "2":
                 #########################################################################
+                dbscanNMI = 0
                 dbscanNMI,clusterAssigned = dbNMI(dblabels,labels,dbClusters,maxDBvalue)
                 print("\n\n#########################################################################")
                 print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
@@ -1008,6 +1022,7 @@ while True:
             
             elif dbScoreOption == "3":
                 #########################################################################
+                dbscanARS = 0
                 dbscanARS,clusterAssigned = dbARS(dblabels,labels)
                 print("\n\n#########################################################################")
                 print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
@@ -1113,6 +1128,7 @@ while True:
             if lofScoreOption == "1":
                 
                 ##########################################################################
+                LOFf1
                 LOFf1,clusterAssigned = lofF1(LOFlabels,labels,lofClusters,maxLOFvalue)
                 print("\n\n#########################################################################")
                 print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
