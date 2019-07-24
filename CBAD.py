@@ -426,7 +426,7 @@ def kmeansClustering(data,labels):#K-means algorithm
     start_time = time.time()
     KMEANS = KMeans(n_clusters = nClusters, init = init,max_iter = 300,n_init = 10,random_state = 0)
     print("\n\nRun Time ->","--- %s seconds ---" % (time.time() - start_time))
-    
+    print("Clustering Sucessfully")
     kmeans = KMEANS.fit(data)
     klabels = kmeans.labels_
     
@@ -566,11 +566,13 @@ def dbscanClustering(data,labels):#DBSCAN algorithm
             
     
     print("\nClustering...\n")
-    
+
     #Compute DBSCAN
     start_time = time.time() 
     db = DBSCAN(eps= epsilon, min_samples = minSamples,algorithm = algorithm).fit(data)
     print("\n\nRun Time ->","--- %s seconds ---" % (time.time() - start_time))
+    print("Clustering Sucessfully")
+    
     
     core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
     core_samples_mask[db.core_sample_indices_] = True
@@ -678,7 +680,7 @@ def dbARS(dblabels,labels,dbClusters,maxDBvalue):
         n+=1
         c+=1
     
-    ars = adjusted_rand_score(labels, dblabels,dbClusters,maxDBvalue)
+    ars = adjusted_rand_score(labels, dblabels)
     
     return ars,dictionaryCluster
 
@@ -1027,7 +1029,7 @@ while True:
             elif dbScoreOption == "3":
                 #########################################################################
                 dbscanARS = 0
-                dbscanARS,clusterAssigned = dbARS(dblabels,labels)
+                dbscanARS,clusterAssigned = dbARS(dblabels,labels,dbClusters,maxDBvalue)
                 print("\n\n#########################################################################")
                 print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
                 print("DBSCAN Adjusted Rand Score -> ",dbscanARS)
