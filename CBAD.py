@@ -12,7 +12,7 @@ import os
 clear = lambda:os.system('clear')
 
 def getDataSet():
-    clear()
+    
     while True:
         print("**************************************************")
         print("DATA SET MENU")
@@ -26,7 +26,7 @@ def getDataSet():
             break
     
     path = input("Path of the File:")
-    print("\n\nReading Dataset...")
+    print("\nReading Dataset...")
     
     return path,option
 
@@ -52,12 +52,12 @@ def gettingVariables(dataSet):
     
     if isMissing == "False":
         while True:
-            print("**************************************************")
+            print("\n\n**************************************************")
             print("Variables Menu")
             print("**************************************************")
             print("1.Data set with categorical data oneHot encoded")
             print("2.Data set with categorical data removed")
-            print("3.Data set with Risk Values replacing Server Type and Flag Features; Protocol Data oneHot encoded\n")
+            print("3.Data set with Risk Values replacing Server Type and Flag Features; Protocol Data oneHot encoded")
             option = input("Enter option :")
             
             
@@ -91,7 +91,6 @@ def gettingVariables(dataSet):
     
 
     elif isMissing == "True":
-        clear()
         
         #if data set has infinity values replace them with none
         dataSet = dataSet.replace('Infinity', np.nan) #Replacing Infinity values with nan values
@@ -104,7 +103,7 @@ def gettingVariables(dataSet):
                     
             if dataSet[rows].isnull().sum() != 0:
                 missingValIndex.append(rows)
-        print("**************************************************")
+        print("\n\n**************************************************")
         print("Data has missing values")
         print("**************************************************")
         print("Features with missing values:",missingValIndex)
@@ -116,7 +115,7 @@ def gettingVariables(dataSet):
     #MANAGE MISSING DATA
     #############################################################################        
         while True:
-            print("\n**************************************************")
+            print("\n\n**************************************************")
             print("Manage Missing Values ")
             print("**************************************************")
             print("1.Eliminate Catg. w/ Missing Values")
@@ -142,7 +141,7 @@ def gettingVariables(dataSet):
             print("Columns Succesfully Removed")
             print(len(deletedColumns),"of",numColumns,"were deleted")
             print("Columns Names -> ",deletedColumns)
-            print("#########################################################################\n\n")
+            print("#########################################################################")
     
         elif missingDataOption == "2":
             for row in missingValIndex:
@@ -213,7 +212,6 @@ def encodingLabels(labels,dataOption,datasetOption):
                 print("\n\n#########################################################################")
                 print("Encoding Menu")
                 print("#########################################################################")
-
                 print("1.Binary true labels: normal = 0, abnormal = 1")
                 print("2.Multiclass true labels: normal = 0, DoS = 1, Probe = 2, R2L = 3, U2R = 4")
                 encodeOption = input("Enter option :") 
@@ -296,7 +294,7 @@ def oneHotEncodingData(data,dataOption):
         data = transform.fit_transform(data)
         print("\n\n#########################################################################")
         print("Data has been successfully One Hot Encoded")
-        print("#########################################################################\n\n")
+        print("#########################################################################")
 
         return data
     elif dataOption == "3": #Only for risk data
@@ -304,7 +302,7 @@ def oneHotEncodingData(data,dataOption):
         data = transform.fit_transform(data)
         print("\n\n#########################################################################")
         print("Data has been successfully One Hot Encoded")
-        print("#########################################################################\n\n")
+        print("#########################################################################")
         return data
         
     else:
@@ -323,7 +321,7 @@ def riskEncodingData(data,labels,dataOption):#This function is only for risk tes
 
         print("\n\n#########################################################################")
         print("Data has been successfully risk Encoded")
-        print("#########################################################################\n\n")
+        print("#########################################################################")
 
         return data,labels
         
@@ -354,7 +352,7 @@ def scaling(data):#Scalign the data with the normalize method
             data =  MinMaxScaler(feature_range=(0, 1)).fit_transform(data)
             print("\n\n#########################################################################")
             print("Data has been successfully scaled.")
-            print("#########################################################################\n\n")
+            print("#########################################################################")
             return data
         
     else:
@@ -381,10 +379,10 @@ def shuffleData(X):
         
         print("\n\n#########################################################################")
         print("Data has been successfully shuffled.")
-        print("#########################################################################\n\n")
+        print("#########################################################################")
         return X
     else:
-        print("\n\n")
+        
         return X
 
 
@@ -397,7 +395,7 @@ def kmeansClustering(data,labels):#K-means algorithm
     while True:
         print("\n\n#########################################################################")
         print("KMEANS ALGORITHM")
-        print("#############################################################################")
+        print("#########################################################################")
               
         nClusters = input("Number of clusters:")
         
@@ -423,11 +421,13 @@ def kmeansClustering(data,labels):#K-means algorithm
         if init == "k-means++" or init == "random":
             
             break
-    
+
     print("\nClustering...\n")
     
-    
+    start_time = time.time()
     KMEANS = KMeans(n_clusters = nClusters, init = init,max_iter = 300,n_init = 10,random_state = 0)
+    print("\n\nRun Time ->","--- %s seconds ---" % (time.time() - start_time))
+    
     kmeans = KMEANS.fit(data)
     klabels = kmeans.labels_
     
@@ -435,7 +435,6 @@ def kmeansClustering(data,labels):#K-means algorithm
     kmeansR = pd.crosstab(labels,klabels)
     maxV = kmeansR.idxmax()
     
-    clear()
     return klabels,clusterArray,kmeansR,maxV,
 
 
@@ -460,15 +459,14 @@ def kF1(klabels,labels,maxKvalue,nClusters):#F1 Score for Kmeans
     
     while True:
         
-        average = input("Average Method[weighted,None,micro,macro,samples,binary]:")
+        average = input("Average Method[weighted,micro,macro,binary]:")
         
-        if average == "weighted" or average == "micro" or average == "macro" or average == "None" or average == 'binary':
+        if average == "weighted" or average == "micro" or average == "macro" or average == 'binary':
             break
         
     f1 = f1_score(labels,klabels, average = average) #Forget the labels that where not predicted and gives lables that were predicted at least once
-    print("Dictionary -> ",dictionaryCluster)
     
-    return f1
+    return f1,dictionaryCluster
 
 
 
@@ -495,7 +493,7 @@ def kNMI(klabels,labels,maxKvalue,nClusters):
     
     NMI = normalized_mutual_info_score(labels, klabels, average_method = average)
     
-    return NMI
+    return NMI,dictionaryCluster
 
 
 
@@ -515,7 +513,7 @@ def kARS(klabels,labels,maxKvalue,nClusters):
     
     ars = adjusted_rand_score(labels, klabels)
     
-    return ars
+    return ars,dictionaryCluster
 
 
 
@@ -526,7 +524,7 @@ def dbscanClustering(data,labels):#DBSCAN algorithm
         
         print("\n\n#########################################################################")
         print("DBSCAN ALGORITHM")
-        print("#############################################################################")
+        print("#########################################################################")
               
         epsilon = input("epsilon[Decimal]:")
         
@@ -567,7 +565,9 @@ def dbscanClustering(data,labels):#DBSCAN algorithm
     print("\nClustering...\n")
     
     #Compute DBSCAN
-    db = DBSCAN(eps= epsilon, min_samples = minSamples,algorithm = algorithm).fit(data) #{auto, ball_tree, kd_tree, brute}
+    start_time = time.time() 
+    db = DBSCAN(eps= epsilon, min_samples = minSamples,algorithm = algorithm).fit(data)
+    print("\n\nRun Time ->","--- %s seconds ---" % (time.time() - start_time))
     
     core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
     core_samples_mask[db.core_sample_indices_] = True
@@ -587,7 +587,6 @@ def dbscanClustering(data,labels):#DBSCAN algorithm
     dbscanR = pd.crosstab(labels,dblabels)
     maxValue = dbscanR.idxmax()
     
-    clear()
     return dblabels,dbClusterArray,n_noise_,dbscanR,maxValue
 
 
@@ -613,9 +612,9 @@ def dbF1(dblabels,labels,dbClusters,maxDBvalue):#F1 score for DBSCAN
     labels = np.array(labels,dtype = int) #Making sure that labels are in a int array
     while True:
         
-        average = input("Average Method[weighted,None,micro,macro]:")
+        average = input("Average Method[weighted,micro,macro]:")
         
-        if average == "weighted" or average == "micro" or average == "macro" or average == "None":
+        if average == "weighted" or average == "micro" or average == "macro":
             break
         
         else:
@@ -623,8 +622,7 @@ def dbF1(dblabels,labels,dbClusters,maxDBvalue):#F1 score for DBSCAN
             print("Error\n\n")
     
     f1 = f1_score(labels,dblabels, average = average)
-    print(dictionaryCluster)
-    return f1
+    return f1,dictionaryCluster
 
 
 def dbNMI(dblabels,labels,dbClusters,maxDBvalue):
@@ -652,10 +650,11 @@ def dbNMI(dblabels,labels,dbClusters,maxDBvalue):
         else:
             
             print("Error\n\n")
-        
+    
+    
     NMI = normalized_mutual_info_score(labels, dblabels, average_method='min')
     
-    return NMI
+    return NMI,dictionaryCluster
 
 
 
@@ -673,7 +672,7 @@ def dbARS(dblabels,labels,dbClusters,maxDBvalue):
     
     ars = adjusted_rand_score(labels, dblabels,dbClusters,maxDBvalue)
     
-    return ars
+    return ars,dictionaryCluster
 
 
 def isolationForest(data,labels):
@@ -691,10 +690,14 @@ def isolationForest(data,labels):
             
         if type(nEstimators) == int:
             break
-        
-    ifLabels = IsolationForest(n_estimators = nEstimators,max_samples = "auto",behaviour = "new",contamination = "auto").fit_predict(data)
-    ifLabels = np.array(ifLabels,dtype = object)
     
+    print("\nClustering...\n")   
+    
+    start_time = time.time() 
+    ifLabels = IsolationForest(n_estimators = nEstimators,max_samples = "auto",behaviour = "new",contamination = "auto").fit_predict(data)
+    print("\n\nRun Time ->","--- %s seconds ---" % (time.time() - start_time))
+    
+    ifLabels = np.array(ifLabels,dtype = object)
     
     ifR = pd.crosstab(labels,ifLabels)
     ifR = pd.DataFrame(ifR)
@@ -708,7 +711,7 @@ def isolationForest(data,labels):
         n += 2
         
 
-    clear()
+    
     
     return ifLabels,ifR,MaxIfVal,ifNclusters
 
@@ -741,7 +744,7 @@ def ifF1(ifLabels,labels,ifNclusters,MaxIfVal):
     
     f1 = f1_score(labels,ifLabels, average = average) #[None, 'micro', 'macro', 'weighted']
     
-    return f1
+    return f1,dictionaryCluster
     
 
 
@@ -770,8 +773,12 @@ def LOF(data,labels):
             
             print("Error\n\n")
             
-
+    print("\nClustering...\n")
+    
+    start_time = time.time() 
     lof = LocalOutlierFactor(n_neighbors = nNeighbors,contamination = "auto",algorithm = algorithm).fit_predict(data)
+    print("\n\nRun Time ->","--- %s seconds ---" % (time.time() - start_time))
+    
     lofR = pd.crosstab(labels,lof)
     maxLOFvalue = lofR.idxmax()
     
@@ -782,7 +789,7 @@ def LOF(data,labels):
         lofCluster.append(n)
         n += 2
     
-    clear()
+    
     
     return lof,lofR,maxLOFvalue,lofCluster
     
@@ -815,19 +822,15 @@ def lofF1(lofLabels,labels,lofCluster,maxLOFvalue):
             print("Error\n\n")
     f1 = f1_score(labels,lofLabels, average = average) #[None, 'micro', 'macro', 'weighted']
     
-    return f1
+    return f1,dictionaryCluster
 
 
 
-
-
-
+clear()
 ##########################################################################
 path,dataSetOption = getDataSet()
 #########################################################################
 #########################################################################
-#/Users/jeremyperez/Desktop/CICIDS2017.csv
-#/Users/jeremyperez/Jupyter/NSL-KDD/KDDTrain+.csv
 #/Users/bethanydanner/Google_Drive/documents/python_code/codeLines_newData/CICIDS2017.csv
 #/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/KDDTrain+.csv", header = None)
 dataSet = readingData(path,dataSetOption)
@@ -859,7 +862,7 @@ data = shuffleData(data)
 
 while True:  
     while True:
-        print("#########################################################################")
+        print("\n\n#########################################################################")
         print("Algorithm Menu")
         print("#########################################################################")
         
@@ -880,24 +883,21 @@ while True:
     if algorithmOption == "1":
         #########################################################################
         #KMEANS
-        start_time = time.time()
         klabels,kClusters,kmeansR,maxKvalue = kmeansClustering(data,labels)
-        print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
-        
         print("#########################################################################")
         print("KMEANS RESULTS\n\n")
         print("Clusters -> ",kClusters,"\n")
         print(kmeansR,"\n\n")
         print("Max True Label","\n\n",maxKvalue)
-        print("\n#########################################################################\n\n\n")
+        print("#########################################################################")
 
         #########################################################################
         
         while True:#If the user want to continue making score metrics on kmeans results
             
-            print("#########################################################################")
+            print("\n\n#########################################################################")
             print("Kmeans Score Metrics Menu")
-            print("#########################################################################\n\n")
+            print("#########################################################################")
             
             while True:
                 print("1.F1 Score")
@@ -917,16 +917,18 @@ while True:
             if kScoreOption == "1":
                 #########################################################################
                 #F1 Score
-                kmeansF1 = kF1(klabels,labels,maxKvalue,kClusters)
-                print("#########################################################################")
+                kmeansF1,clusterAssigned = kF1(klabels,labels,maxKvalue,kClusters)
+                print("\n\n#########################################################################")
+                print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
                 print("KMEANS F1 Score -> ",kmeansF1)
                 print("#########################################################################")
                 #########################################################################
             
             elif kScoreOption == "2":
                 #########################################################################
-                kmeansNMI = kNMI(klabels,labels,maxKvalue,kClusters)
-                print("#########################################################################")
+                kmeansNMI,clusterAssigned = kNMI(klabels,labels,maxKvalue,kClusters)
+                print("\n\n#########################################################################")
+                print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
                 print("KMEANS Normalized Mutual Info Score -> ",kmeansNMI)
                 print("#########################################################################")
                 #########################################################################
@@ -934,8 +936,9 @@ while True:
             elif kScoreOption == "3":
                 
                 #########################################################################
-                kmeansARS = kARS(klabels,labels,maxKvalue,kClusters)
-                print("#########################################################################")
+                kmeansARS,clusterAssigned = kARS(klabels,labels,maxKvalue,kClusters)
+                print("\n\n#########################################################################")
+                print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
                 print("KMEANS Adjusted Rand Score -> ",kmeansARS)
                 print("#########################################################################")
                 #########################################################################
@@ -950,27 +953,22 @@ while True:
             if scoreAgain == "n":
                 break
             
-        
-        
-        
+    
         
     elif algorithmOption == "2":
         #########################################################################
         #DBSCAN
-        start_time = time.time()
         dblabels,dbClusters,nNoises,dbscanR,maxDBvalue = dbscanClustering(data,labels) 
-        print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
-        
         print("#########################################################################")
         print("DBSCAN RESULTS\n\n")
         print("Clusters -> ",dbClusters,"\n")
         print(dbscanR,"\n\n")
         print("Max True Label","\n\n",maxDBvalue)
-        print("\n#########################################################################\n\n\n")
+        print("#########################################################################")
         #########################################################################
         
         while True: #If the user want to continue making score metrics on dbscan results
-            print("#########################################################################")
+            print("\n\n#########################################################################")
             print("Dscan Score Metrics Menu")
             print("#########################################################################")
             
@@ -991,8 +989,9 @@ while True:
             if dbScoreOption == "1":
                 #########################################################################
                 #F1 Score dbscan
-                dbscanF1 = dbF1(dblabels,labels,dbClusters,maxDBvalue)
-                print("#########################################################################")
+                dbscanF1,clusterAssigned = dbF1(dblabels,labels,dbClusters,maxDBvalue)
+                print("\n\n#########################################################################")
+                print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
                 print("DBSCAN F1 Score -> ",dbscanF1)
                 print("#########################################################################")
                 #########################################################################
@@ -1000,16 +999,18 @@ while True:
             
             elif dbScoreOption == "2":
                 #########################################################################
-                dbscanNMI = dbNMI(dblabels,labels,dbClusters,maxDBvalue)
-                print("#########################################################################")
+                dbscanNMI,clusterAssigned = dbNMI(dblabels,labels,dbClusters,maxDBvalue)
+                print("\n\n#########################################################################")
+                print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
                 print("DBSCAN Normalized Mutual Info Score -> ",dbscanNMI)
                 print("#########################################################################")
                 #########################################################################
             
             elif dbScoreOption == "3":
                 #########################################################################
-                dbscanARS = dbARS(dblabels,labels)
-                print("#########################################################################")
+                dbscanARS,clusterAssigned = dbARS(dblabels,labels)
+                print("\n\n#########################################################################")
+                print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
                 print("DBSCAN Adjusted Rand Score -> ",dbscanARS)
                 print("#########################################################################")
                 #########################################################################
@@ -1029,22 +1030,19 @@ while True:
         
     elif algorithmOption == "3":
         #########################################################################
-        start_time = time.time()
         ifLabels,ifR,MaxIfVal,ifNclusters = isolationForest(data,labels)
-        print("Run Time ->","--- %s seconds ---" % (time.time() - start_time))
-        
         print("#########################################################################")
         print("Isolation Forest RESULTS\n\n")
         print("Clusters -> ",ifNclusters,"\n")
         print(ifR,"\n\n")
         print("Max True Label","\n\n",MaxIfVal)
-        print("\n#########################################################################\n\n\n")
+        print("#########################################################################")
         #########################################################################
         while True:#If user want to continue making score metrics on Isolation Forest results
             
-            print("#########################################################################")
+            print("\n\n#########################################################################")
             print("Isolation Forest Score Metrics Menu")
-            print("#########################################################################\n\n")
+            print("#########################################################################")
             
             print("1.F1 Score")
             print("2.AUC")
@@ -1064,8 +1062,9 @@ while True:
             if ifScoreOption == "1":
                 
                 ##########################################################################
-                isolationForestF1 = ifF1(ifLabels,labels,ifNclusters,MaxIfVal)
-                print("#########################################################################")
+                isolationForestF1,clusterAssigned = ifF1(ifLabels,labels,ifNclusters,MaxIfVal)
+                print("\n\n#########################################################################")
+                print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
                 print("Isolation Forest F1 Score -> ",isolationForestF1)
                 print("#########################################################################")
                 ##########################################################################
@@ -1082,22 +1081,19 @@ while True:
         
     elif algorithmOption == "4":
         #########################################################################
-        start_time = time.time()
         LOFlabels,lofR,maxLOFvalue,lofClusters = LOF(data,labels)
-        print("\n\nRun Time ->","--- %s seconds ---" % (time.time() - start_time))
-        
         print("#########################################################################")
         print("Local Outlier Factor RESULTS\n\n")
         print("Clusters -> ",lofClusters,"\n")
         print(lofR,"\n\n")
         print("Max True Label","\n\n",maxLOFvalue)
-        print("\n#########################################################################\n\n\n")
+        print("#########################################################################")
         #########################################################################
         
         while True: #If the user want to continue making score metrics on LOF
-            print("#########################################################################")
+            print("\n\n#########################################################################")
             print("LOF Score Metrics Menu")
-            print("#########################################################################\n\n")
+            print("#########################################################################")
             
             print("1.F1 Score")
             print("2.AUC")
@@ -1117,8 +1113,9 @@ while True:
             if lofScoreOption == "1":
                 
                 ##########################################################################
-                LOFf1 = lofF1(LOFlabels,labels,lofClusters,maxLOFvalue)
-                print("#########################################################################")
+                LOFf1,clusterAssigned = lofF1(LOFlabels,labels,lofClusters,maxLOFvalue)
+                print("\n\n#########################################################################")
+                print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
                 print("LOF F1 Score -> ",LOFf1)
                 print("#########################################################################")
                 ##########################################################################
@@ -1147,3 +1144,6 @@ while True:
     
     if decision == "n":
         break
+    
+    else:
+        clear()
