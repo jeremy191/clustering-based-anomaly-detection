@@ -426,7 +426,7 @@ def kmeansClustering(data,labels):#K-means algorithm
     start_time = time.time()
     KMEANS = KMeans(n_clusters = nClusters, init = init,max_iter = 300,n_init = 10,random_state = 0)
     print("\n\nRun Time ->","--- %s seconds ---" % (time.time() - start_time))
-    print("Clustering Sucessfully")
+    print("Data Successfully Clustered")
     kmeans = KMEANS.fit(data)
     klabels = kmeans.labels_
     
@@ -571,7 +571,7 @@ def dbscanClustering(data,labels):#DBSCAN algorithm
     start_time = time.time() 
     db = DBSCAN(eps= epsilon, min_samples = minSamples,algorithm = algorithm).fit(data)
     print("\n\nRun Time ->","--- %s seconds ---" % (time.time() - start_time))
-    print("Clustering Sucessfully")
+    print("Data Successfully Clustered")
     
     
     core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
