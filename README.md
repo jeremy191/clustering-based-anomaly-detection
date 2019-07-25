@@ -37,23 +37,35 @@ The interactive code asks the user to specify which of the two datasets he or sh
 
 ### Clustering Dataset
 
-The code offers four different clustering algorithms, namely K-Means, DBSCAN, LOF, and Isolation Forest. **Add links / explanations to these**.
+The code offers four different clustering algorithms, namely K-Means, DBSCAN, LOF, and Isolation Forest.
+
+K-Means clusters data by starting with user-specified K initial cluster centroids, and assigning all points to the nearest centroid. Based on the assignments, the algorithm recalculates the cluster centers and reassigns all points to the nearest cluster center. The algorithm repeats this process for a default of 300 iterations. When the process ends, K-Means has clustered data into K clusters. In this project, the user specifies K - the number of initial cluster centroids and eventual clusters - and the method for initialization - the way that the algorithm chooses which points to use as initial cluster centroids.
+
+DBSCAN relies on two user-input parameters, namely epsilon and minimum samples. Epsilon denotes the neighborhood of density to be explored for each data point, and minimum samples denote the minimum number of samples needed to be within a point’s epsilon neighborhood for said point to be considered a core point. Points within another core point’s epsilon neighborhood, but not core points themselves, are considered border points. Meanwhile, points that are not within another core point’s epsilon neighborhood, and that are not core points themselves, are considered anomalous points or noise. DBSCAN finds clusters of core points and border points and reports those clusters along with a group of all of the anomalous points.
+
+**LoF and Isolation Forest**.
 
 ### Evaluating Clusters
 
 The code also offers multiple evaluation metrics for the user to choose from. Each metric depends on comparing the labels of the actual dataset with the labels given by the clustering, or the "true labels" with the "found labels". For both the NSL-KDD and the IDS 2017 datasets, both binary and multiclass labels are available to compare with as "true labels." Users can specify their preference in the interactive code.
 
-The most tested metric used in this code is the [F-Score](https://deepai.org/machine-learning-glossary-and-terms/f-score). **write about other metrics**
+In this code, users can verify the clustering on their data by using one of three different metrics, namely F-1 Score, Normalized Mutual Information Score (NMI), and Adjusted Rand Score (ARS).  
+
+[F-Score](https://deepai.org/machine-learning-glossary-and-terms/f-score). 
+
+NMI
+
+ARS
 
 ## Roadmap
 
+(future work)
 
 ## Contributing
 
 ## Authors and acknowledgment
 
 ## License
-
 
 ## Project status
 
