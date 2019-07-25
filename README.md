@@ -71,4 +71,4 @@ ARS
 
 Current Bugs:
 
-Rarely, after running an F1-Score, when user tries to run another scoring metric, that metric returns nonsense results - numbers larger than 1 or equal to 0, when a number between 0 and 1 and likely higher than 0.2 is expected. The most occuring nonsense result for NMI is 3.5 and for ARS is 0. 
+Rarely, after running an F1-Score, when user tries to run another scoring metric, that metric returns nonsense results - numbers larger than 1 or equal to 0, when a number between 0 and 1 and likely higher than 0.2 is expected. The most occuring nonsense result for NMI is 3.75 and for ARS is 0.0. 
