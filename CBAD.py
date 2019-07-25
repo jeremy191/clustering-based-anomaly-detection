@@ -77,7 +77,6 @@ def gettingVariables(dataSet):
         elif option == "2":
             #Removing Categorical data from the data set
             X = dataSet.iloc[:,[0,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40]].values
-            X = pd.DataFrame(X)
             Y = dataSet.iloc[:,42].values# Labels
             
             return X,Y,option
@@ -91,17 +90,26 @@ def gettingVariables(dataSet):
     
 
     elif isMissing == "True":
+        #############################################################################
+        #GETTING VARIABLES
+        #############################################################################
+        data = dataSet.iloc[:,:-1].values#data
+        labels = dataSet.iloc[:,78].values#Labels
+        data = pd.DataFrame(data)
+        #############################################################################
+        #Variables Got 
+        #############################################################################
         
         #if data set has infinity values replace them with none
-        dataSet = dataSet.replace('Infinity', np.nan) #Replacing Infinity values with nan values
+        data = data.replace('Infinity', np.nan) #Replacing Infinity values with nan values
            
         missingValIndex = []
-        total = dataSet.isnull().sum().sum()
-        percent = (total / (dataSet.count().sum() + dataSet.isnull().sum().sum())) * 100
+        total = data.isnull().sum().sum()
+        percent = (total / (data.count().sum() + data.isnull().sum().sum())) * 100
             
-        for rows in dataSet:
+        for rows in data:
                     
-            if dataSet[rows].isnull().sum() != 0:
+            if data[rows].isnull().sum() != 0:
                 missingValIndex.append(rows)
         print("\n\n**************************************************")
         print("Data has missing values")
@@ -109,8 +117,9 @@ def gettingVariables(dataSet):
         print("Features with missing values:",missingValIndex)
         print("Total missing Values -> " , total)
         print(percent,"%")
+        
 
-            
+        
     #############################################################################
     #MANAGE MISSING DATA
     #############################################################################        
@@ -132,10 +141,10 @@ def gettingVariables(dataSet):
     
         if missingDataOption == "1":
             deletedColumns = []
-            numColumns = len(dataSet.columns)
+            numColumns = len(data.columns)
             for row in missingValIndex:
                 deletedColumns.append(row)
-                del dataSet[row]
+                del data[row]
         
             print("#\n\n########################################################################")
             print("Columns Succesfully Removed")
@@ -145,7 +154,7 @@ def gettingVariables(dataSet):
     
         elif missingDataOption == "2":
             for row in missingValIndex:
-                dataSet[row] = dataSet[row].fillna(0)
+                data[row] = data[row].fillna(0)
         
             print("\n\n#########################################################################")
             print("Sucessfully Filled Missing Values with 0")
@@ -154,8 +163,8 @@ def gettingVariables(dataSet):
     
         elif missingDataOption == "3":
             for row in missingValIndex:
-                dataSet[row] = dataSet[row].astype(float)
-                dataSet[row] = dataSet[row].fillna(dataSet[row].mean())
+                data[row] = data[row].astype(float)
+                data[row] = data[row].fillna(data[row].mean())
         
             print("\n\n#########################################################################")
             print("Sucessfully Filled Missing Values with Mean")
@@ -163,8 +172,8 @@ def gettingVariables(dataSet):
     
         elif missingDataOption == "4":
             for row in missingValIndex:
-                median = dataSet[row].median()
-                dataSet[row].fillna(median, inplace=True)
+                median = data[row].median()
+                data[row].fillna(median, inplace=True)
             print("\n\n#########################################################################")
             print("Sucessfully Filled Missing Values with Median")
             print("#########################################################################")
@@ -172,30 +181,31 @@ def gettingVariables(dataSet):
         elif missingDataOption == "5":
     
             for row in missingValIndex:
-                dataSet[row] = dataSet[row].fillna(dataSet[row].mode()[0])
+                data[row] = data[row].fillna(data[row].mode()[0])
     
             print("\n\n#########################################################################")
             print("Sucessfully Filled Missing Values with Mode ")
             print("#########################################################################")
         
         elif missingDataOption == "6": 
-            from statsmodels.imputation import MICE ,mice
+            # explicitly require this experimental feature
+            from sklearn.experimental import enable_iterative_imputer  # noqa
+            # now you can import normally from sklearn.impute
+            from sklearn.impute import IterativeImputer
             
+            data = IterativeImputer(estimator=None, sample_posterior=False, max_iter=10, tol=0.001, n_nearest_features=None, initial_strategy='mean', imputation_order='ascending', min_value=None, max_value=None, verbose=0, random_state=None, add_indicator=False).fit_transform(data)
+            
+            print("\n\n#########################################################################")
+            print("Sucessfully Imputed MICE ")
+            print("#########################################################################")
+                  
+                  
+        option = "None" #This data does not have categorical features so dataOption is none      
+        return data,labels,option
        
 #############################################################################
 #END OF MISSING DATA
 #############################################################################
-        if missingDataOption == "1":#Check if missing data was removed
-            X = dataSet.iloc[:,:-1].values
-            Y = dataSet.iloc[:,76].values#Labels
-            option = "None"
-        else: #If it was another Option that do not remove data rows
-        
-            X = dataSet.iloc[:,:-1].values
-            Y = dataSet.iloc[:,78].values#Labels
-            option = "None" #This data does not have categorical features so dataOption is none
-        
-        return X,Y,option
     
 
 
