@@ -188,15 +188,11 @@ def gettingVariables(dataSet):
             print("#########################################################################")
         
         elif missingDataOption == "6": 
-            # explicitly require this experimental feature
-            from sklearn.experimental import enable_iterative_imputer  # noqa
-            # now you can import normally from sklearn.impute
-            from sklearn.impute import IterativeImputer
-            
-            data = IterativeImputer(estimator=None, sample_posterior=False, max_iter=10, tol=0.001, n_nearest_features=None, initial_strategy='mean', imputation_order='ascending', min_value=None, max_value=None, verbose=0, random_state=None, add_indicator=False).fit_transform(data)
-            
+            from sklearn.impute import SimpleImputer
+            #"Imputation transformer for completing missing values."(Univariate)
+            data = SimpleImputer(missing_values = np.nan, strategy='mean', fill_value=None, verbose=0, copy=True, add_indicator=False).fit_transform(data)          
             print("\n\n#########################################################################")
-            print("Sucessfully Imputed MICE ")
+            print("Sucessfully Imputed Simple Imputer ")
             print("#########################################################################")
                   
                   
@@ -285,6 +281,7 @@ def encodingLabels(labels,dataOption,datasetOption):
         
         else:
             return labels
+
 
 
 
