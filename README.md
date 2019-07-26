@@ -61,7 +61,7 @@ ARS
 
 ## Roadmap
 
-(future work)
+* Implement Dimensionality Reduction- The main idea to implement this is because both datasets are considerably big  and they consume a lot of processing resources also we want to implement this because we can run DBSCAN algorithm on a bigger data set than IDS2017 and we want to know if we are going to be able to implement the algorithm.
 
 ## Contributing
 
