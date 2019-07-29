@@ -191,7 +191,7 @@ def gettingVariables(dataSet):
         elif missingDataOption == "6": 
             from sklearn.impute import SimpleImputer
             #"Imputation transformer for completing missing values."(Univariate)
-            X = SimpleImputer(missing_values = np.nan, strategy='mean', fill_value=None, verbose=0, copy=True, add_indicator=False).fit_transform(data)          
+            X = SimpleImputer(missing_values = np.nan, strategy='mean', fill_value=None, verbose=0, copy=True).fit_transform(data)          
             print("\n\n#########################################################################")
             print("Sucessfully Imputed Simple Imputer ")
             print("#########################################################################")
@@ -304,7 +304,7 @@ def oneHotEncodingData(X,dataOption):
         print("Data has been successfully One Hot Encoded")
         print("#########################################################################")
 
-        return data
+        return X
     elif dataOption == "3": #Only for risk data
         transform = ColumnTransformer([("Servers", OneHotEncoder(categories = "auto"), [1])], remainder="passthrough")
         X = transform.fit_transform(X)
@@ -331,11 +331,11 @@ def riskEncodingData(X,dataOption):#This function is only for risk testing only
         print("Data has been successfully risk Encoded")
         print("#########################################################################")
 
-        return data
+        return X
         
     else:
         
-        return data #return data with no changes
+        return X #return data with no changes
             
     
 
@@ -654,9 +654,7 @@ def dbNMI(Z,Y,clusters,maxVal):
         n+=1
         c+=1
     
-    
     Y = np.array(Y,dtype = int) #Making sure that labels are in a int array
-
 
     while True:
         
@@ -668,12 +666,9 @@ def dbNMI(Z,Y,clusters,maxVal):
             
             print("Error\n\n")
     
-    
     NMI = normalized_mutual_info_score(Y, Z, average_method= average)
     
     return NMI,dictionaryCluster
-
-
 
 def dbARS(Z,Y,clusters,maxVal):
     from sklearn.metrics import adjusted_rand_score
@@ -721,16 +716,12 @@ def isolationForest(X,Y):
     ifR = pd.DataFrame(ifR)
     maxVal = ifR.idxmax()
     
-    
     n = -1  # Isolation Forest return index -1 and 1 cluster
     clusters = []
     while n < len(ifR.columns):
         ifNclusters.append(n)
         n += 2
         
-
-    
-    
     return Z,ifR,maxVal,clusters
 
 def ifF1(Z,Y,clusters,maxVal):
@@ -768,7 +759,6 @@ def ifF1(Z,Y,clusters,maxVal):
     
     return f1,dictionaryCluster
     
-
 
 def LOF(X,Y):
     from sklearn.neighbors import LocalOutlierFactor 
@@ -816,7 +806,6 @@ def LOF(X,Y):
     return lof,lofR,maxVal,clusters
     
 
-
 def lofF1(Z,Y,clusters,maxVal):
     from sklearn.metrics import f1_score
     
@@ -847,8 +836,6 @@ def lofF1(Z,Y,clusters,maxVal):
     
     return f1,dictionaryCluster
 
-
-
 clear()
 ##########################################################################
 path,dataSetOption = getDataSet()
@@ -857,7 +844,6 @@ path,dataSetOption = getDataSet()
 #/Users/bethanydanner/Google_Drive/documents/python_code/codeLines_newData/CICIDS2017.csv
 #/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/KDDTrain+.csv", header = None)
 dataSet = readingData(path,dataSetOption)
-
 #########################################################################
 #########################################################################
 data,labels,dataOption = gettingVariables(dataSet) #Getting the Data we want to use for the algorithms
@@ -867,8 +853,6 @@ try:
     labels,encodeOption = encodingLabels(labels,dataOption,dataSetOption) #Encoding the true labels
 except ValueError:
     labels = encodingLabels(labels,dataOption,dataSetOption) #Encoding the true labels
-    
-
 #########################################################################
 #########################################################################
 data = riskEncodingData(data,dataOption)
@@ -914,10 +898,7 @@ while True:
         print(kmeansR,"\n\n")
         print("Max True Label","\n\n",maxKvalue)
         print("#########################################################################")
-
         #########################################################################
-    
-        
         print("\n\n#########################################################################")
         print("Kmeans Score Metrics Menu")
         print("#########################################################################")
@@ -935,8 +916,6 @@ while True:
                 
                 print("Error\n\n")
      
-        
-        
         if kScoreOption == "1":
             #########################################################################
             #F1 Score
@@ -965,10 +944,7 @@ while True:
             print("KMEANS Adjusted Rand Score -> ",kmeansARS)
             print("#########################################################################")
             #########################################################################
-
-        
-    
-        
+            
     elif algorithmOption == "2":
         #########################################################################
         #DBSCAN
@@ -981,11 +957,9 @@ while True:
         print("Max True Label","\n\n",maxDBvalue)
         print("#########################################################################")
         #########################################################################
-    
         print("\n\n#########################################################################")
         print("Dscan Score Metrics Menu")
         print("#########################################################################")
-        
         print("1.F1 Score")
         print("2.Normalized Mutual Info Score")
         print("3.Adjusted Rand Score")
@@ -1009,8 +983,7 @@ while True:
             print("DBSCAN F1 Score -> ",dbscanF1)
             print("#########################################################################")
             #########################################################################
-
-        
+            
         elif dbScoreOption == "2":
             #########################################################################
             dbscanNMI,clusterAssigned = dbNMI(dblabels,labels,dbClusters,maxDBvalue)
@@ -1019,7 +992,7 @@ while True:
             print("DBSCAN Normalized Mutual Info Score -> ",dbscanNMI)
             print("#########################################################################")
             #########################################################################
-        
+            
         elif dbScoreOption == "3":
             #########################################################################
             dbscanARS,clusterAssigned = dbARS(dblabels,labels,dbClusters,maxDBvalue)
@@ -1028,9 +1001,6 @@ while True:
             print("DBSCAN Adjusted Rand Score -> ",dbscanARS)
             print("#########################################################################")
             #########################################################################
-            
-        
-            
         
         
     elif algorithmOption == "3":
@@ -1043,11 +1013,9 @@ while True:
         print("Max True Label","\n\n",MaxIfVal)
         print("#########################################################################")
         #########################################################################
-        
         print("\n\n#########################################################################")
         print("Isolation Forest Score Metrics Menu")
         print("#########################################################################")
-        
         print("1.F1 Score")
         print("2.AUC")
         print("3.Normalized Mutual Info Score")
@@ -1072,7 +1040,6 @@ while True:
             print("Isolation Forest F1 Score -> ",isolationForestF1)
             print("#########################################################################")
             ##########################################################################
-
         
     elif algorithmOption == "4":
         #########################################################################
@@ -1084,7 +1051,6 @@ while True:
         print("Max True Label","\n\n",maxLOFvalue)
         print("#########################################################################")
         #########################################################################
-    
         print("\n\n#########################################################################")
         print("LOF Score Metrics Menu")
         print("#########################################################################")
@@ -1112,10 +1078,6 @@ while True:
             print("LOF F1 Score -> ",LOFf1)
             print("#########################################################################")
             ##########################################################################
-                
-                
-
-            
                 
     while True: # If the user want to Make a new clustering algorithm test
         
