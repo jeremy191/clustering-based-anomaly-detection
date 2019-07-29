@@ -916,67 +916,57 @@ while True:
         print("#########################################################################")
 
         #########################################################################
+    
         
-        while True:#If the user want to continue making score metrics on kmeans results
-            
-            print("\n\n#########################################################################")
-            print("Kmeans Score Metrics Menu")
-            print("#########################################################################")
-            
-            while True:
-                print("1.F1 Score")
-                print("2.Normalized Mutual Info Score")
-                print("3.Adjusted Rand Score")
-            
-                kScoreOption = input("option:")
-                
-                if kScoreOption == "1" or kScoreOption == "2" or kScoreOption == "3":
-                    break
-                else:
-                    
-                    print("Error\n\n")
-         
-            
-            
-            if kScoreOption == "1":
-                #########################################################################
-                #F1 Score
-                kmeansF1,clusterAssigned = kF1(klabels,labels,maxKvalue,kClusters)
-                print("\n\n#########################################################################")
-                print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
-                print("KMEANS F1 Score -> ",kmeansF1)
-                print("#########################################################################")
-                #########################################################################
-            
-            elif kScoreOption == "2":
-                #########################################################################
-                kmeansNMI,clusterAssigned = kNMI(klabels,labels,maxKvalue,kClusters)
-                print("\n\n#########################################################################")
-                print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
-                print("KMEANS Normalized Mutual Info Score -> ",kmeansNMI)
-                print("#########################################################################")
-                #########################################################################
+        print("\n\n#########################################################################")
+        print("Kmeans Score Metrics Menu")
+        print("#########################################################################")
         
-            elif kScoreOption == "3":
-                
-                #########################################################################
-                kmeansARS,clusterAssigned = kARS(klabels,labels,maxKvalue,kClusters)
-                print("\n\n#########################################################################")
-                print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
-                print("KMEANS Adjusted Rand Score -> ",kmeansARS)
-                print("#########################################################################")
-                #########################################################################
+        while True:
+            print("1.F1 Score")
+            print("2.Normalized Mutual Info Score")
+            print("3.Adjusted Rand Score")
+        
+            kScoreOption = input("option:")
             
-            
-            while True:
-                scoreAgain = input("Try another Score[y/n]:")
-                
-                if scoreAgain == "y" or scoreAgain == "n":
-                    break
-            
-            if scoreAgain == "n":
+            if kScoreOption == "1" or kScoreOption == "2" or kScoreOption == "3":
                 break
+            else:
+                
+                print("Error\n\n")
+     
+        
+        
+        if kScoreOption == "1":
+            #########################################################################
+            #F1 Score
+            kmeansF1,clusterAssigned = kF1(klabels,labels,maxKvalue,kClusters)
+            print("\n\n#########################################################################")
+            print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
+            print("KMEANS F1 Score -> ",kmeansF1)
+            print("#########################################################################")
+            #########################################################################
+        
+        elif kScoreOption == "2":
+            #########################################################################
+            kmeansNMI,clusterAssigned = kNMI(klabels,labels,maxKvalue,kClusters)
+            print("\n\n#########################################################################")
+            print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
+            print("KMEANS Normalized Mutual Info Score -> ",kmeansNMI)
+            print("#########################################################################")
+            #########################################################################
+    
+        elif kScoreOption == "3":
             
+            #########################################################################
+            kmeansARS,clusterAssigned = kARS(klabels,labels,maxKvalue,kClusters)
+            print("\n\n#########################################################################")
+            print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
+            print("KMEANS Adjusted Rand Score -> ",kmeansARS)
+            print("#########################################################################")
+            #########################################################################
+
+        
     
         
     elif algorithmOption == "2":
@@ -991,63 +981,53 @@ while True:
         print("Max True Label","\n\n",maxDBvalue)
         print("#########################################################################")
         #########################################################################
-        
-        while True: #If the user want to continue making score metrics on dbscan results
-            print("\n\n#########################################################################")
-            print("Dscan Score Metrics Menu")
-            print("#########################################################################")
-            
-            print("1.F1 Score")
-            print("2.Normalized Mutual Info Score")
-            print("3.Adjusted Rand Score")
-            
-            while True:
-                
-                dbScoreOption = input("option:")
-                
-                if dbScoreOption == "1" or dbScoreOption == "2" or dbScoreOption == "3":
-                    break
-                else:
-                    
-                    print("Error\n\n")
-        
-            if dbScoreOption == "1":
-                #########################################################################
-                #F1 Score dbscan
-                dbscanF1,clusterAssigned = dbF1(dblabels,labels,dbClusters,maxDBvalue)
-                print("\n\n#########################################################################")
-                print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
-                print("DBSCAN F1 Score -> ",dbscanF1)
-                print("#########################################################################")
-                #########################################################################
     
+        print("\n\n#########################################################################")
+        print("Dscan Score Metrics Menu")
+        print("#########################################################################")
+        
+        print("1.F1 Score")
+        print("2.Normalized Mutual Info Score")
+        print("3.Adjusted Rand Score")
+        
+        while True:
             
-            elif dbScoreOption == "2":
-                #########################################################################
-                dbscanNMI,clusterAssigned = dbNMI(dblabels,labels,dbClusters,maxDBvalue)
-                print("\n\n#########################################################################")
-                print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
-                print("DBSCAN Normalized Mutual Info Score -> ",dbscanNMI)
-                print("#########################################################################")
-                #########################################################################
+            dbScoreOption = input("option:")
             
-            elif dbScoreOption == "3":
-                #########################################################################
-                dbscanARS,clusterAssigned = dbARS(dblabels,labels,dbClusters,maxDBvalue)
-                print("\n\n#########################################################################")
-                print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
-                print("DBSCAN Adjusted Rand Score -> ",dbscanARS)
-                print("#########################################################################")
-                #########################################################################
-            
-            while True:
-                scoreAgain = input("Try another Score[y/n]:")
-                
-                if scoreAgain == "y" or scoreAgain == "n":
-                    break
-            
-            if scoreAgain == "n":
+            if dbScoreOption == "1" or dbScoreOption == "2" or dbScoreOption == "3":
                 break
+            else:
+                
+                print("Error\n\n")
+    
+        if dbScoreOption == "1":
+            #########################################################################
+            #F1 Score dbscan
+            dbscanF1,clusterAssigned = dbF1(dblabels,labels,dbClusters,maxDBvalue)
+            print("\n\n#########################################################################")
+            print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
+            print("DBSCAN F1 Score -> ",dbscanF1)
+            print("#########################################################################")
+            #########################################################################
+
+        
+        elif dbScoreOption == "2":
+            #########################################################################
+            dbscanNMI,clusterAssigned = dbNMI(dblabels,labels,dbClusters,maxDBvalue)
+            print("\n\n#########################################################################")
+            print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
+            print("DBSCAN Normalized Mutual Info Score -> ",dbscanNMI)
+            print("#########################################################################")
+            #########################################################################
+        
+        elif dbScoreOption == "3":
+            #########################################################################
+            dbscanARS,clusterAssigned = dbARS(dblabels,labels,dbClusters,maxDBvalue)
+            print("\n\n#########################################################################")
+            print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
+            print("DBSCAN Adjusted Rand Score -> ",dbscanARS)
+            print("#########################################################################")
+            #########################################################################
             
         
             
@@ -1063,46 +1043,36 @@ while True:
         print("Max True Label","\n\n",MaxIfVal)
         print("#########################################################################")
         #########################################################################
-        while True:#If user want to continue making score metrics on Isolation Forest results
+        
+        print("\n\n#########################################################################")
+        print("Isolation Forest Score Metrics Menu")
+        print("#########################################################################")
+        
+        print("1.F1 Score")
+        print("2.AUC")
+        print("3.Normalized Mutual Info Score")
+        print("4.Adjusted Rand Score")
+        
+        while True:
             
-            print("\n\n#########################################################################")
-            print("Isolation Forest Score Metrics Menu")
-            print("#########################################################################")
+            ifScoreOption = input("option:")
             
-            print("1.F1 Score")
-            print("2.AUC")
-            print("3.Normalized Mutual Info Score")
-            print("4.Adjusted Rand Score")
-            
-            while True:
-                
-                ifScoreOption = input("option:")
-                
-                if ifScoreOption == "1" or ifScoreOption == "2" or ifScoreOption == "3" or ifScoreOption == "4":
-                    break
-                else:
-                    
-                    print("Error\n\n")
-            
-            if ifScoreOption == "1":
-                
-                ##########################################################################
-                isolationForestF1,clusterAssigned = ifF1(ifLabels,labels,ifNclusters,MaxIfVal)
-                print("\n\n#########################################################################")
-                print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
-                print("Isolation Forest F1 Score -> ",isolationForestF1)
-                print("#########################################################################")
-                ##########################################################################
-            
-            
-            while True:
-                scoreAgain = input("Try another Score[y/n]:")
-                
-                if scoreAgain == "y" or scoreAgain == "n":
-                    break
-            
-            if scoreAgain == "n":
+            if ifScoreOption == "1" or ifScoreOption == "2" or ifScoreOption == "3" or ifScoreOption == "4":
                 break
+            else:
+                
+                print("Error\n\n")
+        
+        if ifScoreOption == "1":
+            
+            ##########################################################################
+            isolationForestF1,clusterAssigned = ifF1(ifLabels,labels,ifNclusters,MaxIfVal)
+            print("\n\n#########################################################################")
+            print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
+            print("Isolation Forest F1 Score -> ",isolationForestF1)
+            print("#########################################################################")
+            ##########################################################################
+
         
     elif algorithmOption == "4":
         #########################################################################
@@ -1114,46 +1084,37 @@ while True:
         print("Max True Label","\n\n",maxLOFvalue)
         print("#########################################################################")
         #########################################################################
+    
+        print("\n\n#########################################################################")
+        print("LOF Score Metrics Menu")
+        print("#########################################################################")
+        print("1.F1 Score")
+        print("2.AUC")
+        print("3.Normalized Mutual Info Score")
+        print("4.Adjusted Rand Score")
         
-        while True: #If the user want to continue making score metrics on LOF
-            print("\n\n#########################################################################")
-            print("LOF Score Metrics Menu")
-            print("#########################################################################")
+        while True:
             
-            print("1.F1 Score")
-            print("2.AUC")
-            print("3.Normalized Mutual Info Score")
-            print("4.Adjusted Rand Score")
+            lofScoreOption = input("option:")
             
-            while True:
-                
-                lofScoreOption = input("option:")
-                
-                if lofScoreOption == "1" or lofScoreOption == "2" or lofScoreOption == "3" or lofScoreOption == "4":
-                    break
-                else:
-                    
-                    print("Error\n\n")
-            
-            if lofScoreOption == "1":
-                
-                ##########################################################################
-                LOFf1,clusterAssigned = lofF1(LOFlabels,labels,lofClusters,maxLOFvalue)
-                print("\n\n#########################################################################")
-                print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
-                print("LOF F1 Score -> ",LOFf1)
-                print("#########################################################################")
-                ##########################################################################
-                
-                
-            while True:
-                scoreAgain = input("Try another metric score[y/n]:")
-                
-                if scoreAgain == "y" or scoreAgain == "n":
-                    break
-            
-            if scoreAgain == "n":
+            if lofScoreOption == "1" or lofScoreOption == "2" or lofScoreOption == "3" or lofScoreOption == "4":
                 break
+            else:
+                
+                print("Error\n\n")
+        
+        if lofScoreOption == "1":
+            
+            ##########################################################################
+            LOFf1,clusterAssigned = lofF1(LOFlabels,labels,lofClusters,maxLOFvalue)
+            print("\n\n#########################################################################")
+            print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
+            print("LOF F1 Score -> ",LOFf1)
+            print("#########################################################################")
+            ##########################################################################
+                
+                
+
             
                 
     while True: # If the user want to Make a new clustering algorithm test
