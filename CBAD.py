@@ -692,22 +692,22 @@ def isolationForest(X,Y):
     from sklearn.ensemble import IsolationForest
     
     while True:
-        nEstimators = input("nEstimators: ")
+        contamination = input("Contamination[Float 0 to 0.5]: ")
         
         try:
-            nEstimators = int(nEstimators)
+            contamination = float(contamination)
             
         except ValueError:
             
             print("Enter a Number")
             
-        if type(nEstimators) == int:
+        if type(contamination) == float and (contamination >= 0 and contamination <= 0.5):
             break
     
     print("\nClustering...\n")   
     
     start_time = time.time() 
-    Z = IsolationForest(n_estimators = nEstimators,max_samples = "auto",behaviour = "new",contamination = "auto").fit_predict(X)
+    Z = IsolationForest(max_samples = "auto",behaviour = "new",contamination = contamination).fit_predict(X)
     print("\n\nRun Time ->","--- %s seconds ---" % (time.time() - start_time))
     
     Z = np.array(Z,dtype = object)
@@ -719,7 +719,7 @@ def isolationForest(X,Y):
     n = -1  # Isolation Forest return index -1 and 1 cluster
     clusters = []
     while n < len(ifR.columns):
-        ifNclusters.append(n)
+        clusters.append(n)
         n += 2
         
     return Z,ifR,maxVal,clusters
@@ -764,16 +764,16 @@ def LOF(X,Y):
     from sklearn.neighbors import LocalOutlierFactor 
     
     while True:
-        nNeighbors = input("nNeighbors: ")
+        contamination = input("Contamination[Float 0 to 0.5]: ")
         
         try:
-            nNeighbors = int(nNeighbors)
+            contamination = float(contamination)
             
         except ValueError:
             
             print("Enter a Number")
             
-        if type(nNeighbors) == int:
+        if type(contamination) == float and (contamination >= 0 and contamination <= 0.5):
             break
         
     while True:
@@ -788,7 +788,7 @@ def LOF(X,Y):
     print("\nClustering...\n")
     
     start_time = time.time() 
-    lof = LocalOutlierFactor(n_neighbors = nNeighbors,contamination = "auto",algorithm = algorithm).fit_predict(X)
+    lof = LocalOutlierFactor(contamination = contamination,algorithm = algorithm).fit_predict(X)
     print("\n\nRun Time ->","--- %s seconds ---" % (time.time() - start_time))
     
     lofR = pd.crosstab(Y,lof)
