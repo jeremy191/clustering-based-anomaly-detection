@@ -108,7 +108,7 @@ def gettingVariables(dataSet):
         total = X.isnull().sum().sum()
         percent = (total / (X.count().sum() + X.isnull().sum().sum())) * 100
             
-        for rows in data:
+        for rows in X:
                     
             if X[rows].isnull().sum() != 0:
                 missingValIndex.append(rows)
@@ -191,7 +191,7 @@ def gettingVariables(dataSet):
         elif missingDataOption == "6": 
             from sklearn.impute import SimpleImputer
             #"Imputation transformer for completing missing values."(Univariate)
-            X = SimpleImputer(missing_values = np.nan, strategy='mean', fill_value=None, verbose=0, copy=True).fit_transform(data)          
+            X = SimpleImputer(missing_values = np.nan, strategy='mean', fill_value=None, verbose=0, copy=True).fit_transform(X)          
             print("\n\n#########################################################################")
             print("Sucessfully Imputed Simple Imputer ")
             print("#########################################################################")
@@ -364,7 +364,7 @@ def scaling(X):#Scalign the data with the normalize method
             return X
         
     else:
-        return data
+        return X
 
     
 def shuffleData(X):
@@ -707,7 +707,7 @@ def isolationForest(X,Y):
     print("\nClustering...\n")   
     
     start_time = time.time() 
-    Z = IsolationForest(n_estimators = nEstimators,max_samples = "auto",behaviour = "new",contamination = "auto").fit_predict(data)
+    Z = IsolationForest(n_estimators = nEstimators,max_samples = "auto",behaviour = "new",contamination = "auto").fit_predict(X)
     print("\n\nRun Time ->","--- %s seconds ---" % (time.time() - start_time))
     
     Z = np.array(Z,dtype = object)
