@@ -93,23 +93,24 @@ def gettingVariables(dataSet):
         #############################################################################
         #GETTING VARIABLES
         #############################################################################
-        data = dataSet.iloc[:,:-1].values#data
-        labels = dataSet.iloc[:,78].values#Labels
-        data = pd.DataFrame(data)
+        X = dataSet.iloc[:,:-1].values#data
+        X = pd.DataFrame(X)
+        Y = dataSet.iloc[:,78].values#Labels
+        
         #############################################################################
         #Variables Got 
         #############################################################################
         
         #if data set has infinity values replace them with none
-        data = data.replace('Infinity', np.nan) #Replacing Infinity values with nan values
+        X = X.replace('Infinity', np.nan) #Replacing Infinity values with nan values
            
         missingValIndex = []
-        total = data.isnull().sum().sum()
-        percent = (total / (data.count().sum() + data.isnull().sum().sum())) * 100
+        total = X.isnull().sum().sum()
+        percent = (total / (X.count().sum() + X.isnull().sum().sum())) * 100
             
         for rows in data:
                     
-            if data[rows].isnull().sum() != 0:
+            if X[rows].isnull().sum() != 0:
                 missingValIndex.append(rows)
         print("\n\n**************************************************")
         print("Data has missing values")
@@ -141,10 +142,10 @@ def gettingVariables(dataSet):
     
         if missingDataOption == "1":
             deletedColumns = []
-            numColumns = len(data.columns)
+            numColumns = len(X.columns)
             for row in missingValIndex:
                 deletedColumns.append(row)
-                del data[row]
+                del X[row]
         
             print("#\n\n########################################################################")
             print("Columns Succesfully Removed")
@@ -154,7 +155,7 @@ def gettingVariables(dataSet):
     
         elif missingDataOption == "2":
             for row in missingValIndex:
-                data[row] = data[row].fillna(0)
+                X[row] = X[row].fillna(0)
         
             print("\n\n#########################################################################")
             print("Sucessfully Filled Missing Values with 0")
@@ -163,8 +164,8 @@ def gettingVariables(dataSet):
     
         elif missingDataOption == "3":
             for row in missingValIndex:
-                data[row] = data[row].astype(float)
-                data[row] = data[row].fillna(data[row].mean())
+                X[row] = X[row].astype(float)
+                X[row] = X[row].fillna(X[row].mean())
         
             print("\n\n#########################################################################")
             print("Sucessfully Filled Missing Values with Mean")
@@ -172,8 +173,8 @@ def gettingVariables(dataSet):
     
         elif missingDataOption == "4":
             for row in missingValIndex:
-                median = data[row].median()
-                data[row].fillna(median, inplace=True)
+                median = X[row].median()
+                X[row].fillna(median, inplace=True)
             print("\n\n#########################################################################")
             print("Sucessfully Filled Missing Values with Median")
             print("#########################################################################")
@@ -181,7 +182,7 @@ def gettingVariables(dataSet):
         elif missingDataOption == "5":
     
             for row in missingValIndex:
-                data[row] = data[row].fillna(data[row].mode()[0])
+                X[row] = X[row].fillna(X[row].mode()[0])
     
             print("\n\n#########################################################################")
             print("Sucessfully Filled Missing Values with Mode ")
@@ -190,14 +191,14 @@ def gettingVariables(dataSet):
         elif missingDataOption == "6": 
             from sklearn.impute import SimpleImputer
             #"Imputation transformer for completing missing values."(Univariate)
-            data = SimpleImputer(missing_values = np.nan, strategy='mean', fill_value=None, verbose=0, copy=True, add_indicator=False).fit_transform(data)          
+            X = SimpleImputer(missing_values = np.nan, strategy='mean', fill_value=None, verbose=0, copy=True, add_indicator=False).fit_transform(data)          
             print("\n\n#########################################################################")
             print("Sucessfully Imputed Simple Imputer ")
             print("#########################################################################")
                   
                   
         option = "None" #This data does not have categorical features so dataOption is none      
-        return data,labels,option
+        return X,Y,option
        
 #############################################################################
 #END OF MISSING DATA
@@ -208,7 +209,7 @@ def gettingVariables(dataSet):
 
 
     
-def encodingLabels(labels,dataOption,datasetOption):
+def encodingLabels(Y,dataOption,datasetOption):
     
     if datasetOption == "1": #Check if the data set choosen is NSL-KDD or IDS2017
         
@@ -234,9 +235,9 @@ def encodingLabels(labels,dataOption,datasetOption):
                 attackType  = {'normal':"normal", 'neptune':"abnormal", 'warezclient':"abnormal", 'ipsweep':"abnormal",'back':"abnormal", 'smurf':"abnormal", 'rootkit':"abnormal",'satan':"abnormal", 'guess_passwd':"abnormal",'portsweep':"abnormal",'teardrop':"abnormal",'nmap':"abnormal",'pod':"abnormal",'ftp_write':"abnormal",'multihop':"abnormal",'buffer_overflow':"abnormal",'imap':"abnormal",'warezmaster':"abnormal",'phf':"abnormal",'land':"abnormal",'loadmodule':"abnormal",'spy':"abnormal",'perl':"abnormal"} 
                 attackEncodingCluster  = {'normal':0,'abnormal':1}
     
-                labels[:] = [attackType[item] for item in labels[:]] #Encoding the binary data
-                labels[:] = [attackEncodingCluster[item] for item in labels[:]]#Changing the names of the labels to binary labels normal and abnormal
-                return labels,encodeOption
+                Y[:] = [attackType[item] for item in Y[:]] #Encoding the binary data
+                Y[:] = [attackEncodingCluster[item] for item in Y[:]]#Changing the names of the labels to binary labels normal and abnormal
+                return Y,encodeOption
     
             elif encodeOption == "2":
                 #4 Main Categories
@@ -248,11 +249,11 @@ def encodingLabels(labels,dataOption,datasetOption):
                 attackType  = {'normal': 'normal', 'neptune':'DoS', 'warezclient': 'R2L', 'ipsweep': 'Probe','back': 'DoS', 'smurf': 'DoS', 'rootkit': 'U2R','satan': 'Probe', 'guess_passwd': 'R2L','portsweep': 'Probe','teardrop': 'DoS','nmap': 'Probe','pod': 'DoS','ftp_write': 'R2L','multihop': 'R2L','buffer_overflow': 'U2R','imap': 'R2L','warezmaster': 'R2L','phf': 'R2L','land': 'DoS','loadmodule': 'U2R','spy': 'R2L','perl': 'U2R'} 
                 attackEncodingCluster  = {'normal':0,'DoS':1,'Probe':2,'R2L':3, 'U2R':4} #Main Categories
     
-                labels[:] = [attackType[item] for item in labels[:]] #Encoding the main 4 categories
-                labels[:] = [attackEncodingCluster[item] for item in labels[:]]# Changing the names of attacks into 4 main categories
-                return labels,encodeOption
+                Y[:] = [attackType[item] for item in Y[:]] #Encoding the main 4 categories
+                Y[:] = [attackEncodingCluster[item] for item in Y[:]]# Changing the names of attacks into 4 main categories
+                return Y,encodeOption
         else:
-            return labels
+            return Y
     
     
     elif datasetOption == "2":#Check if the data set choosen is NSL-KDD or IDS2017
@@ -264,29 +265,29 @@ def encodingLabels(labels,dataOption,datasetOption):
         encodeOption = input("Enter option :")
 
         if encodeOption == "1":
-            labels = np.array(labels,dtype= object)
+            Y = np.array(Y,dtype= object)
             attackEncoding  = {'BENIGN': 0,'DoS slowloris': 1,'DoS Slowhttptest': 2,'DoS Hulk': 3, 'DoS GoldenEye': 4, 'Heartbleed': 5} #Main Categories
-            labels[:] = [attackEncoding[item] for item in labels[:]]# Changing the names of attacks into 4 main categories
+            Y[:] = [attackEncoding[item] for item in Y[:]]# Changing the names of attacks into 4 main categories
     
-            return labels,encodeOption
+            return Y,encodeOption
         
         elif encodeOption == "2":
-            labels = np.array(labels,dtype= object)
+            Y = np.array(Y,dtype= object)
             attackType  = {'BENIGN': 'normal','DoS slowloris': 'abnormal','DoS Slowhttptest': 'abnormal','DoS Hulk': 'abnormal', 'DoS GoldenEye': 'abnormal', 'Heartbleed': 'abnormal'} #Binary Categories
             attackEncoding = {'normal': 0, 'abnormal': 1}
             
-            labels[:] = [attackType[item] for item in labels[:]]# Changing the names of attacks into binary categories
-            labels[:] = [attackEncoding[item] for item in labels[:]]# Changing the names of attacks into binary categories
-            return labels,encodeOption
+            Y[:] = [attackType[item] for item in Y[:]]# Changing the names of attacks into binary categories
+            Y[:] = [attackEncoding[item] for item in Y[:]]# Changing the names of attacks into binary categories
+            return Y,encodeOption
         
         else:
-            return labels
+            return Y
 
 
 
 
 #Encoding the data using one hot encoding and using Main attacks categories or binary categories
-def oneHotEncodingData(data,dataOption):
+def oneHotEncodingData(X,dataOption):
         
     from sklearn.preprocessing import OneHotEncoder
     from sklearn.compose import ColumnTransformer
@@ -298,7 +299,7 @@ def oneHotEncodingData(data,dataOption):
     #Encoding the Independient Variable
     if dataOption == "1": #Only for dataset with Categorical Data
         transform = ColumnTransformer([("Servers", OneHotEncoder(categories = "auto"), [1,2,3])], remainder="passthrough")
-        data = transform.fit_transform(data)
+        X = transform.fit_transform(X)
         print("\n\n#########################################################################")
         print("Data has been successfully One Hot Encoded")
         print("#########################################################################")
@@ -306,40 +307,40 @@ def oneHotEncodingData(data,dataOption):
         return data
     elif dataOption == "3": #Only for risk data
         transform = ColumnTransformer([("Servers", OneHotEncoder(categories = "auto"), [1])], remainder="passthrough")
-        data = transform.fit_transform(data)
+        X = transform.fit_transform(X)
         print("\n\n#########################################################################")
         print("Data has been successfully One Hot Encoded")
         print("#########################################################################")
-        return data
+        return X
         
     else:
-        return data #return data with no changes
+        return X #return data with no changes
 
 
-def riskEncodingData(data,labels,dataOption):#This function is only for risk testing only
+def riskEncodingData(X,dataOption):#This function is only for risk testing only
     #Manually Encoding for the attacks types only
     if dataOption == "3": #if data option is risk Value
-        data = pd.DataFrame(data)
+        X = pd.DataFrame(X)
         servers  = {'http':0.01, 'domain_u':0, 'sunrpc':1, 'smtp':0.01, 'ecr_i':0.87, 'iso_tsap':1, 'private':0.97, 'finger':0.27, 'ftp':0.26, 'telnet':0.48,'other':0.12,'discard':1, 'courier':1, 'pop_3':0.53, 'ldap':1, 'eco_i':0.8, 'ftp_data':0.06, 'klogin':1, 'auth':0.31, 'mtp':1, 'name':1, 'netbios_ns':1,'remote_job':1,'supdup':1,'uucp_path':1,'Z39_50':1,'csnet_ns':1,'uucp':1,'netbios_dgm':1,'urp_i':0,'domain':0.96,'bgp':1,'gopher':1,'vmnet':1,'systat':1,'http_443':1,'efs':1,'whois':1,'imap4':1,'echo':1,'link':1,'login':1,'kshell':1,'sql_net':1,'time':0.88,'hostnames':1,'exec':1,'ntp_u':0,'nntp':1,'ctf':1,'ssh':1,'daytime':1,'shell':1,'netstat':1,'nnsp':1,'IRC':0,'pop_2':1,'printer':1,'tim_i':0.33,'pm_dump':1,'red_i':0,'netbios_ssn':1,'rje':1,'X11':0.04,'urh_i':0,'http_8001':1,'aol':1,'http_2784':1,'tftp_u':0,'harvest':1}
-        data[2] = [servers[item] for item in data[2]]
+        X[2] = [servers[item] for item in X[2]]
 
         servers_Error  = {'REJ':0.519, 'SF':0.016, 'S0':0.998, 'RSTR':0.882, 'RSTO':0.886,'SH':0.993,'S1':0.008,'RSTOS0':1,'S3':0.08,'S2':0.05,'OTH':0.729} 
-        data[3] = [servers_Error[item] for item in data[3]]
+        X[3] = [servers_Error[item] for item in X[3]]
 
         print("\n\n#########################################################################")
         print("Data has been successfully risk Encoded")
         print("#########################################################################")
 
-        return data,labels
+        return data
         
     else:
         
-        return data,labels #return data with no changes
+        return data #return data with no changes
             
     
 
 
-def scaling(data):#Scalign the data with the normalize method
+def scaling(X):#Scalign the data with the normalize method
     
 
     while True:
@@ -356,11 +357,11 @@ def scaling(data):#Scalign the data with the normalize method
         
             from sklearn.preprocessing import MinMaxScaler
             #Transforms features by scaling each feature to a given range.
-            data =  MinMaxScaler(feature_range=(0, 1)).fit_transform(data)
+            X =  MinMaxScaler(feature_range=(0, 1)).fit_transform(X)
             print("\n\n#########################################################################")
             print("Data has been successfully scaled.")
             print("#########################################################################")
-            return data
+            return X
         
     else:
         return data
@@ -396,7 +397,7 @@ def shuffleData(X):
 
 
 
-def kmeansClustering(data,labels):#K-means algorithm 
+def kmeansClustering(X,Y):#K-means algorithm 
     from sklearn.cluster import KMeans
 
     while True:
@@ -415,10 +416,10 @@ def kmeansClustering(data,labels):#K-means algorithm
             
         if type(nClusters) == int:
             n = 0
-            clusterArray = []
+            clusters = []
             
             while n < nClusters:#Converting nCluster into an array of n clusters [n]
-                clusterArray.append(n)
+                clusters.append(n)
                 n+=1
             break
         
@@ -434,19 +435,19 @@ def kmeansClustering(data,labels):#K-means algorithm
     KMEANS = KMeans(n_clusters = nClusters, init = init,max_iter = 300,n_init = 10,random_state = 0)
     print("\n\nRun Time ->","--- %s seconds ---" % (time.time() - start_time))
     print("Data Successfully Clustered")
-    kmeans = KMEANS.fit(data)
-    klabels = kmeans.labels_
+    kmeans = KMEANS.fit(X)
+    Z = kmeans.labels_
     inertia = KMEANS.inertia_
     #Kmeans Results
-    kmeansR = pd.crosstab(labels,klabels)
-    maxV = kmeansR.idxmax()
+    kmeansR = pd.crosstab(Y,Z)
+    maxVal = kmeansR.idxmax()
     
-    return klabels,clusterArray,kmeansR,maxV,inertia
+    return Z,clusters,kmeansR,maxVal,inertia
 
 
 
 
-def kF1(klabels,labels,maxKvalue,nClusters):#F1 Score for Kmeans
+def kF1(Z,Y,maxVal,clusters):#F1 Score for Kmeans
     from sklearn.metrics import f1_score
     #Encoding data to F-score
     
@@ -456,13 +457,13 @@ def kF1(klabels,labels,maxKvalue,nClusters):#F1 Score for Kmeans
     f1 = 0 #f1score
     average = ''
     
-    while n < len(nClusters):# while counter < number of clusters
-        dictionaryCluster[nClusters[n]] = maxKvalue[n] #creating key(cluster index) with value (max number of the clustering results) for every iteration
+    while n < len(clusters):# while counter < number of clusters
+        dictionaryCluster[clusters[n]] = maxVal[n] #creating key(cluster index) with value (max number of the clustering results) for every iteration
         n+=1
         
-    klabels[:] = [dictionaryCluster[item] for item in klabels[:]] # match key with the index of klabels and replace it with key value
+    Z[:] = [dictionaryCluster[item] for item in Z[:]] # match key with the index of klabels and replace it with key value
             
-    labels = np.array(labels,dtype = int) # Converting labels into a int array
+    Y = np.array(Y,dtype = int) # Converting labels into a int array
     
     while True:
         
@@ -471,13 +472,13 @@ def kF1(klabels,labels,maxKvalue,nClusters):#F1 Score for Kmeans
         if average == "weighted" or average == "micro" or average == "macro" or average == 'binary':
             break
         
-    f1 = f1_score(labels,klabels, average = average) #Forget the labels that where not predicted and gives lables that were predicted at least once
+    f1 = f1_score(Y,Z, average = average) #Forget the labels that where not predicted and gives lables that were predicted at least once
     
     return f1,dictionaryCluster
 
 
 
-def kNMI(klabels,labels,maxKvalue,nClusters):
+def kNMI(Z,Y,maxVal,clusters):
     from sklearn.metrics import normalized_mutual_info_score
     
     n = 0 # counter
@@ -485,13 +486,13 @@ def kNMI(klabels,labels,maxKvalue,nClusters):
     NMI = 0
     average = ''
     
-    while n < len(nClusters):# while counter < number of clusters
-        dictionaryCluster[nClusters[n]] = maxKvalue[n] #creating key(cluster index) with value (max number of the clustering results) for every iteration
+    while n < len(clusters):# while counter < number of clusters
+        dictionaryCluster[clusters[n]] = maxVal[n] #creating key(cluster index) with value (max number of the clustering results) for every iteration
         n+=1
         
-    klabels[:] = [dictionaryCluster[item] for item in klabels[:]] # match key with the index of klabels and replace it with key value
+    Z[:] = [dictionaryCluster[item] for item in Z[:]] # match key with the index of klabels and replace it with key value
     
-    labels = np.array(labels,dtype = int) #Making sure that labels are in a int array
+    Y = np.array(Y,dtype = int) #Making sure that labels are in a int array
     
     while True:
         
@@ -500,34 +501,34 @@ def kNMI(klabels,labels,maxKvalue,nClusters):
         if average == "geometric" or average == "min" or average == "arithmetic" or average == "max":
             break
     
-    NMI = normalized_mutual_info_score(labels, klabels, average_method = average)
+    NMI = normalized_mutual_info_score(Y, Z, average_method = average)
     
     return NMI,dictionaryCluster
 
 
 
-def kARS(klabels,labels,maxKvalue,nClusters):
+def kARS(Z,Y,maxVal,clusters):
     from sklearn.metrics import adjusted_rand_score
     
     n = 0 # counter
     dictionaryCluster  = {} # creating an empty dictionary 
     ars = 0
     
-    while n < len(nClusters):# while counter < number of clusters
-        dictionaryCluster[nClusters[n]] = maxKvalue[n] #creating key(cluster index) with value (max number of the clustering results) for every iteration
+    while n < len(clusters):# while counter < number of clusters
+        dictionaryCluster[clusters[n]] = maxVal[n] #creating key(cluster index) with value (max number of the clustering results) for every iteration
         n+=1
         
-    klabels[:] = [dictionaryCluster[item] for item in klabels[:]] # match key with the index of klabels and replace it with key value
+    Z[:] = [dictionaryCluster[item] for item in Z[:]] # match key with the index of klabels and replace it with key value
     
-    labels = np.array(labels,dtype = int) #Making sure that labels are in a int array
+    Y = np.array(Y,dtype = int) #Making sure that labels are in a int array
     
-    ars = adjusted_rand_score(labels, klabels)
+    ars = adjusted_rand_score(Y, Z)
     
     return ars,dictionaryCluster
 
 
 
-def dbscanClustering(data,labels):#DBSCAN algorithm
+def dbscanClustering(X,Y):#DBSCAN algorithm
     from sklearn.cluster import DBSCAN
     
     while True:
@@ -576,7 +577,7 @@ def dbscanClustering(data,labels):#DBSCAN algorithm
 
     #Compute DBSCAN
     start_time = time.time() 
-    db = DBSCAN(eps= epsilon, min_samples = minSamples,algorithm = algorithm).fit(data)
+    db = DBSCAN(eps= epsilon, min_samples = minSamples,algorithm = algorithm).fit(X)
     print("\n\nRun Time ->","--- %s seconds ---" % (time.time() - start_time))
     print("Data Successfully Clustered")
     
@@ -584,27 +585,27 @@ def dbscanClustering(data,labels):#DBSCAN algorithm
     core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
     core_samples_mask[db.core_sample_indices_] = True
     
-    dblabels = db.labels_
+    Z = db.labels_
     # Number of clusters in labels, ignoring noise if present.
-    n_clusters = len(set(dblabels))
-    n_noise_ = list(dblabels).count(-1)
+    n_clusters = len(set(Z))
+    n_noise_ = list(Z).count(-1)
     
     n = -1  # DBSCAN return index -1 cluster
-    dbClusterArray = []
+    clusters = []
     while n + 1 < n_clusters:
-        dbClusterArray.append(n)
+        clusters.append(n)
         n += 1
     
     #DBSCAN Results
-    dbscanR = pd.crosstab(labels,dblabels)
-    maxValue = dbscanR.idxmax()
+    dbscanR = pd.crosstab(Y,Z)
+    maxVal = dbscanR.idxmax()
     
-    return dblabels,dbClusterArray,n_noise_,dbscanR,maxValue
+    return Z,clusters,n_noise_,dbscanR,maxVal
 
 
 
 
-def dbF1(dblabels,labels,dbClusters,maxDBvalue):#F1 score for DBSCAN
+def dbF1(Z,Y,clusters,maxVal):#F1 score for DBSCAN
     from sklearn.metrics import f1_score
     #Encoding data to F-score
     
@@ -615,15 +616,15 @@ def dbF1(dblabels,labels,dbClusters,maxDBvalue):#F1 score for DBSCAN
     f1 = 0
     average = ''
     
-    while n < len(dbClusters):# while counter < number of clusters
-        dictionaryCluster[dbClusters[n]] = maxDBvalue[c] #creating key(cluster index) with value (max number of the clustering results) for every iteration
+    while n < len(clusters):# while counter < number of clusters
+        dictionaryCluster[clusters[n]] = maxVal[c] #creating key(cluster index) with value (max number of the clustering results) for every iteration
         n+=1
         c+=1
     
         
-    dblabels[:] = [dictionaryCluster[item] for item in dblabels[:]] # match key with the index of klabels and replace it with key value
+    Z[:] = [dictionaryCluster[item] for item in Z[:]] # match key with the index of klabels and replace it with key value
     
-    labels = np.array(labels,dtype = int) #Making sure that labels are in a int array
+    Y = np.array(Y,dtype = int) #Making sure that labels are in a int array
     while True:
         
         average = input("Average Method[weighted,micro,macro]:")
@@ -635,11 +636,11 @@ def dbF1(dblabels,labels,dbClusters,maxDBvalue):#F1 score for DBSCAN
             
             print("Error\n\n")
     
-    f1 = f1_score(labels,dblabels, average = average)
+    f1 = f1_score(Y,Z, average = average)
     return f1,dictionaryCluster
 
 
-def dbNMI(dblabels,labels,dbClusters,maxDBvalue):
+def dbNMI(Z,Y,clusters,maxVal):
     from sklearn.metrics import normalized_mutual_info_score
     
     n = 0 # counter
@@ -648,13 +649,13 @@ def dbNMI(dblabels,labels,dbClusters,maxDBvalue):
     dictionaryCluster  = {} # creating an empty dictionary 
     average = ''
     
-    while n < len(dbClusters):# while counter < number of clusters
-        dictionaryCluster[dbClusters[n]] = maxDBvalue[c] #creating key(cluster index) with value (max number of the clustering results) for every iteration
+    while n < len(clusters):# while counter < number of clusters
+        dictionaryCluster[clusters[n]] = maxVal[c] #creating key(cluster index) with value (max number of the clustering results) for every iteration
         n+=1
         c+=1
     
     
-    labels = np.array(labels,dtype = int) #Making sure that labels are in a int array
+    Y = np.array(Y,dtype = int) #Making sure that labels are in a int array
 
 
     while True:
@@ -668,13 +669,13 @@ def dbNMI(dblabels,labels,dbClusters,maxDBvalue):
             print("Error\n\n")
     
     
-    NMI = normalized_mutual_info_score(labels, dblabels, average_method= average)
+    NMI = normalized_mutual_info_score(Y, Z, average_method= average)
     
     return NMI,dictionaryCluster
 
 
 
-def dbARS(dblabels,labels,dbClusters,maxDBvalue):
+def dbARS(Z,Y,clusters,maxVal):
     from sklearn.metrics import adjusted_rand_score
     
     n = 0 # counter
@@ -682,17 +683,17 @@ def dbARS(dblabels,labels,dbClusters,maxDBvalue):
     ars = 0
     dictionaryCluster  = {} # creating an empty dictionary 
     
-    while n < len(dbClusters):# while counter < number of clusters
-        dictionaryCluster[dbClusters[n]] = maxDBvalue[c] #creating key(cluster index) with value (max number of the clustering results) for every iteration
+    while n < len(clusters):# while counter < number of clusters
+        dictionaryCluster[clusters[n]] = maxVal[c] #creating key(cluster index) with value (max number of the clustering results) for every iteration
         n+=1
         c+=1
     
-    ars = adjusted_rand_score(labels, dblabels)
+    ars = adjusted_rand_score(Y,Z)
     
     return ars,dictionaryCluster
 
 
-def isolationForest(data,labels):
+def isolationForest(X,Y):
     from sklearn.ensemble import IsolationForest
     
     while True:
@@ -711,18 +712,18 @@ def isolationForest(data,labels):
     print("\nClustering...\n")   
     
     start_time = time.time() 
-    ifLabels = IsolationForest(n_estimators = nEstimators,max_samples = "auto",behaviour = "new",contamination = "auto").fit_predict(data)
+    Z = IsolationForest(n_estimators = nEstimators,max_samples = "auto",behaviour = "new",contamination = "auto").fit_predict(data)
     print("\n\nRun Time ->","--- %s seconds ---" % (time.time() - start_time))
     
-    ifLabels = np.array(ifLabels,dtype = object)
+    Z = np.array(Z,dtype = object)
     
-    ifR = pd.crosstab(labels,ifLabels)
+    ifR = pd.crosstab(Y,Z)
     ifR = pd.DataFrame(ifR)
-    MaxIfVal = ifR.idxmax()
+    maxVal = ifR.idxmax()
     
     
     n = -1  # Isolation Forest return index -1 and 1 cluster
-    ifNclusters = []
+    clusters = []
     while n < len(ifR.columns):
         ifNclusters.append(n)
         n += 2
@@ -730,9 +731,9 @@ def isolationForest(data,labels):
 
     
     
-    return ifLabels,ifR,MaxIfVal,ifNclusters
+    return Z,ifR,maxVal,clusters
 
-def ifF1(ifLabels,labels,ifNclusters,MaxIfVal):
+def ifF1(Z,Y,clusters,maxVal):
     from sklearn.metrics import f1_score
     
     n = 0 # counter
@@ -742,14 +743,15 @@ def ifF1(ifLabels,labels,ifNclusters,MaxIfVal):
     dictionaryCluster  = {} # creating an empty dictionary 
 
     
-    while n < len(ifNclusters): # Since we got -1 and 1 clusters , in order to assing the corrects result counter starts at -1 and it increments by 2 so it can have the 1 index of maxLOFvalue
-        dictionaryCluster[ifNclusters[n]] = MaxIfVal[c] 
+    while n < len(clusters): # Since we got -1 and 1 clusters , in order to assing the corrects result counter starts at -1 and it increments by 2 so it can have the 1 index of maxLOFvalue
+        dictionaryCluster[clusters[n]] = maxVal[c] 
         n+=1
         c+=2
         
-    ifLabels[:] = [dictionaryCluster[item] for item in ifLabels[:]] # match key with the index of klabels and replace it with key value
-    labels = np.array(labels,dtype = int)
-    ifLabels = np.array(ifLabels,dtype = int)
+    Z[:] = [dictionaryCluster[item] for item in Z[:]] # match key with the index of klabels and replace it with key value
+    
+    Y = np.array(Y,dtype = int)
+    Z = np.array(Z,dtype = int)
     
     while True:
         
@@ -762,13 +764,13 @@ def ifF1(ifLabels,labels,ifNclusters,MaxIfVal):
             
             print("Error\n\n")
     
-    f1 = f1_score(labels,ifLabels, average = average) #[None, 'micro', 'macro', 'weighted']
+    f1 = f1_score(Y,Z, average = average) #[None, 'micro', 'macro', 'weighted']
     
     return f1,dictionaryCluster
     
 
 
-def LOF(data,labels):
+def LOF(X,Y):
     from sklearn.neighbors import LocalOutlierFactor 
     
     while True:
@@ -796,26 +798,26 @@ def LOF(data,labels):
     print("\nClustering...\n")
     
     start_time = time.time() 
-    lof = LocalOutlierFactor(n_neighbors = nNeighbors,contamination = "auto",algorithm = algorithm).fit_predict(data)
+    lof = LocalOutlierFactor(n_neighbors = nNeighbors,contamination = "auto",algorithm = algorithm).fit_predict(X)
     print("\n\nRun Time ->","--- %s seconds ---" % (time.time() - start_time))
     
-    lofR = pd.crosstab(labels,lof)
-    maxLOFvalue = lofR.idxmax()
+    lofR = pd.crosstab(Y,lof)
+    maxVal = lofR.idxmax()
     
     
     n = -1  # LOF return index -1 and 1 cluster
-    lofCluster = []
+    clusters = []
     while n < len(lofR.columns):
-        lofCluster.append(n)
+        clusters.append(n)
         n += 2
     
     
     
-    return lof,lofR,maxLOFvalue,lofCluster
+    return lof,lofR,maxVal,clusters
     
 
 
-def lofF1(lofLabels,labels,lofCluster,maxLOFvalue):
+def lofF1(Z,Y,clusters,maxVal):
     from sklearn.metrics import f1_score
     
     n = 0 # counter
@@ -823,14 +825,14 @@ def lofF1(lofLabels,labels,lofCluster,maxLOFvalue):
     f1 = 0
     dictionaryCluster  = {} # creating an empty dictionary 
     
-    while n < len(lofCluster): # Since we got -1 and 1 clusters , in order to assing the corrects result counter starts at -1 and it increments by 2 so it can have the 1 index of maxLOFvalue
-        dictionaryCluster[lofCluster[n]] = maxLOFvalue[c] 
+    while n < len(clusters): # Since we got -1 and 1 clusters , in order to assing the corrects result counter starts at -1 and it increments by 2 so it can have the 1 index of maxLOFvalue
+        dictionaryCluster[clusters[n]] = maxVal[c] 
         n+=1
         c+=2
         
-    lofLabels[:] = [dictionaryCluster[item] for item in lofLabels[:]] # match key with the index of klabels and replace it with key value
-    labels = np.array(labels,dtype = int)
-    lofLabels = np.array(lofLabels,dtype = int)
+    Z[:] = [dictionaryCluster[item] for item in Z[:]] # match key with the index of klabels and replace it with key value
+    Y = np.array(Y,dtype = int)
+    Z = np.array(Z,dtype = int)
     while True:
         
         average = input("Average Method[weighted,None,micro,macro]:")
@@ -841,7 +843,7 @@ def lofF1(lofLabels,labels,lofCluster,maxLOFvalue):
         else:
             
             print("Error\n\n")
-    f1 = f1_score(labels,lofLabels, average = average) #[None, 'micro', 'macro', 'weighted']
+    f1 = f1_score(Y,Z, average = average) #[None, 'micro', 'macro', 'weighted']
     
     return f1,dictionaryCluster
 
@@ -869,7 +871,7 @@ except ValueError:
 
 #########################################################################
 #########################################################################
-data,labels = riskEncodingData(data,labels,dataOption)
+data = riskEncodingData(data,dataOption)
 #########################################################################
 #########################################################################
 data = oneHotEncodingData(data,dataOption) #One hot Encode with the complete data
@@ -939,7 +941,6 @@ while True:
             if kScoreOption == "1":
                 #########################################################################
                 #F1 Score
-                kmeansF1 = 0
                 kmeansF1,clusterAssigned = kF1(klabels,labels,maxKvalue,kClusters)
                 print("\n\n#########################################################################")
                 print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
@@ -949,7 +950,6 @@ while True:
             
             elif kScoreOption == "2":
                 #########################################################################
-                kmeansNMI = 0
                 kmeansNMI,clusterAssigned = kNMI(klabels,labels,maxKvalue,kClusters)
                 print("\n\n#########################################################################")
                 print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
@@ -960,7 +960,6 @@ while True:
             elif kScoreOption == "3":
                 
                 #########################################################################
-                kmeansARS = 0
                 kmeansARS,clusterAssigned = kARS(klabels,labels,maxKvalue,kClusters)
                 print("\n\n#########################################################################")
                 print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
@@ -1015,7 +1014,6 @@ while True:
             if dbScoreOption == "1":
                 #########################################################################
                 #F1 Score dbscan
-                dbscanF1 = 0
                 dbscanF1,clusterAssigned = dbF1(dblabels,labels,dbClusters,maxDBvalue)
                 print("\n\n#########################################################################")
                 print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
@@ -1026,7 +1024,6 @@ while True:
             
             elif dbScoreOption == "2":
                 #########################################################################
-                dbscanNMI = 0
                 dbscanNMI,clusterAssigned = dbNMI(dblabels,labels,dbClusters,maxDBvalue)
                 print("\n\n#########################################################################")
                 print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
@@ -1036,7 +1033,6 @@ while True:
             
             elif dbScoreOption == "3":
                 #########################################################################
-                dbscanARS = 0
                 dbscanARS,clusterAssigned = dbARS(dblabels,labels,dbClusters,maxDBvalue)
                 print("\n\n#########################################################################")
                 print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
@@ -1142,7 +1138,6 @@ while True:
             if lofScoreOption == "1":
                 
                 ##########################################################################
-                LOFf1 = 0
                 LOFf1,clusterAssigned = lofF1(LOFlabels,labels,lofClusters,maxLOFvalue)
                 print("\n\n#########################################################################")
                 print("Cluster Matchings by Maximun Intersection[Found: True] -> ",clusterAssigned)
