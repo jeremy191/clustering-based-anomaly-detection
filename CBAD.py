@@ -436,12 +436,12 @@ def kmeansClustering(data,labels):#K-means algorithm
     print("Data Successfully Clustered")
     kmeans = KMEANS.fit(data)
     klabels = kmeans.labels_
-    
+    inertia = KMEANS.inertia_
     #Kmeans Results
     kmeansR = pd.crosstab(labels,klabels)
     maxV = kmeansR.idxmax()
     
-    return klabels,clusterArray,kmeansR,maxV,
+    return klabels,clusterArray,kmeansR,maxV,inertia
 
 
 
@@ -904,10 +904,11 @@ while True:
     if algorithmOption == "1":
         #########################################################################
         #KMEANS
-        klabels,kClusters,kmeansR,maxKvalue = kmeansClustering(data,labels)
+        klabels,kClusters,kmeansR,maxKvalue,inertia = kmeansClustering(data,labels)
         print("#########################################################################")
         print("KMEANS RESULTS\n\n")
         print("Clusters -> ",kClusters,"\n")
+        print("Inertia -> ",inertia)
         print(kmeansR,"\n\n")
         print("Max True Label","\n\n",maxKvalue)
         print("#########################################################################")
