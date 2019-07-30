@@ -20,10 +20,13 @@ For this project, we installed Anaconda-Navigator to use as our package and envi
 This [guide](https://docs.anaconda.com/_downloads/9ee215ff15fde24bf01791d719084950/Anaconda-Starter-Guide.pdf) can help use Anaconda
 
 
-
-
-
 ## Code Details
+After you install all the requirements you should be able to run the code without any problems. This code is implemented user friendly and the steps will be briefly explained below:
+
+1. The user is asked to input wich dataset is will be made test in it, We will be look in more detail about this in step ??
+* ![Dataset option](/Users/jeremyperez/Desktop/datasetOption.png)
+
+
 
 ### Preprocessing Dataset
 
