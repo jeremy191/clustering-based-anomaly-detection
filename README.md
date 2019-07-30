@@ -23,8 +23,36 @@ This [guide](https://docs.anaconda.com/_downloads/9ee215ff15fde24bf01791d7190849
 ## Code Details
 After you install all the requirements you should be able to run the code without any problems. This code is implemented user friendly and the steps will be briefly explained below:
 
-1. The user is asked to input wich dataset is will be made test in it, We will be look in more detail about this in step ??
-* ![Dataset option](/Users/jeremyperez/Desktop/datasetOption.png)
+##### 1. Dataset option
+* ![image](https://user-images.githubusercontent.com/31083873/62171123-263b7400-b2eb-11e9-92ea-27dd3511b052.png)
+The user is asked to input wich dataset is will be made test in it, We will be look in more detail about this in step ??
+
+##### 2. Path
+* ![image](https://user-images.githubusercontent.com/31083873/62171230-816d6680-b2eb-11e9-814b-d6d2d2f819dd.png)
+The user is asked to input the path of the data set.
+
+##### 3. Variable Menu
+* ![image](https://user-images.githubusercontent.com/31083873/62171295-afeb4180-b2eb-11e9-8958-317cc71b9e43.png)
+The user is asked to choose the variables he wants to be working on.
+* 1. The data will have categorical features(protocols,service type,attack types,service error) and it will be [one hot encoded](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html)(encode categorical features into numerical features)
+* 2. The categorical features is removed from the data.
+* 3. The Categorical features(service type,attack types,service error) are encoded with [Risk Values](http://www.jatit.org/volumes/Vol65No3/13Vol65No3.pdf), since protocols don't have risk value they are one hot encoded
+
+##### 4. Encoding Menu
+* ![image](https://user-images.githubusercontent.com/31083873/62171931-ed50ce80-b2ed-11e9-9963-45de4cc4301e.png)
+The user is asked to encode the labels, normally they are a total of 22.
+1. The labels are converted in binary labels (normal and abnormal), every attack name that is not normal(not a attack) it is converted into a abnormal after that it is encoded into binary numbers where 0 is normal and 1 is abnormal the purpose of this is because we can't calculate a metric score with categorical features.
+
+2. The labels are converted into a 5 main categoires (normal,DoS,Probe,U2R,R2L), after that is encoded into 5 numbers where normal is 0, Dos is 1, Probe is 2, R2L is 3 and U2R is 4.
+
+##### 5. Scale the data
+* ![image](https://user-images.githubusercontent.com/31083873/62172317-1756c080-b2ef-11e9-873b-3c4a0f8fb0e9.png)
+The user is asked if he wants to Scale the data. We use [Min Max Scaler](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html), the reason to do this is because we want our data instances to be at the same range thus Min Max Scaler put the data in a range of [0,1].
+
+##### 6. 
+
+
+
 
 
 
