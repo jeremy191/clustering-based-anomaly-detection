@@ -67,7 +67,7 @@ Instead of measuring entropy as the NMI score does, the [Adjusted Rand Score](ht
 ## Authors and acknowledgment
 * Jeremy Perez
 * Bethany Danner
-* **Special thanks to Dr. Veronika Neeley for mentoring us throughout this project, and for Dr. Clem Izurieta for organizing the REU program at Montana State University. This work was funded by the NSF**.
+* **Special thanks to Dr. Veronika Neeley for mentoring us throughout this project, and for Dr. Clem Izurieta for organizing the REU program at Montana State University. This work was funded by the [NSF](https://www.nsf.gov/)**.
 
 ## License
 
