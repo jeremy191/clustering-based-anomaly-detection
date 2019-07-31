@@ -34,22 +34,33 @@ The user is asked to input the path of the data set.
 ##### 3. Variable Menu
 * ![image](https://user-images.githubusercontent.com/31083873/62171295-afeb4180-b2eb-11e9-8958-317cc71b9e43.png)
 The user is asked to choose the variables he wants to be working on.
-* 1. The data will have categorical features(protocols,service type,attack types,service error) and it will be [one hot encoded](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html)(encode categorical features into numerical features)
-* 2. The categorical features is removed from the data.
-* 3. The Categorical features(service type,attack types,service error) are encoded with [Risk Values](http://www.jatit.org/volumes/Vol65No3/13Vol65No3.pdf), since protocols don't have risk value they are one hot encoded
+Going back to first step, the meaning of that is that the two data sets have different amount of features in order to know wich features delete or encode the program need to know wich data set will be working on.
+
+  1. The data will have categorical features(protocols,service type,attack types,service error) and it will be [one hot  encoded](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html)(encode categorical features into numerical features)
+
+  2. The categorical features is removed from the data.
+
+  3. The Categorical features(service type,attack types,service error) are encoded with [Risk Values](http://www.jatit.org/volumes/Vol65No3/13Vol65No3.pdf), since protocols don't have risk value they are one hot encoded
 
 ##### 4. Encoding Menu
 * ![image](https://user-images.githubusercontent.com/31083873/62171931-ed50ce80-b2ed-11e9-9963-45de4cc4301e.png)
 The user is asked to encode the labels, normally they are a total of 22.
-1. The labels are converted in binary labels (normal and abnormal), every attack name that is not normal(not a attack) it is converted into a abnormal after that it is encoded into binary numbers where 0 is normal and 1 is abnormal the purpose of this is because we can't calculate a metric score with categorical features.
+  1. The labels are converted in binary labels (normal and abnormal), every attack name that is not normal(not a attack) it is converted into a abnormal after that it is encoded into binary numbers where 0 is normal and 1 is abnormal the purpose of this is because we can't calculate a metric score with categorical features.
 
-2. The labels are converted into a 5 main categoires (normal,DoS,Probe,U2R,R2L), after that is encoded into 5 numbers where normal is 0, Dos is 1, Probe is 2, R2L is 3 and U2R is 4.
+  2. The labels are converted into a 5 main categoires (normal,DoS,Probe,U2R,R2L), after that is encoded into 5 numbers where normal is 0, Dos is 1, Probe is 2, R2L is 3 and U2R is 4.
 
 ##### 5. Scale the data
 * ![image](https://user-images.githubusercontent.com/31083873/62172317-1756c080-b2ef-11e9-873b-3c4a0f8fb0e9.png)
 The user is asked if he wants to Scale the data. We use [Min Max Scaler](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html), the reason to do this is because we want our data instances to be at the same range thus Min Max Scaler put the data in a range of [0,1].
 
-##### 6. 
+##### 6. Shuffle the data
+* ![image](https://user-images.githubusercontent.com/31083873/62183286-db375600-b316-11e9-97e4-71f1440ee1ed.png)
+The user is asked if he wants to suffle de data. We use this ????
+
+##### 7. Algorithm Menu
+* ![image](https://user-images.githubusercontent.com/31083873/62183597-0ff7dd00-b318-11e9-9bcf-d26b4f6ae0ac.png)
+The user is asked wich clustering algorithm want to use for the data (Kmeans,DBSCAN) however isolation forest and Local Outlier Factor are not clustering algorithm but we use them to compare it with the clustering ones.
+
 
 
 
