@@ -30,27 +30,59 @@ def getDataSet():
     
     return path,option
 
-def readingData(path,dataSetOption):
-    #Reading the Train Dataset
-
+def readingData(path): #Reading the Train Dataset
+    
+    while True:
         
-    if dataSetOption == "2":#Checking if data set has header
+        option = input("Dataset has feature names[y/n]:") 
+        
+        if option == "y" or option == "n":
+            break
+            
+        print("\nReading Dataset...") 
+        
+    if option == "y":
         dataSet = pd.read_csv(path,low_memory=False)
     
-    elif dataSetOption == "1":
+    elif option == "n":
         dataSet = pd.read_csv(path, header = None,low_memory=False)
-        
-    
-    
+            
     return dataSet
 
 
+def checkMissing(X):    
+    isMissing = str(X.isnull().values.any()) #Using String instead of Boolean because ("cannot unpack non-iterable numpy.bool object")
+    
+    if isMissing == "True":
+        #if data set has infinity values replace them with none
+        X = X.replace('Infinity', np.nan) #Replacing Infinity values with nan values
+           
+        missingValIndex = []
+        total = X.isnull().sum().sum()
+        percent = (total / (X.count().sum() + X.isnull().sum().sum())) * 100
+            
+        for rows in X:
+                    
+            if X[rows].isnull().sum() != 0:
+                missingValIndex.append(rows)
+        print("\n\n**************************************************")
+        print("Data has missing values")
+        print("**************************************************")
+        print("Features with missing values:",missingValIndex)
+        print("Total missing Values -> " , total)
+        print(percent,"%")
+        
+        return X
+    
+    else:
+        
+        return X
+
+
 #Getting The data we want to test for the clustering algorithms
-def gettingVariables(dataSet):
-    isMissing = str(dataSet.isnull().values.any()) #Using String instead of Boolean because ("cannot unpack non-iterable numpy.bool object")
-    
-    
-    if isMissing == "False":
+def gettingVariables(dataSet,dataSetOption):
+   
+    if dataSetOption == "1":
         while True:
             print("\n\n**************************************************")
             print("Variables Menu")
@@ -89,10 +121,15 @@ def gettingVariables(dataSet):
             return X,Y,option
     
 
-    elif isMissing == "True":
+    elif dataSetOption == "2":
         #############################################################################
         #GETTING VARIABLES
         #############################################################################
+        missingValIndex = []
+        for rows in dataSet: #Getting features index with missing values
+            if dataSet[rows].isnull().sum() != 0:
+                    missingValIndex.append(dataSet)
+                
         X = dataSet.iloc[:,:-1].values#data
         X = pd.DataFrame(X)
         Y = dataSet.iloc[:,78].values#Labels
@@ -100,26 +137,6 @@ def gettingVariables(dataSet):
         #############################################################################
         #Variables Got 
         #############################################################################
-        
-        #if data set has infinity values replace them with none
-        X = X.replace('Infinity', np.nan) #Replacing Infinity values with nan values
-           
-        missingValIndex = []
-        total = X.isnull().sum().sum()
-        percent = (total / (X.count().sum() + X.isnull().sum().sum())) * 100
-            
-        for rows in X:
-                    
-            if X[rows].isnull().sum() != 0:
-                missingValIndex.append(rows)
-        print("\n\n**************************************************")
-        print("Data has missing values")
-        print("**************************************************")
-        print("Features with missing values:",missingValIndex)
-        print("Total missing Values -> " , total)
-        print(percent,"%")
-        
-
         
     #############################################################################
     #MANAGE MISSING DATA
@@ -773,7 +790,7 @@ def LOF(X,Y):
             
             print("Enter a Number")
             
-        if type(contamination) == float and (contamination >= 0 and contamination <= 0.5):
+        if type(contamination) == float and (contamination > 0 and contamination <= 0.5):
             break
         
     while True:
@@ -841,12 +858,13 @@ clear()
 path,dataSetOption = getDataSet()
 #########################################################################
 #########################################################################
-#/Users/bethanydanner/Google_Drive/documents/python_code/codeLines_newData/CICIDS2017.csv
-#/Users/bethanydanner/Google_Drive/documents/python_code/clustering-based-anomaly-detection/Dataset/KDDTrain+.csv", header = None)
-dataSet = readingData(path,dataSetOption)
+dataSet = readingData(path)
 #########################################################################
 #########################################################################
-data,labels,dataOption = gettingVariables(dataSet) #Getting the Data we want to use for the algorithms
+dataSet = checkMissing(dataSet)
+#########################################################################
+#########################################################################
+data,labels,dataOption = gettingVariables(dataSet,dataSetOption) #Getting the Data we want to use for the algorithms
 #########################################################################
 #########################################################################
 try:
@@ -1017,15 +1035,12 @@ while True:
         print("Isolation Forest Score Metrics Menu")
         print("#########################################################################")
         print("1.F1 Score")
-        print("2.AUC")
-        print("3.Normalized Mutual Info Score")
-        print("4.Adjusted Rand Score")
         
         while True:
             
             ifScoreOption = input("option:")
             
-            if ifScoreOption == "1" or ifScoreOption == "2" or ifScoreOption == "3" or ifScoreOption == "4":
+            if ifScoreOption == "1":
                 break
             else:
                 
@@ -1055,15 +1070,12 @@ while True:
         print("LOF Score Metrics Menu")
         print("#########################################################################")
         print("1.F1 Score")
-        print("2.AUC")
-        print("3.Normalized Mutual Info Score")
-        print("4.Adjusted Rand Score")
         
         while True:
             
             lofScoreOption = input("option:")
             
-            if lofScoreOption == "1" or lofScoreOption == "2" or lofScoreOption == "3" or lofScoreOption == "4":
+            if lofScoreOption == "1":
                 break
             else:
                 
