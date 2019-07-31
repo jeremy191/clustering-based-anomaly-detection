@@ -20,10 +20,68 @@ For this project, we installed Anaconda-Navigator to use as our package and envi
 This [guide](https://docs.anaconda.com/_downloads/9ee215ff15fde24bf01791d719084950/Anaconda-Starter-Guide.pdf) can help use Anaconda
 
 
-
-
-
 ## Code Details
+After you install all the requirements you should be able to run the code without any problems. This code is implemented user friendly and the steps will be briefly explained below:
+
+##### 1. Dataset option
+* ![image](https://user-images.githubusercontent.com/31083873/62171123-263b7400-b2eb-11e9-92ea-27dd3511b052.png)
+The user is asked to input wich dataset is will be made test in it, We will be look in more detail about this in step ??
+
+##### 2. Path
+* ![image](https://user-images.githubusercontent.com/31083873/62171230-816d6680-b2eb-11e9-814b-d6d2d2f819dd.png)
+The user is asked to input the path of the data set.
+
+##### 3. Variable Menu
+* ![image](https://user-images.githubusercontent.com/31083873/62171295-afeb4180-b2eb-11e9-8958-317cc71b9e43.png)
+The user is asked to choose the variables he wants to be working on.
+Going back to first step, the meaning of that is that the two data sets have different amount of features in order to know wich features delete or encode the program need to know wich data set will be working on.
+
+  1. The data will have categorical features(protocols,service type,attack types,service error) and it will be [one hot  encoded](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html)(encode categorical features into numerical features)
+
+  2. The categorical features is removed from the data.
+
+  3. The Categorical features(service type,attack types,service error) are encoded with [Risk Values](http://www.jatit.org/volumes/Vol65No3/13Vol65No3.pdf), since protocols don't have risk value they are one hot encoded
+
+##### 4. Encoding Menu
+* ![image](https://user-images.githubusercontent.com/31083873/62171931-ed50ce80-b2ed-11e9-9963-45de4cc4301e.png)
+The user is asked to encode the labels, normally they are a total of 22.
+  1. The labels are converted in binary labels (normal and abnormal), every attack name that is not normal(not a attack) it is converted into a abnormal after that it is encoded into binary numbers where 0 is normal and 1 is abnormal the purpose of this is because we can't calculate a metric score with categorical features.
+
+  2. The labels are converted into a 5 main categoires (normal,DoS,Probe,U2R,R2L), after that is encoded into 5 numbers where normal is 0, Dos is 1, Probe is 2, R2L is 3 and U2R is 4.
+
+##### 5. Scale the data
+* ![image](https://user-images.githubusercontent.com/31083873/62172317-1756c080-b2ef-11e9-873b-3c4a0f8fb0e9.png)
+The user is asked if he wants to Scale the data. We use [Min Max Scaler](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html), the reason to do this is because we want our data instances to be at the same range thus Min Max Scaler put the data in a range of [0,1].
+
+##### 6. Shuffle the data
+* ![image](https://user-images.githubusercontent.com/31083873/62183286-db375600-b316-11e9-97e4-71f1440ee1ed.png)
+The user is asked if he wants to suffle de data. We use this ????
+
+##### 7. Algorithm Menu
+* ![image](https://user-images.githubusercontent.com/31083873/62183597-0ff7dd00-b318-11e9-9bcf-d26b4f6ae0ac.png)
+The user is asked wich clustering algorithm want to use for the data (Kmeans,DBSCAN) however isolation forest and Local Outlier Factor are not clustering algorithm but we use them to compare it with the clustering ones.
+
+  if user choose Kmeans algorithm it will apear the kmeans menu where the user can specify the parameters for the algorithm.
+  
+  ##### Initialization method
+  ![image](https://user-images.githubusercontent.com/31083873/62186624-2b68e500-b324-11e9-9fdb-c700ee87ee4c.png)
+  bla bla
+  
+  ##### Clusters
+  ![image](https://user-images.githubusercontent.com/31083873/62186784-97e3e400-b324-11e9-8505-d35d78ee9fc1.png)
+  blabla
+  
+  ##### Scoring Metrics
+  ![image](https://user-images.githubusercontent.com/31083873/62186832-be098400-b324-11e9-9036-ae5413a4535e.png)
+  blabla
+
+  
+
+
+
+
+
+
 
 ### Preprocessing Dataset
 
@@ -31,7 +89,7 @@ This project was designed to be used with the NSL-KDD and IDS 2017 datasets, ava
 
 The NSL-KDD dataset has [categorical data](https://machinelearningmastery.com/why-one-hot-encode-data-in-machine-learning/) that must be omitted or encoded as numerical data to be clustered. The options in this project for dealing with categorical data include omitting categorical features, One Hot Encoding catgorical features, and [assigning risk values](http://www.jatit.org/volumes/Vol65No3/13Vol65No3.pdf) to Server Type and Flag features while One Hot Encoding Protocol data.
 
-The IDS-2017 dataset has missing values that must be dealt with as well. The code offers the user the option of deleting the columns with missing values, imputing "0", imputing the mean, median, or mode of the feature, or using the MICE method. (**As of 7/23/2019, MICE Method is not implemented yet.**) 
+The IDS-2017 dataset has missing values that must be dealt with as well. The code offers the user the option of deleting the columns with missing values, imputing "0", imputing the mean, median, or mode of the feature, or using the Iterative Imputer method offered by Python.
 
 The interactive code asks the user to specify which of the two datasets he or she is using.
 
@@ -39,9 +97,11 @@ The interactive code asks the user to specify which of the two datasets he or sh
 
 The code offers four different clustering algorithms, namely K-Means, DBSCAN, LOF, and Isolation Forest.
 
-[K-Means](https://www.youtube.com/watch?v=_aWzGGNrcic) clusters data by starting with user-specified K initial cluster centroids, and assigning all points to the nearest centroid. Based on the assignments, the algorithm recalculates the cluster centers and reassigns all points to the nearest cluster center. The algorithm repeats this process for a default of 300 iterations. When the process ends, K-Means has clustered data into K clusters. [SciKitLearn's K-Means algorithm](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html) offers the option for the user to also specify the method for initialization, the way that the algorithm chooses which points to use as initial cluster centroids. In this project, the user specifies K, the number of initial cluster centroids and eventual clusters. A typical way of choosing K is often by the [elbow method](https://www.scikit-yb.org/en/latest/api/cluster/elbow.html), **but the researchers of this project instead uses experiments on the F-Scores of clustering with varied K in order to determine the optimal K, so this project does not offer the elbow method.** 
+[K-Means](https://www.youtube.com/watch?v=_aWzGGNrcic) clusters data by starting with user-specified K initial cluster centroids, and assigning all points to the nearest centroid. Based on the assignments, the algorithm recalculates the cluster centers and reassigns all points to the nearest cluster center. The algorithm repeats this process for a default of 300 iterations. When the process ends, K-Means has clustered data into K clusters. [SciKitLearn's K-Means algorithm](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html) offers the option for the user to also specify the method for initialization, the way that the algorithm chooses which points to use as initial cluster centroids. In this project, the user specifies K, the number of initial cluster centroids and eventual clusters. A typical way of choosing K is often by the [elbow method](https://www.scikit-yb.org/en/latest/api/cluster/elbow.html). The implementation of K-Means in this project reports the sum of squared distances to cluster centers (or squared sum of errors, SSE) needed in the elbow plot, so a user can run tests with different values of K and plot that against the SSE for each K value. A user can then subjectively choose the elbow point on such a plot to determine the best K, and can then conduct tests with this K. The researchers suggest using a few values of K around the elbow and comparing the evaluation metric scores generated for each K in order to determine the best value of K.
 
-[Density-Based Spacial Clustering of Applications with Noise](https://medium.com/@elutins/dbscan-what-is-it-when-to-use-it-how-to-use-it-8bd506293818), or DBSCAN, relies on two user-input parameters, namely epsilon and minimum samples. Epsilon denotes the neighborhood of density to be explored for each data point, and minimum samples denote the minimum number of samples needed to be within a point’s epsilon neighborhood for said point to be considered a core point. Points within another core point’s epsilon neighborhood, but not core points themselves, are considered border points. Meanwhile, points that are not within another core point’s epsilon neighborhood, and that are not core points themselves, are considered anomalous points or noise. DBSCAN finds clusters of core points and border points and reports those clusters along with a group of all of the anomalous points. [SciKitLearn's DBSCAN](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html) offers the user other parameters to manipulate the specific way that DBSCAN calculates the clusters; this project uses all default parameters except for the algorithm parameter, for which the project specifies the 'brute' option in order to reduce run time. 
+[Density-Based Spacial Clustering of Applications with Noise](https://medium.com/@elutins/dbscan-what-is-it-when-to-use-it-how-to-use-it-8bd506293818), or DBSCAN, relies on two user-input parameters, namely epsilon and minimum samples. Epsilon denotes the neighborhood of density to be explored for each data point, and minimum samples denote the minimum number of samples needed to be within a point’s epsilon neighborhood for said point to be considered a core point. Points within another core point’s epsilon neighborhood, but not core points themselves, are considered border points. Meanwhile, points that are not within another core point’s epsilon neighborhood, and that are not core points themselves, are considered anomalous points or noise. DBSCAN finds clusters of core points and border points and reports those clusters along with a group of all of the anomalous points. [SciKitLearn's DBSCAN](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html) offers the user other parameters to manipulate the specific way that DBSCAN calculates the clusters; this project uses all default parameters except for the algorithm parameter, for which the project specifies the 'brute' option in order to reduce run time.
+**DBSCAN run time will depend of how big the dataset is and what resources your computer has. Since "DBSCAN groups together points that are close to each other based on a distance measurement," it is slower than K-means algorithm (Salton do Prado, 2017). The experiments on DBSCAN were made on a Macbook Pro 2.6 GHz i7 with 16 GB of RAM memory and using the Brute parameter for the algorithm. The average time for these experiments was ????. DBSCAN tests were attempted on a Macbook air 1.6 GHz i5
+with 8GB of RAM, but after ???? never finished due to the processing capacity of the computer. Before running experiments with DBSCAN make sure the computer can handle it.**
 
 [Local Outlier Factor](https://towardsdatascience.com/local-outlier-factor-for-anomaly-detection-cc0c770d2ebe), or LOF, begins with the parameter K, a default-set or user-chosen integer. For a specific point, the algorithm calculates the reach-distance to each point, which is essentially the distance from a specific point to another point with a small smoothing caveat for close points. The algorithm then takes the average of the reach-distances for a specific point to each of that point's k-nearest neighbors. The inverse of this average is called the Local Reachability Distance, or LRD. A point's high LRD indicates that the point exists in a highly dense neighborhood and does not have to travel far to encounter all K nearest neighbors, and a point's low LRD indicates the opposite, a low-density neighborhood. The algorithm calculates the LRDs for each point, and finds the average of all LRDs. Finally, the algoirthm calculates the Local Outlier Factor for each point by dividing that point's LRD by the average LRD of all points. An LRD around 1 indicates a point with average density, and an LRD much greater than 1 indicates a point in a much lower-density neighborhood than the average point, and therefore a point that is likely an anomaly. [SciKitLearn's LOF algorithm](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html) returns the negative of each point's local outlier factor. In this code, one can choose an Offset value such that all points with an LOF more negative than that Offset value are labeled as anomalous points, and all points equal to or more positive than that Offset value are labeled as normal points. 
 
@@ -62,14 +122,36 @@ Instead of measuring entropy as the NMI score does, the [Adjusted Rand Score](ht
 
 * Implement Dimensionality Reduction- The main idea to implement this is because both datasets are considerably big  and they consume a lot of processing resources also we want to implement this because we can run DBSCAN algorithm on a bigger data set than IDS2017 and we want to know if we are going to be able to implement the algorithm.
 
-## Contributing
 
 ## Authors and acknowledgment
+* Jeremy Perez
+* Bethany Danner
+* **Special thanks to Dr. Veronika Neeley for mentoring us throughout this project, and for Dr. Clem Izurieta for organizing the REU program at Montana State University. This work was funded by the [National Science Foundation](https://www.nsf.gov/)**.
 
 ## License
+
+MIT License
+
+Copyright (c) 2019 Jeremy Perez
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ## Project status
 
 Current Bugs:
-
-Rarely, after running an F1-Score, when user tries to run another scoring metric, that metric returns nonsense results - numbers larger than 1 or equal to 0, when a number between 0 and 1 and likely higher than 0.2 is expected. The most occuring nonsense result for NMI is 3.75 and for ARS is 0.0. 
