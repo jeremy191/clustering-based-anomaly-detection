@@ -61,6 +61,22 @@ The user is asked if he wants to suffle de data. We use this ????
 * ![image](https://user-images.githubusercontent.com/31083873/62183597-0ff7dd00-b318-11e9-9bcf-d26b4f6ae0ac.png)
 The user is asked wich clustering algorithm want to use for the data (Kmeans,DBSCAN) however isolation forest and Local Outlier Factor are not clustering algorithm but we use them to compare it with the clustering ones.
 
+  if user choose Kmeans algorithm it will apear the kmeans menu where the user can specify the parameters for the algorithm.
+  
+  ##### Initialization method
+  ![image](https://user-images.githubusercontent.com/31083873/62186624-2b68e500-b324-11e9-9fdb-c700ee87ee4c.png)
+  bla bla
+  
+  ##### Clusters
+  ![image](https://user-images.githubusercontent.com/31083873/62186784-97e3e400-b324-11e9-8505-d35d78ee9fc1.png)
+  blabla
+  
+  ##### Scoring Metrics
+  ![image](https://user-images.githubusercontent.com/31083873/62186832-be098400-b324-11e9-9036-ae5413a4535e.png)
+  blabla
+
+  
+
 
 
 
