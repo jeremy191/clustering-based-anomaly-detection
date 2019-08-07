@@ -59,27 +59,41 @@ The user is asked if he or she wants to suffle the data. Because one of the clus
 
 ##### 7. Algorithm Menu
 * ![image](https://user-images.githubusercontent.com/31083873/62183597-0ff7dd00-b318-11e9-9bcf-d26b4f6ae0ac.png)
-The user is asked which anomaly detection algorithm he or she wants to use on the data. Each algorithm is discussed in greater detail in the Clustering Dataset section.
+The user is asked which anomaly detection algorithm he or she wants to use on the data. Each algorithm is discussed in greater detail in the Analyzing Dataset section.
 
 Each algorithm requires user-input parameters.
 
-  if user choose Kmeans algorithm it will apear the kmeans menu where the user can specify the parameters for the algorithm.
-  
-  ##### Initialization method
+  ###### K-Means
+
+  ####### Initialization method
   ![image](https://user-images.githubusercontent.com/31083873/62186624-2b68e500-b324-11e9-9fdb-c700ee87ee4c.png)
-  bla bla
+  K-Means provides different options for choosing the initial cluster centers. In this project, the user can choose either the random method or SciKitLearn's more sophisticated [k-means++](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html) method.
   
-  ##### Clusters
+  ####### Clusters
   ![image](https://user-images.githubusercontent.com/31083873/62186784-97e3e400-b324-11e9-8505-d35d78ee9fc1.png)
-  blabla
+  Users must choose the number of clusters for K-Means. The elbow method is popular for choosing the number of clusters. Read more below in the Analyzing Dataset section.
   
-  ##### Scoring Metrics
+  ###### DBSCAN  
+  
+  
+  
+  
+  ###### Local Outlier Factor
+  
+  
+  
+  
+  ###### Isolation Forest 
+  
+  
+  
+  
+  ####### Scoring Metrics
   ![image](https://user-images.githubusercontent.com/31083873/62186832-be098400-b324-11e9-9036-ae5413a4535e.png)
   blabla
 
   ![image](https://user-images.githubusercontent.com/51713553/62640889-bdae5180-b8ff-11e9-975d-f2c356561180.png)
  
-
 
 
 
@@ -103,8 +117,7 @@ The code offers four different anomaly detection algorithms, namely K-Means, DBS
 [K-Means](https://www.youtube.com/watch?v=_aWzGGNrcic) clusters data by starting with user-specified K initial cluster centroids, and assigning all points to the nearest centroid. Based on the assignments, the algorithm recalculates the cluster centers and reassigns all points to the nearest cluster center. The algorithm repeats this process for a default of 300 iterations. When the process ends, K-Means has clustered data into K clusters. [SciKitLearn's K-Means algorithm](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html) offers the option for the user to also specify the method for initialization, the way that the algorithm chooses which points to use as initial cluster centroids. In this project, the user specifies K, the number of initial cluster centroids and eventual clusters. A typical way of choosing K is often by the [elbow method](https://www.scikit-yb.org/en/latest/api/cluster/elbow.html). The implementation of K-Means in this project reports the sum of squared distances to cluster centers (or squared sum of errors, SSE) needed in the elbow plot, so a user can run tests with different values of K and plot that against the SSE for each K value. A user can then subjectively choose the elbow point on such a plot to determine the best K, and can then conduct tests with this K. The researchers suggest using a few values of K around the elbow and comparing the evaluation metric scores generated for each K in order to determine the best value of K.
 
 [Density-Based Spacial Clustering of Applications with Noise](https://medium.com/@elutins/dbscan-what-is-it-when-to-use-it-how-to-use-it-8bd506293818), or DBSCAN, relies on two user-input parameters, namely epsilon and minimum samples. Epsilon denotes the neighborhood of density to be explored for each data point, and minimum samples denote the minimum number of samples needed to be within a point’s epsilon neighborhood for said point to be considered a core point. Points within another core point’s epsilon neighborhood, but not core points themselves, are considered border points. Meanwhile, points that are not within another core point’s epsilon neighborhood, and that are not core points themselves, are considered anomalous points or noise. DBSCAN finds clusters of core points and border points and reports those clusters along with a group of all of the anomalous points. [SciKitLearn's DBSCAN](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html) offers the user other parameters to manipulate the specific way that DBSCAN calculates the clusters; this project uses all default parameters except for the algorithm parameter, for which the project specifies the 'brute' option in order to reduce run time.
-**DBSCAN run time will depend of how big the dataset is and what resources your computer has. Since "DBSCAN groups together points that are close to each other based on a distance measurement," it is slower than K-means algorithm (Salton do Prado, 2017). The experiments on DBSCAN were made on a Macbook Pro 2.6 GHz i7 with 16 GB of RAM memory and using the Brute parameter for the algorithm. The average time for these experiments was ????. DBSCAN tests were attempted on a Macbook air 1.6 GHz i5
-with 8GB of RAM, but after ???? never finished due to the processing capacity of the computer. Before running experiments with DBSCAN make sure the computer can handle it.**
+**DBSCAN run time will depend of how big the dataset is and what resources your computer has. Since "DBSCAN groups together points that are close to each other based on a distance measurement," it is slower than K-means algorithm (Salton do Prado, 2017). The experiments on DBSCAN were made on a Macbook Pro 2.6 GHz i7 with 16 GB of RAM memory and using the Brute parameter for the algorithm. The average time for these experiments was 3 minutes. DBSCAN tests were attempted on a Macbook air 1.6 GHz i5 with 8GB of RAM, but after 30 minutes never finished due to the processing capacity of the computer. Before running experiments with DBSCAN make sure the computer can handle it.**
 
 [Local Outlier Factor](https://towardsdatascience.com/local-outlier-factor-for-anomaly-detection-cc0c770d2ebe), or LOF, begins with the parameter K, a default-set or user-chosen integer. For a specific point, the algorithm calculates the reach-distance to each point, which is essentially the distance from a specific point to another point with a small smoothing caveat for close points. The algorithm then takes the average of the reach-distances for a specific point to each of that point's k-nearest neighbors. The inverse of this average is called the Local Reachability Distance, or LRD. A point's high LRD indicates that the point exists in a highly dense neighborhood and does not have to travel far to encounter all K nearest neighbors, and a point's low LRD indicates the opposite, a low-density neighborhood. The algorithm calculates the LRDs for each point, and finds the average of all LRDs. Finally, the algoirthm calculates the Local Outlier Factor for each point by dividing that point's LRD by the average LRD of all points. An LRD around 1 indicates a point with average density, and an LRD much greater than 1 indicates a point in a much lower-density neighborhood than the average point, and therefore a point that is likely an anomaly. [SciKitLearn's LOF algorithm](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html) returns the negative of each point's local outlier factor. In this code, one can choose an Offset value such that all points with an LOF more negative than that Offset value are labeled as anomalous points, and all points equal to or more positive than that Offset value are labeled as normal points. 
 
