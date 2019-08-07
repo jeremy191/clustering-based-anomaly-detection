@@ -2,7 +2,6 @@
 
 #reset -f
 
-
 import numpy as np
 import pandas as pd 
 import time
@@ -26,11 +25,10 @@ def getDataSet():
             break
     
     path = input("Path of the File:")
-    print("\nReading Dataset...")
     
     return path,option
 
-def readingData(path): #Reading the Train Dataset
+def readingData(path): #Reading the Dataset
     
     while True:
         
@@ -39,7 +37,7 @@ def readingData(path): #Reading the Train Dataset
         if option == "y" or option == "n":
             break
             
-        print("\nReading Dataset...") 
+    print("\nReading Dataset...") 
         
     if option == "y":
         dataSet = pd.read_csv(path,low_memory=False)
@@ -50,7 +48,7 @@ def readingData(path): #Reading the Train Dataset
     return dataSet
 
 
-def checkMissing(X):    
+def checkMissing(X):#This check if the dataset given has missing values.
     isMissing = str(X.isnull().values.any()) #Using String instead of Boolean because ("cannot unpack non-iterable numpy.bool object")
     
     if isMissing == "True":
@@ -80,7 +78,7 @@ def checkMissing(X):
 
 
 #Getting The data we want to test for the clustering algorithms
-def gettingVariables(dataSet,dataSetOption):
+def gettingVariables(dataSet,dataSetOption):# If the dataset is NSL-KDD it would get the features and the labels for it and if its IDS 2017 it would take the features and the labels for it and take careof missing values.
    
     if dataSetOption == "1":
         while True:
@@ -102,6 +100,9 @@ def gettingVariables(dataSet,dataSetOption):
         
         if option == "1":
             #Getting the Dependent and independent Variables
+            #In all the option we remove the dificulty level feature because we don't need it in our experiments
+            
+            
             X = dataSet.iloc[:,:-2].values # Data, Get all the rows and all the clums except all the colums - 2
             Y = dataSet.iloc[:,42].values# Labels
             return X,Y,option
@@ -114,7 +115,7 @@ def gettingVariables(dataSet,dataSetOption):
             return X,Y,option
         
         elif option == "3":
-            #Risk Encode Categorical features
+            #for later Risk Encode - Categorical features
             X = dataSet.iloc[:,:-2].values
             Y = dataSet.iloc[:,42].values# Labels
             
@@ -131,6 +132,7 @@ def gettingVariables(dataSet,dataSetOption):
                     missingValIndex.append(rows)
                 
         X = dataSet.iloc[:,:-1].values#data
+        #if names are not especified it will assign 0,1,2...n for the features name
         X = pd.DataFrame(X,columns = [' Destination Port',' Flow Duration',' Total Fwd Packets',' Total Backward Packets','Total Length of Fwd Packets',
                                       ' Total Length of Bwd Packets',' Fwd Packet Length Max',' Fwd Packet Length Min',' Fwd Packet Length Mean',' Fwd Packet Length Std',
                                       'Bwd Packet Length Max',' Bwd Packet Length Min',' Bwd Packet Length Mean',' Bwd Packet Length Std','Flow Bytes/s',' Flow Packets/s',' Flow IAT Mean',
@@ -148,7 +150,8 @@ def gettingVariables(dataSet,dataSetOption):
         
     #############################################################################
     #MANAGE MISSING DATA
-    #############################################################################        
+    #############################################################################   
+     
         while True:
             print("\n\n**************************************************")
             print("Manage Missing Values ")
@@ -158,7 +161,7 @@ def gettingVariables(dataSet,dataSetOption):
             print("3.Impute Mean for Missing Values")
             print("4.Impute Median for Missing Values")
             print("5.Impute Mode for Missing Values")
-            print("6.MICE Method")
+            print("6.Simple Imputer")
             missingDataOption = input("Option:")
     
             if missingDataOption == "1" or missingDataOption == "2" or missingDataOption == "3" or missingDataOption == "4" or missingDataOption == "5" or missingDataOption == "6":
@@ -168,6 +171,7 @@ def gettingVariables(dataSet,dataSetOption):
         if missingDataOption == "1":
             deletedColumns = []
             numColumns = len(X.columns)
+            #removing features with missing values
             for row in missingValIndex:
                 deletedColumns.append(row)
                 del X[row]
@@ -179,6 +183,7 @@ def gettingVariables(dataSet,dataSetOption):
             print("#########################################################################")
     
         elif missingDataOption == "2":
+            #fill with 0
             for row in missingValIndex:
                 X[row] = X[row].fillna(0)
         
@@ -188,6 +193,7 @@ def gettingVariables(dataSet,dataSetOption):
     
     
         elif missingDataOption == "3":
+            #mean imputer
             for row in missingValIndex:
                 X[row] = X[row].astype(float)
                 X[row] = X[row].fillna(X[row].mean())
@@ -197,6 +203,7 @@ def gettingVariables(dataSet,dataSetOption):
             print("#########################################################################")
     
         elif missingDataOption == "4":
+            #median imputer
             for row in missingValIndex:
                 median = X[row].median()
                 X[row].fillna(median, inplace=True)
@@ -205,7 +212,7 @@ def gettingVariables(dataSet,dataSetOption):
             print("#########################################################################")
     
         elif missingDataOption == "5":
-    
+            #Mode imputer
             for row in missingValIndex:
                 X[row] = X[row].fillna(X[row].mode()[0])
     
@@ -234,7 +241,7 @@ def gettingVariables(dataSet,dataSetOption):
 
 
     
-def encodingLabels(Y,dataOption,datasetOption):
+def encodingLabels(Y,dataOption,datasetOption):# Encoding the labels with multi class or binary
     
     if datasetOption == "1": #Check if the data set choosen is NSL-KDD or IDS2017
         
@@ -311,7 +318,7 @@ def encodingLabels(Y,dataOption,datasetOption):
 
 
 
-#Encoding the data using one hot encoding and using Main attacks categories or binary categories
+#Encoding the categorical features using one hot encoding and using Main attacks categories or binary categories
 def oneHotEncodingData(X,dataOption):
         
     from sklearn.preprocessing import OneHotEncoder
@@ -330,7 +337,7 @@ def oneHotEncodingData(X,dataOption):
         print("#########################################################################")
 
         return X
-    elif dataOption == "3": #Only for risk data
+    elif dataOption == "3": #Only for risk data, because we don't have risk values for protocol feature we do one hot encoding for only that feature and the other ones we do risk value encoding
         transform = ColumnTransformer([("Servers", OneHotEncoder(categories = "auto"), [1])], remainder="passthrough")
         X = transform.fit_transform(X)
         print("\n\n#########################################################################")
@@ -342,7 +349,7 @@ def oneHotEncodingData(X,dataOption):
         return X #return data with no changes
 
 
-def riskEncodingData(X,dataOption):#This function is only for risk testing only
+def riskEncodingData(X,dataOption):#Risk encoding categorical features
     #Manually Encoding for the attacks types only
     if dataOption == "3": #if data option is risk Value
         X = pd.DataFrame(X)
@@ -365,7 +372,8 @@ def riskEncodingData(X,dataOption):#This function is only for risk testing only
     
 
 
-def scaling(X):#Scalign the data with the normalize method
+def scaling(X):#Scalign the data with the normalize method, we scale the data to have it in the same range for the experiments
+    
     
 
     while True:
@@ -392,7 +400,8 @@ def scaling(X):#Scalign the data with the normalize method
         return X
 
     
-def shuffleData(X):
+def shuffleData(X):# currently a bug, if we do shuffleling the experiments resutls are not good, the order of the data does not affect the results
+
     from sklearn.utils import shuffle
     while True:
         option = input("Shuffle data [y]/[n]:")
@@ -443,7 +452,7 @@ def kmeansClustering(X,Y):#K-means algorithm
             n = 0
             clusters = []
             
-            while n < nClusters:#Converting nCluster into an array of n clusters [n]
+            while n < nClusters:#Converting nCluster into an array of n clusters [n] for use it later
                 clusters.append(n)
                 n+=1
             break
@@ -477,6 +486,7 @@ def kF1(Z,Y,maxVal,clusters):#F1 Score for Kmeans
     #Encoding data to F-score
     
     
+    # This part of the code automatically assign the max-ocurring instance in each found cluster to that specific found cluster,in order to evaluate the clustering with greater ease.
     n = 0 # counter
     dictionaryCluster  = {} # creating an empty dictionary 
     f1 = 0 #f1score
@@ -496,7 +506,7 @@ def kF1(Z,Y,maxVal,clusters):#F1 Score for Kmeans
         
         if average == "weighted" or average == "micro" or average == "macro" or average == 'binary':
             break
-        
+    #score metric   
     f1 = f1_score(Y,Z, average = average) #Forget the labels that where not predicted and gives lables that were predicted at least once
     
     return f1,dictionaryCluster
@@ -506,6 +516,7 @@ def kF1(Z,Y,maxVal,clusters):#F1 Score for Kmeans
 def kNMI(Z,Y,maxVal,clusters):
     from sklearn.metrics import normalized_mutual_info_score
     
+    # This part of the code automatically assign the max-ocurring instance in each found cluster to that specific found cluster,in order to evaluate the clustering with greater ease.
     n = 0 # counter
     dictionaryCluster  = {} # creating an empty dictionary 
     NMI = 0
@@ -525,7 +536,7 @@ def kNMI(Z,Y,maxVal,clusters):
         
         if average == "geometric" or average == "min" or average == "arithmetic" or average == "max":
             break
-    
+    #Score metric 
     NMI = normalized_mutual_info_score(Y, Z, average_method = average)
     
     return NMI,dictionaryCluster
@@ -535,6 +546,7 @@ def kNMI(Z,Y,maxVal,clusters):
 def kARS(Z,Y,maxVal,clusters):
     from sklearn.metrics import adjusted_rand_score
     
+    # This part of the code automatically assign the max-ocurring instance in each found cluster to that specific found cluster,in order to evaluate the clustering with greater ease.
     n = 0 # counter
     dictionaryCluster  = {} # creating an empty dictionary 
     ars = 0
@@ -547,6 +559,7 @@ def kARS(Z,Y,maxVal,clusters):
     
     Y = np.array(Y,dtype = int) #Making sure that labels are in a int array
     
+    #score metric
     ars = adjusted_rand_score(Y, Z)
     
     return ars,dictionaryCluster
@@ -634,7 +647,7 @@ def dbF1(Z,Y,clusters,maxVal):#F1 score for DBSCAN
     from sklearn.metrics import f1_score
     #Encoding data to F-score
     
-    
+    # This part of the code automatically assign the max-ocurring instance in each found cluster to that specific found cluster,in order to evaluate the clustering with greater ease.
     n = 0 # counter
     c = -1 # - counter max Value has negative index
     dictionaryCluster  = {} # creating an empty dictionary 
@@ -660,14 +673,14 @@ def dbF1(Z,Y,clusters,maxVal):#F1 score for DBSCAN
         else:
             
             print("Error\n\n")
-    
+    #score metric
     f1 = f1_score(Y,Z, average = average)
     return f1,dictionaryCluster
 
 
-def dbNMI(Z,Y,clusters,maxVal):
+def dbNMI(Z,Y,clusters,maxVal):# Mutual info score for dbscan
     from sklearn.metrics import normalized_mutual_info_score
-    
+    # This part of the code automatically assign the max-ocurring instance in each found cluster to that specific found cluster,in order to evaluate the clustering with greater ease.
     n = 0 # counter
     c = -1 # - counter max Value has negative index
     NMI = 0
@@ -690,14 +703,15 @@ def dbNMI(Z,Y,clusters,maxVal):
         else:
             
             print("Error\n\n")
-    
+    #score metric
     NMI = normalized_mutual_info_score(Y, Z, average_method= average)
     
     return NMI,dictionaryCluster
 
-def dbARS(Z,Y,clusters,maxVal):
+def dbARS(Z,Y,clusters,maxVal): # adjusted rand score for dbscan
     from sklearn.metrics import adjusted_rand_score
     
+    # This part of the code automatically assign the max-ocurring instance in each found cluster to that specific found cluster,in order to evaluate the clustering with greater ease.
     n = 0 # counter
     c = -1 # - counter max Value has negative index
     ars = 0
@@ -707,13 +721,13 @@ def dbARS(Z,Y,clusters,maxVal):
         dictionaryCluster[clusters[n]] = maxVal[c] #creating key(cluster index) with value (max number of the clustering results) for every iteration
         n+=1
         c+=1
-    
+    #score metric
     ars = adjusted_rand_score(Y,Z)
     
     return ars,dictionaryCluster
 
 
-def isolationForest(X,Y):
+def isolationForest(X,Y):# isolation forest algorithm
     from sklearn.ensemble import IsolationForest
     
     while True:
@@ -749,8 +763,9 @@ def isolationForest(X,Y):
         
     return Z,ifR,maxVal,clusters
 
-def ifF1(Z,Y,clusters,maxVal):
+def ifF1(Z,Y,clusters,maxVal): #f1 score for isolation forest
     from sklearn.metrics import f1_score
+    # This part of the code automatically assign the max-ocurring instance in each found cluster to that specific found cluster,in order to evaluate the clustering with greater ease.
     
     n = 0 # counter
     c = -1 # - counter max Value has negative index
@@ -779,13 +794,13 @@ def ifF1(Z,Y,clusters,maxVal):
         else:
             
             print("Error\n\n")
-    
+    # score metric
     f1 = f1_score(Y,Z, average = average) #[None, 'micro', 'macro', 'weighted']
     
     return f1,dictionaryCluster
     
 
-def LOF(X,Y):
+def LOF(X,Y):# Local outlier factor algorithm
     from sklearn.neighbors import LocalOutlierFactor 
     
     while True:
@@ -831,9 +846,10 @@ def LOF(X,Y):
     return lof,lofR,maxVal,clusters
     
 
-def lofF1(Z,Y,clusters,maxVal):
+def lofF1(Z,Y,clusters,maxVal): # f1 score for local outlier factor
     from sklearn.metrics import f1_score
     
+    # This part of the code automatically assign the max-ocurring instance in each found cluster to that specific found cluster,in order to evaluate the clustering with greater ease.
     n = 0 # counter
     c = -1 # - counter max Value has negative index
     f1 = 0
@@ -862,6 +878,8 @@ def lofF1(Z,Y,clusters,maxVal):
     return f1,dictionaryCluster
 
 clear()
+#Calling the functions
+
 ##########################################################################
 path,dataSetOption = getDataSet()
 #########################################################################
@@ -893,6 +911,7 @@ data = scaling(data)
 data = shuffleData(data)
 #########################################################################
 
+#This menu is a option to run diferrent algorithms with the same preproceced data witouth the need of running all the code from 0 to make another experiment.
 while True:  
     while True:
         print("\n\n#########################################################################")
