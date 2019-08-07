@@ -21,45 +21,47 @@ This [guide](https://docs.anaconda.com/_downloads/9ee215ff15fde24bf01791d7190849
 
 
 ## Code Details
-After you install all the requirements you should be able to run the code without any problems. This code is implemented user friendly and the steps will be briefly explained below:
+After you install all the requirements you should be able to run the code without any problems. This code is implemented to be user friendly and the steps will be briefly explained below:
 
 ##### 1. Dataset option
 * ![image](https://user-images.githubusercontent.com/31083873/62171123-263b7400-b2eb-11e9-92ea-27dd3511b052.png)
-The user is asked to input wich dataset is will be made test in it, We will be look in more detail about this in step ??
+The user is asked to input which dataset will be analyzed in this run of the anomaly detetion algorithms. The two datasets that this project used contain different types of data and therefore require different types of preprocessing; thus, the user must choose which dataset to preprocess before beginning anomaly detection.
 
 ##### 2. Path
 * ![image](https://user-images.githubusercontent.com/31083873/62171230-816d6680-b2eb-11e9-814b-d6d2d2f819dd.png)
-The user is asked to input the path of the data set.
+The user is asked to input the path of the data set. After [downloading the dataset](https://www.unb.ca/cic/datasets/index.html) to your computer, copy the path to that dataset and input the path here.
 
 ##### 3. Variable Menu
 * ![image](https://user-images.githubusercontent.com/31083873/62171295-afeb4180-b2eb-11e9-8958-317cc71b9e43.png)
 The user is asked to choose the variables he wants to be working on.
-Going back to first step, the meaning of that is that the two data sets have different amount of features in order to know wich features delete or encode the program need to know wich data set will be working on.
+As explained in step 1, the two data sets have different types of features. Specifically, the NSL-KDD Dataset has categorical data that must either be converted into numerical data or eliminated. The user can choose between three options for dealing with the categorical features on the NSL-KDD Dataset:
 
-  1. The data will have categorical features(protocols,service type,attack types,service error) and it will be [one hot  encoded](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html)(encode categorical features into numerical features)
+  1. The data will have categorical features(protocols,service type,attack types,service error) and the data within those features will be [one hot  encoded](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html)(encode categorical features into numerical features)
 
-  2. The categorical features is removed from the data.
+  2. The categorical features are removed from the data.
 
-  3. The Categorical features(service type,attack types,service error) are encoded with [Risk Values](http://www.jatit.org/volumes/Vol65No3/13Vol65No3.pdf), since protocols don't have risk value they are one hot encoded
+  3. The Categorical features (service type, attack types, and service error/flag) are encoded with [Risk Values](http://www.jatit.org/volumes/Vol65No3/13Vol65No3.pdf). Since protocols do not have associated risk values, they are one hot encoded
 
 ##### 4. Encoding Menu
 * ![image](https://user-images.githubusercontent.com/31083873/62171931-ed50ce80-b2ed-11e9-9963-45de4cc4301e.png)
-The user is asked to encode the labels, normally they are a total of 22.
-  1. The labels are converted in binary labels (normal and abnormal), every attack name that is not normal(not a attack) it is converted into a abnormal after that it is encoded into binary numbers where 0 is normal and 1 is abnormal the purpose of this is because we can't calculate a metric score with categorical features.
+The user is asked to encode the labels. The NSL-KDD Dataset contains 22 usual attack types plus the normal category for a total of 23 possible labels.
+  1. The labels are converted in binary labels (normal and abnormal). Every attack name that is not normal - in other words, that is an attack - is converted into a abnormal. After that, the labels are encoded into binary numbers where 0 is normal and 1 is abnormal. The purpose of this is because we can't calculate a metric score with categorical features, so the normal and abnormal labels must be converted to numeric data.
 
-  2. The labels are converted into a 5 main categoires (normal,DoS,Probe,U2R,R2L), after that is encoded into 5 numbers where normal is 0, Dos is 1, Probe is 2, R2L is 3 and U2R is 4.
+  2. The labels are converted into a 5 main categoires (normal,DoS,Probe,U2R,R2L) using the information provided in [this analysis of the dataset](https://pdfs.semanticscholar.org/1b34/80021c4ab0f632efa99e01a9b073903c5554.pdf). After that, each attack is encoded into one of 5 numbers where normal is 0, Dos is 1, Probe is 2, R2L is 3 and U2R is 4.
 
 ##### 5. Scale the data
 * ![image](https://user-images.githubusercontent.com/31083873/62172317-1756c080-b2ef-11e9-873b-3c4a0f8fb0e9.png)
-The user is asked if he wants to Scale the data. We use [Min Max Scaler](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html), the reason to do this is because we want our data instances to be at the same range thus Min Max Scaler put the data in a range of [0,1].
+The user is asked if he or she wants to Scale the data. We use [Min Max Scaler](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html). We do this because we want our data instances to be at the same range, and Min Max Scaler puts the data in a range of [0,1] by feature. This allows the distance-based anomaly detection algorithms to accurately analyze the data.
 
 ##### 6. Shuffle the data
 * ![image](https://user-images.githubusercontent.com/31083873/62183286-db375600-b316-11e9-97e4-71f1440ee1ed.png)
-The user is asked if he wants to suffle de data. We use this ????
+The user is asked if he or she wants to suffle the data. Because one of the clustering algorithms, namely DBSCAN, could potentially return a different clustering depending on the order of the dataset, we attempted to shuffle the data and compare results. Unfortunately, the shuffled data returned clusters vastly different from the unshuffled data, with enough reason to believe that the shuffling algorithm was not working properly. Users are welcome to attempt shuffling the data but are forewarned that the shuffling may not return desired results.
 
 ##### 7. Algorithm Menu
 * ![image](https://user-images.githubusercontent.com/31083873/62183597-0ff7dd00-b318-11e9-9bcf-d26b4f6ae0ac.png)
-The user is asked wich clustering algorithm want to use for the data (Kmeans,DBSCAN) however isolation forest and Local Outlier Factor are not clustering algorithm but we use them to compare it with the clustering ones.
+The user is asked which anomaly detection algorithm he or she wants to use on the data. Each algorithm is discussed in greater detail in the Clustering Dataset section.
+
+Each algorithm requires user-input parameters.
 
   if user choose Kmeans algorithm it will apear the kmeans menu where the user can specify the parameters for the algorithm.
   
@@ -94,9 +96,9 @@ The IDS-2017 dataset has missing values that must be dealt with as well. The cod
 
 The interactive code asks the user to specify which of the two datasets he or she is using.
 
-### Clustering Dataset
+### Analyzing Dataset
 
-The code offers four different clustering algorithms, namely K-Means, DBSCAN, LOF, and Isolation Forest.
+The code offers four different anomaly detection algorithms, namely K-Means, DBSCAN, Local Outlier Factor (LOF), and Isolation Forest. K-Means and DBSCAN are clustering algorithms, while LOF is a K-Nearest-Neighbor algorithm and Isolation Forest is a decision tree algorithm, both using a contamination factor to classify data as normal or anomaly.
 
 [K-Means](https://www.youtube.com/watch?v=_aWzGGNrcic) clusters data by starting with user-specified K initial cluster centroids, and assigning all points to the nearest centroid. Based on the assignments, the algorithm recalculates the cluster centers and reassigns all points to the nearest cluster center. The algorithm repeats this process for a default of 300 iterations. When the process ends, K-Means has clustered data into K clusters. [SciKitLearn's K-Means algorithm](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html) offers the option for the user to also specify the method for initialization, the way that the algorithm chooses which points to use as initial cluster centroids. In this project, the user specifies K, the number of initial cluster centroids and eventual clusters. A typical way of choosing K is often by the [elbow method](https://www.scikit-yb.org/en/latest/api/cluster/elbow.html). The implementation of K-Means in this project reports the sum of squared distances to cluster centers (or squared sum of errors, SSE) needed in the elbow plot, so a user can run tests with different values of K and plot that against the SSE for each K value. A user can then subjectively choose the elbow point on such a plot to determine the best K, and can then conduct tests with this K. The researchers suggest using a few values of K around the elbow and comparing the evaluation metric scores generated for each K in order to determine the best value of K.
 
