@@ -75,7 +75,8 @@ The user is asked wich clustering algorithm want to use for the data (Kmeans,DBS
   ![image](https://user-images.githubusercontent.com/31083873/62186832-be098400-b324-11e9-9036-ae5413a4535e.png)
   blabla
 
-  
+  ![image](https://user-images.githubusercontent.com/51713553/62640889-bdae5180-b8ff-11e9-975d-f2c356561180.png)
+ 
 
 
 
