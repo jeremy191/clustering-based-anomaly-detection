@@ -45,7 +45,7 @@ As explained in step 1, the two data sets have different types of features. Spec
 ##### 4. Encoding Menu
 * ![image](https://user-images.githubusercontent.com/31083873/62171931-ed50ce80-b2ed-11e9-9963-45de4cc4301e.png)
 The user is asked to encode the labels. The NSL-KDD Dataset contains 22 usual attack types plus the normal category for a total of 23 possible labels.
-  1. The labels are converted in binary labels (normal and abnormal). Every attack name that is not normal - in other words, that is an attack - is converted into a abnormal. After that, the labels are encoded into binary numbers where 0 is normal and 1 is abnormal. The purpose of this is because we can't calculate a metric score with categorical features, so the normal and abnormal labels must be converted to numeric data.
+  1. The labels are converted in binary labels (normal and abnormal). Every attack name that is not normal - in other words, that is an attack - is renamed with the label abnormal. After that, the labels are encoded into binary numbers where 0 is normal and 1 is abnormal. Because we can't calculate a metric score with categorical features, so the normal and abnormal labels must be converted to numeric data.
 
   2. The labels are converted into a 5 main categoires (normal,DoS,Probe,U2R,R2L) using the information provided in [this analysis of the dataset](https://pdfs.semanticscholar.org/1b34/80021c4ab0f632efa99e01a9b073903c5554.pdf). After that, each attack is encoded into one of 5 numbers where normal is 0, Dos is 1, Probe is 2, R2L is 3 and U2R is 4.
 
