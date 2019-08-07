@@ -178,4 +178,4 @@ SOFTWARE.
 
 ## Project status
 
-Current Bugs:
+Current Bugs: After shuflleling the data results are not as excpected
