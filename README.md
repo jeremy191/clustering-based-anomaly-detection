@@ -65,11 +65,11 @@ Each algorithm requires user-input parameters.
 
   ###### K-Means
 
-  ####### Initialization method
+     ###### Initialization method
   ![image](https://user-images.githubusercontent.com/31083873/62186624-2b68e500-b324-11e9-9fdb-c700ee87ee4c.png)
   K-Means provides different options for choosing the initial cluster centers. In this project, the user can choose either the random method or SciKitLearn's more sophisticated [k-means++](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html) method.
   
-  ####### Clusters
+      ###### Clusters
   ![image](https://user-images.githubusercontent.com/31083873/62186784-97e3e400-b324-11e9-8505-d35d78ee9fc1.png)
   Users must choose the number of clusters for K-Means. The elbow method is popular for choosing the number of clusters. Read more below in the Analyzing Dataset section.
   
@@ -85,7 +85,7 @@ Each algorithm requires user-input parameters.
   
   ###### Isolation Forest 
   
-  ####### Contamination Factor
+     ###### Contamination Factor
   ![image](https://user-images.githubusercontent.com/51713553/62648301-c149d480-b90f-11e9-848f-1fbe843099cb.png)
   Users must choose the ratio of anomalies in the dataset. This is called the contamination factor.
   
