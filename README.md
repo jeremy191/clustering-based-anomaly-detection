@@ -66,21 +66,22 @@ Each algorithm requires user-input parameters.
   ###### K-Means
 
      ###### Initialization method
- * ![image](https://user-images.githubusercontent.com/31083873/62186624-2b68e500-b324-11e9-9fdb-c700ee87ee4c.png)
-  K-Means provides different options for choosing the initial cluster centers. In this project, the user can choose either the random method or SciKitLearn's more sophisticated [k-means++](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html) method.
+* ![image](https://user-images.githubusercontent.com/31083873/62186624-2b68e500-b324-11e9-9fdb-c700ee87ee4c.png)
+K-Means provides different options for choosing the initial cluster centers. In this project, the user can choose either the random method or SciKitLearn's more sophisticated [k-means++](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html) method.
   
       ###### Clusters
- * ![image](https://user-images.githubusercontent.com/31083873/62186784-97e3e400-b324-11e9-8505-d35d78ee9fc1.png)
-  Users must choose the number of clusters for K-Means. The elbow method is popular for choosing the number of clusters. Read  more below in the Analyzing Dataset section.
+* ![image](https://user-images.githubusercontent.com/31083873/62186784-97e3e400-b324-11e9-8505-d35d78ee9fc1.png)
+Users must choose the number of clusters for K-Means. The elbow method is popular for choosing the number of clusters. Read  more below in the Analyzing Dataset section.
   
   ###### DBSCAN  
-  * ![image](https://user-images.githubusercontent.com/31083873/62664174-cfabe680-b937-11e9-8352-d9cd5550c7f3.png)
-  DBSCAN need 2 main parameter epsilon and min samples , the algorithm parameter will affect the run time, we concluded that brute is the fastest one for the NSL-KDD dataset.
+* ![image](https://user-images.githubusercontent.com/31083873/62664174-cfabe680-b937-11e9-8352-d9cd5550c7f3.png)
+DBSCAN need 2 main parameter epsilon and min samples , the algorithm parameter will affect the run time, we concluded that brute is the fastest one for the NSL-KDD dataset.
   
   
   
   ###### Local Outlier Factor
-  
+  * ![image](https://user-images.githubusercontent.com/31083873/62664862-65487580-b93a-11e9-80e5-32dcff8b0ac1.png)
+  Users must choose the ratio of anomalies in the dataset. This is called the contamination factor.
   
   
   
@@ -93,24 +94,18 @@ Each algorithm requires user-input parameters.
   
   
 ##### 8. Scoring Metrics
-  * ![image](https://user-images.githubusercontent.com/31083873/62186832-be098400-b324-11e9-9036-ae5413a4535e.png)
+* ![image](https://user-images.githubusercontent.com/31083873/62186832-be098400-b324-11e9-9036-ae5413a4535e.png)
   
   
   
   
-  
-  * ![image](https://user-images.githubusercontent.com/51713553/62640889-bdae5180-b8ff-11e9-975d-f2c356561180.png)
-  Kmeans F1-score
-  
+* ![image](https://user-images.githubusercontent.com/51713553/62640889-bdae5180-b8ff-11e9-975d-f2c356561180.png)
+Kmeans F1-score
   
   
-  * ![image](https://user-images.githubusercontent.com/31083873/62664455-cb33fd80-b938-11e9-8032-72bb83af578d.png)
-  DBSCAN F1-score
+* ![image](https://user-images.githubusercontent.com/31083873/62664455-cb33fd80-b938-11e9-8032-72bb83af578d.png)
+DBSCAN F1-score
  
-
-
-
-
 
 
 ### Preprocessing Dataset
