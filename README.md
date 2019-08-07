@@ -85,12 +85,18 @@ Each algorithm requires user-input parameters.
   
   ###### Isolation Forest 
   
+  ####### Contamination Factor
+  ![image](https://user-images.githubusercontent.com/51713553/62648301-c149d480-b90f-11e9-848f-1fbe843099cb.png)
+  Users must choose the ratio of anomalies in the dataset. This is called the contamination factor.
   
   
   
-  ####### Scoring Metrics
+##### 8. Scoring Metrics
   ![image](https://user-images.githubusercontent.com/31083873/62186832-be098400-b324-11e9-9036-ae5413a4535e.png)
-  blabla
+  
+  
+  
+  
 
   ![image](https://user-images.githubusercontent.com/51713553/62640889-bdae5180-b8ff-11e9-975d-f2c356561180.png)
  
