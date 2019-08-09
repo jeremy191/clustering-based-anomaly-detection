@@ -129,12 +129,6 @@ The [Normalized Mutual Information Score](https://scikit-learn.org/stable/module
 
 Instead of measuring entropy as the NMI score does, the [Adjusted Rand Score](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.adjusted_rand_score.html) measures the similarity between the true labels and the found labels. Furthermore, the ARS is adjusted for chance, while the NMI is not.
 
-## Poster
-
-![image](https://user-images.githubusercontent.com/31083873/62745692-65637680-ba09-11e9-863e-83a345a7a3f6.png)
-
-
-
 
 ## Roadmap
 
