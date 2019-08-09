@@ -64,11 +64,9 @@ The user is asked which anomaly detection algorithm he or she wants to use on th
 Each algorithm requires user-input parameters.
 
   ###### K-Means
-
      ###### Initialization method
 * ![image](https://user-images.githubusercontent.com/31083873/62186624-2b68e500-b324-11e9-9fdb-c700ee87ee4c.png)
 K-Means provides different options for choosing the initial cluster centers. In this project, the user can choose either the random method or SciKitLearn's more sophisticated [k-means++](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html) method.
-  
       ###### Clusters
 * ![image](https://user-images.githubusercontent.com/31083873/62186784-97e3e400-b324-11e9-8505-d35d78ee9fc1.png)
 Users must choose the number of clusters for K-Means. The elbow method is popular for choosing the number of clusters. Read  more below in the Analyzing Dataset section.
@@ -77,27 +75,16 @@ Users must choose the number of clusters for K-Means. The elbow method is popula
 * ![image](https://user-images.githubusercontent.com/31083873/62664174-cfabe680-b937-11e9-8352-d9cd5550c7f3.png)
 DBSCAN need 2 main parameter epsilon and min samples , the algorithm parameter will affect the run time, we concluded that brute is the fastest one for the NSL-KDD dataset.
   
-  
-  
   ###### Local Outlier Factor
   * ![image](https://user-images.githubusercontent.com/31083873/62664862-65487580-b93a-11e9-80e5-32dcff8b0ac1.png)
   Users must choose the ratio of anomalies in the dataset. This is called the contamination factor.
-  
-  
-  
+ 
   ###### Isolation Forest 
-  
-     ###### Contamination Factor
   * ![image](https://user-images.githubusercontent.com/51713553/62648301-c149d480-b90f-11e9-848f-1fbe843099cb.png)
   Users must choose the ratio of anomalies in the dataset. This is called the contamination factor.
   
-  
-  
 ##### 8. Scoring Metrics
 * ![image](https://user-images.githubusercontent.com/31083873/62186832-be098400-b324-11e9-9036-ae5413a4535e.png)
-  
-  
-  
   
 * ![image](https://user-images.githubusercontent.com/51713553/62640889-bdae5180-b8ff-11e9-975d-f2c356561180.png)
 Kmeans F1-score
@@ -112,7 +99,7 @@ DBSCAN F1-score
 
 This project was designed to be used with the NSL-KDD and IDS 2017 datasets, available for download [here](https://www.unb.ca/cic/datasets/index.html). The preprocessing options thus are specific for each dataset. 
 
-The NSL-KDD dataset has [categorical data](https://machinelearningmastery.com/why-one-hot-encode-data-in-machine-learning/) that must be omitted or encoded as numerical data to be clustered. The options in this project for dealing with categorical data include omitting categorical features, One Hot Encoding catgorical features, and [assigning risk values](http://www.jatit.org/volumes/Vol65No3/13Vol65No3.pdf) to Server Type and Flag features while One Hot Encoding Protocol data.
+The NSL-KDD dataset has [categorical data](https://machinelearningmastery.com/why-one-hot-encode-data-in-machine-learning/) that must be omitted or encoded as numerical data to be clustered. The options in this project for dealing with categorical data include omitting categorical features, One Hot Encoding catgorical features, and [assigning risk values](http://www.jatit.org/volumes/Vol65No3/13Vol65No3.pdf) to Server Type and Flag features while One Hot Encoding Protocol data. One Hot Encoding is a process that takes each categorical option in a feature and makes that option a feature itself, assinging each data instance a "0" if it does not contain that category and a "1" if it does. While this option allows the user to keep the structure of the categorical data without assigning arbitrary hierarchical ordering to categories, this option also increases the number of features and thus is not always optimal for already-large datasets. For this reason, the code offers three different methods of dealing with categorical data.
 
 The IDS-2017 dataset has missing values that must be dealt with as well. The code offers the user the option of deleting the columns with missing values, imputing "0", imputing the mean, median, or mode of the feature, or using the Iterative Imputer method offered by Python.
 
@@ -141,6 +128,13 @@ The code also offers multiple evaluation metrics for the user to choose from. Ea
 The [Normalized Mutual Information Score](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.normalized_mutual_info_score.html) is based on the probability function of entropy and uncertainty between the true and the found labels. 
 
 Instead of measuring entropy as the NMI score does, the [Adjusted Rand Score](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.adjusted_rand_score.html) measures the similarity between the true labels and the found labels. Furthermore, the ARS is adjusted for chance, while the NMI is not.
+
+## Poster
+
+![image](https://user-images.githubusercontent.com/31083873/62745692-65637680-ba09-11e9-863e-83a345a7a3f6.png)
+
+
+
 
 ## Roadmap
 
