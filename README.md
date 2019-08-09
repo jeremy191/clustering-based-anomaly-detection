@@ -72,15 +72,15 @@ K-Means provides different options for choosing the initial cluster centers. In 
 Users must choose the number of clusters for K-Means. The elbow method is popular for choosing the number of clusters. Read  more below in the Analyzing Dataset section.
   
   ###### DBSCAN  
-* ![image](https://user-images.githubusercontent.com/31083873/62664174-cfabe680-b937-11e9-8352-d9cd5550c7f3.png)
-DBSCAN need 2 main parameter epsilon and min samples , the algorithm parameter will affect the run time, we concluded that brute is the fastest one for the NSL-KDD dataset.
+  * ![image](https://user-images.githubusercontent.com/31083873/62664174-cfabe680-b937-11e9-8352-d9cd5550c7f3.png)
+  DBSCAN need 2 main parameter epsilon and min samples , the algorithm parameter will affect the run time, we concluded that    brute is the fastest one for the NSL-KDD dataset.
   
   ###### Local Outlier Factor
-* ![image](https://user-images.githubusercontent.com/31083873/62664862-65487580-b93a-11e9-80e5-32dcff8b0ac1.png)
+  * ![image](https://user-images.githubusercontent.com/31083873/62664862-65487580-b93a-11e9-80e5-32dcff8b0ac1.png)
   Users must choose the ratio of anomalies in the dataset. This is called the contamination factor.
  
   ###### Isolation Forest 
-* ![image](https://user-images.githubusercontent.com/51713553/62648301-c149d480-b90f-11e9-848f-1fbe843099cb.png)
+  * ![image](https://user-images.githubusercontent.com/51713553/62648301-c149d480-b90f-11e9-848f-1fbe843099cb.png)
   Users must choose the ratio of anomalies in the dataset. This is called the contamination factor.
   
 ##### 8. Scoring Metrics
