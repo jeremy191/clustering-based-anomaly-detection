@@ -134,6 +134,10 @@ Instead of measuring entropy as the NMI score does, the [Adjusted Rand Score](ht
 
 * Implement Dimensionality Reduction- The main idea to implement this is because both datasets are considerably big  and they consume a lot of processing resources also we want to implement this because we can run DBSCAN algorithm on a bigger data set than IDS2017 and we want to know if we are going to be able to implement the algorithm.
 
+## Poster
+![CBAD-Poster](https://user-images.githubusercontent.com/31083873/70267654-41c0fa80-1775-11ea-9fa4-2bc85b1a57a3.png)
+
+
 
 ## Authors and acknowledgment
 * Jeremy Perez
